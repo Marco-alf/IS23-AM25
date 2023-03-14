@@ -1,10 +1,7 @@
-package it.polimi.ingsw;
+package it.polimi.ingsw.model;
 
-/**
- * Hello world!
- *
- */
-public class App 
+
+public class Game
 {
     public static void main( String[] args )
     {

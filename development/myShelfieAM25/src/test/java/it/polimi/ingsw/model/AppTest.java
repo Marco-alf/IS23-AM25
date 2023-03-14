@@ -1,11 +1,11 @@
-package it.polimi.ingsw;
+package it.polimi.ingsw.model;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * Unit test for simple App.
+ * Unit test for simple Game.
  */
 public class AppTest 
     extends TestCase
