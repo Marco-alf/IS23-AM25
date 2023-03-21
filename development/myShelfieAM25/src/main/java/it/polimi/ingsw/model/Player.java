@@ -7,15 +7,24 @@ import java.util.ArrayList;
  */
 public class Player {
     private String name;
-    private Shelf shelf;
+    private Shelf shelf = new Shelf();
     private LivingRoom board;
+    private PersonalGoal personalGoal;
+
+    public Player(String name, LivingRoom board, PersonalGoal personalGoal){
+        this.name = name;
+        this.board = board;
+        this.personalGoal = personalGoal;
+    }
 
     public int calculatePersonalPoints(){
-        return 0;
+
+        return personalGoal.calculatePoints(shelf);
     }
 
     public int calculateCommonPoints(){
-        return 0;
+
+        return LivingRoom.calculateCommonPoints(this);
     }
 
     public TilesType[][] getShelf(){
