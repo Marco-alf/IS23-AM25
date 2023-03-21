@@ -2,6 +2,8 @@ package it.polimi.ingsw.model.commongoal;
 
 import it.polimi.ingsw.model.exception.*;
 
+import it.polimi.ingsw.model.*;
+
 import java.util.ArrayList;
 public abstract class CommonGoal {
 
