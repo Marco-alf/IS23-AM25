@@ -163,7 +163,11 @@ public class LivingRoom {
      * @return the board (a 9x9 TilesType matrix)
      */
     public TilesType[][] getEnumArray() {
-        return board;
+        TilesType[][] boardCopy = new TilesType[board.length][];
+        for(int i = 0; i < board.length; i++){
+            boardCopy[i] = board[i].clone();
+        }
+        return boardCopy;
     }
 
     /**
@@ -184,6 +188,7 @@ public class LivingRoom {
     /**
      * This method checks whether the tiles can be taken from the board or it is an illegal move. If
      * it is a valid move it removes the tiles from the board and return them to the player
+     * The order of the TilesType in the tiles parameter is kept in the returned array
      * @param tiles is an ArrayList that contains the tiles the player wants to move
      * @return an ArrayList of TilesType to the player
      * @throws NotInLineException if the tiles are not in a straight line
@@ -203,7 +208,7 @@ public class LivingRoom {
             if (tile.getPosX() > maxX) maxX = tile.getPosX();
             if (tile.getPosX() < minX) minX = tile.getPosX();
             if (tile.getPosY() > maxY) maxY = tile.getPosY();
-            if (tile.getPosY() > minY) minY = tile.getPosY();
+            if (tile.getPosY() < minY) minY = tile.getPosY();
         }
 
         if((minX == maxX && maxY - minY == tiles.size() - 1) || (minY == maxY && maxX - minX == tiles.size() - 1)) {
