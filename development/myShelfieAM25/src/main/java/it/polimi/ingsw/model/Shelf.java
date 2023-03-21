@@ -1,17 +1,14 @@
 package it.polimi.ingsw.model;
 
 public class Shelf {
-<<<<<<< Updated upstream
-=======
+
     private TilesType [][] shelf;
     private final int xBound = 5, yBound = 6;
->>>>>>> Stashed changes
 
     public Shelf() {
         this.shelf = new TilesType[yBound][xBound];
     }
-
-=======
+    /**
     * adds a list of Tiles to the shelf
     * @param    tiles   List of tiletype, ordered by order of insertion
     * @param    column  int, destination column
@@ -95,5 +92,4 @@ public class Shelf {
     public TilesType[][] getShelf() {
         return shelf;
     }
->>>>>>> Stashed changes
 }
