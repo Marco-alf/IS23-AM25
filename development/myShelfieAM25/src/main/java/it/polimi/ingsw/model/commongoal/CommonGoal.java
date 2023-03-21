@@ -1,18 +1,43 @@
 package it.polimi.ingsw.model.commongoal;
 
 import it.polimi.ingsw.model.exception.*;
+import it.polimi.ingsw.model.*;
 
 import it.polimi.ingsw.model.*;
 
 import java.util.ArrayList;
+
+/**
+ * This class represents a common goal. It is an abstract class, the method checkPoints
+ * is implemented in its subclasses.
+ */
 public abstract class CommonGoal {
 
+    /**
+     * Max height of a shelf
+     */
     protected static final int MAX_ROW = 6;
+    /**
+     * Max width of a shelf
+     */
     protected static final int MAX_COLUMN = 5;
 
+    /**
+     * This ArrayList tracks the players that scored the points of the common goal and in which order they completed it
+     */
     protected final ArrayList<String> players;
+    /**
+     * It is an array of int, it is built based on the number of players in the game. The index of a player in the
+     * ArrayList players matches the index of points in this array
+     */
     protected int[] points; // stack of points, it varies with the number of players in the game
 
+    /**
+     * The constructor initializes the ArrayList players and creates the array points based on the number
+     * of players in the game
+     * @param numPlayers is the number of players in the game
+     * @throws InvalidPlayerNumberException if the number of players is >4 or <2
+     */
     public CommonGoal(int numPlayers) throws InvalidPlayerNumberException{
         players = new ArrayList<>();
         switch (numPlayers) {
@@ -31,7 +56,17 @@ public abstract class CommonGoal {
 
     }
 
-    public abstract boolean checkPoints(Player player);
+    /**
+     * This is an abstract method, it is implemented in its subclasses
+     * @param player
+     * @return true if the player completed the goal, false if they didn't
+     */
+    protected abstract boolean checkPoints(Player player);
+
+    /**
+     * @param player
+     * @return the number of points the player accumulated
+     */
     public int calculatePoints(Player player) {
         if(players.contains(player.getName())){
             return points[players.indexOf(player.getName())];
