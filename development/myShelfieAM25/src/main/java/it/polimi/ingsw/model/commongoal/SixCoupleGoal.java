@@ -8,96 +8,75 @@ import it.polimi.ingsw.model.exception.*;
  * 2 tiles of the same type. The tiles of one group can be different from those of another group.
  */
 public class SixCoupleGoal extends CommonGoal {
-
-    /**
-     * Dimension of the groups
-     */
-    private final int length = 2;
-
     /**
      * This is a matrix of int. It is used to verify whether a slot of the shelf has already been checked
      */
     private final int[][] checked = new int[MAX_ROW][MAX_COLUMN];
 
     /**
-     * Constructor is the same as the super class
-     * @param numPlayers
-     * @throws InvalidPlayerNumberException
+     * The constructor is the same as the super class
+     * @param numPlayers is the number of players
+     * @throws InvalidPlayerNumberException if the number of players is not valid
      */
     public SixCoupleGoal(int numPlayers) throws InvalidPlayerNumberException {
         super(numPlayers);
     }
 
     /**
-     * private method used by checkPoints
+     * Private method used by checkPoints, it uses recursion to search and find the size of a group containing
+     * tiles of the same type.
      * @param matrix is the shelf (a TilesType matrix)
      * @param i is the first coordinate of the cell I want to check (es: matrix[i][...])
-     * @param j is the second coordinate of the cell I want to check (es: matrix[...][j])
-     * @return true if the tile to the right of the control cell is the same type of the control cell, and that it has
-     * not already been checked, false otherwise
+     * @param j is the second coordinate of the cell I want to check (es: matrix[...][k])
+     * @return the size of the group of tiles of the same type that contains the tile in the
+     * coordinates [i][j]
      */
-    private boolean checkRow(TilesType[][] matrix, int i, int j) {
-        TilesType control = matrix[i][j];
-        if(control == null) return false;
-        for (int k = 0; k < length; k++) {
-            if(matrix[i][j + k] != control || checked[i + k][j] == 0) return false;
+    private int numAdj(TilesType[][] matrix, int i, int j) {
+        int adj = 0;
+        if(checked[i][j] == 0 || matrix[i][j] == null) return 0;
+        adj++;
+        TilesType type = matrix[i][j];
+        checked[i][j] = 0;
+        if((j + 1) < MAX_COLUMN && matrix[i][j + 1] == type) {
+            adj = adj + numAdj(matrix, i, j + 1);
         }
-        return true;
+        if((i + 1) < MAX_ROW && matrix[i + 1][j] == type) {
+            adj = adj + numAdj(matrix, i + 1, j);
+        }
+        if((j - 1) >= 0 && matrix[i][j - 1] == type) {
+            adj = adj + numAdj(matrix, i, j - 1);
+        }
+        if((i - 1) >= 0 && matrix[i - 1][j] == type) {
+            adj = adj + numAdj(matrix, i - 1, j);
+        }
+        return adj;
     }
 
     /**
-     * private method used by checkPoints
-     * @param matrix is the shelf (a TilesType matrix)
-     * @param i is the first coordinate of the cell I want to check (es: matrix[i][...])
-     * @param j is the second coordinate of the cell I want to check (es: matrix[...][j])
-     * @return true if the tile below the control cell is the same type of the control cell, and that it has
-     * not already been checked, false otherwise
-     */
-    private boolean checkColumn(TilesType[][] matrix, int i, int j) {
-        TilesType control = matrix[i][j];
-        if(control == null) return false;
-        for (int k = 0; k < length; k++) {
-            if(matrix[i + k][j] != control || checked[i + k][j] == 0) return false;
-        }
-        return true;
-    }
-
-    /**
-     * @param player
-     * @return true if the shelf (associated to the player) contains 6 groups of two tiles of the same type,
+     * This method checks every slot of the bookshelf and verifies if the groups of tiles of the same type
+     * contains 2 or more tiles
+     * @param player is the number of players
+     * @return true if the number of groups of tiles of the same type containing 2 tiles is greater or equal to 6,
      * false otherwise
      */
     protected boolean checkPoints(Player player) {
         TilesType[][] matrixCopy = player.getShelf().clone();
         int couples = 0;
-        int i = 0, j = 0;
 
-        for (int k = 0; k < 6; k++) {
-            for (int l = 0; l < 5; l++) {
+        for (int k = 0; k < MAX_ROW; k++) {
+            for (int l = 0; l < MAX_COLUMN; l++) {
                 checked[k][l] = 1;
             }
         }
 
-        while(i < 6 - length + 1) {
-            while(j < 5 - length + 1) {
-                if(checkRow(matrixCopy, i, j)) {
-                    couples++;
-                    if(couples == 6) return true;
-                    for (int k = 0; k < 2; k++) {
-                        checked[i][i + k] = 0;
-                    }
-                }
-                if(checkColumn(matrixCopy, i, j)) {
-                    couples++;
-                    if(couples == 6) return true;
-                    for (int k = 0; k < 2; k++) {
-                        checked[i + k][j] = 0;
-                    }
-                }
-                j++;
+        for (int i = 0; i < MAX_ROW; i++) {
+            for (int j = 0; j < MAX_COLUMN; j++) {
+                int dim = numAdj(matrixCopy, i, j);
+                if (dim >= 2) couples++;
+                if(couples >= 6) return true;
             }
-            i++;
         }
+
         return false;
     }
 }

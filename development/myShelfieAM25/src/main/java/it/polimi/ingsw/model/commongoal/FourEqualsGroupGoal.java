@@ -16,8 +16,8 @@ public class FourEqualsGroupGoal extends CommonGoal {
 
     /**
      * The constructor is the same as the super class
-     * @param numPlayers
-     * @throws InvalidPlayerNumberException
+     * @param numPlayers is the number of players in the game
+     * @throws InvalidPlayerNumberException if the number of players is not valid
      */
     public FourEqualsGroupGoal(int numPlayers) throws InvalidPlayerNumberException {
         super(numPlayers);
@@ -44,13 +44,19 @@ public class FourEqualsGroupGoal extends CommonGoal {
         if((i + 1) < MAX_ROW && matrix[i + 1][j] == type) {
             adj = adj + numAdj(matrix, i + 1, j);
         }
+        if((j - 1) >= 0 && matrix[i][j - 1] == type) {
+            adj = adj + numAdj(matrix, i, j - 1);
+        }
+        if((i - 1) >= 0 && matrix[i - 1][j] == type) {
+            adj = adj + numAdj(matrix, i - 1, j);
+        }
         return adj;
     }
 
     /**
      * This method checks every slot of the bookshelf and verifies if the groups of tiles of the same type
      * contains 4 or more tiles
-     * @param player
+     * @param player is the number of players
      * @return true if the number of groups of tiles of the same type containing 4 tiles is greater or equal to 4,
      * false otherwise
      */
@@ -67,7 +73,7 @@ public class FourEqualsGroupGoal extends CommonGoal {
         for (int i = 0; i < MAX_ROW; i++) {
             for (int j = 0; j < MAX_COLUMN; j++) {
                 int dim = numAdj(matrixCopy, i, j);
-                quartets += dim / 4;
+                if (dim >= 4) quartets++;
                 if(quartets >= 4) return true;
             }
         }

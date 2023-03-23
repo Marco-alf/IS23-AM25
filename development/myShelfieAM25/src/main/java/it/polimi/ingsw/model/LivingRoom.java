@@ -92,7 +92,7 @@ public class LivingRoom {
                 commonGoals[0] = new ThreeRegularColumnGoal(playerNumber);
                 break;
             case 9:
-                commonGoals[0] = new XGoals(playerNumber);
+                commonGoals[0] = new XGoal(playerNumber);
                 break;
             case 10:
                 commonGoals[0] = new EightEqualsGoal(playerNumber);
@@ -133,7 +133,7 @@ public class LivingRoom {
                 commonGoals[1] = new ThreeRegularColumnGoal(playerNumber);
                 break;
             case 9:
-                commonGoals[1] = new XGoals(playerNumber);
+                commonGoals[1] = new XGoal(playerNumber);
                 break;
             case 10:
                 commonGoals[1] = new EightEqualsGoal(playerNumber);
