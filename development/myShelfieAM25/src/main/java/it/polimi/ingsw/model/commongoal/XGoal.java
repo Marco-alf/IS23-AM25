@@ -4,9 +4,9 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.TilesType;
 import it.polimi.ingsw.model.exception.InvalidPlayerNumberException;
 
-public class XGoals extends CommonGoal{
+public class XGoal extends CommonGoal{
 
-    public XGoals(int numPlayers) throws InvalidPlayerNumberException {
+    public XGoal(int numPlayers) throws InvalidPlayerNumberException {
         super(numPlayers);
     }
 

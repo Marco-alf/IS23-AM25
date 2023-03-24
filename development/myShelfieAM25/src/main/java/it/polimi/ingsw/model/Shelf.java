@@ -26,6 +26,22 @@ public class Shelf {
     }
 
     /**
+     * getter for xBound
+     * @return xBound, the dimension of shelf regarding the x axes
+     */
+    public int getxBound() {
+        return xBound;
+    }
+
+    /**
+     * getter for yBound
+     * @return yBound, the dimension of shelf regarding the y axes
+     */
+    public int getyBound() {
+        return yBound;
+    }
+
+    /**
      * add a list of tiles in the shelf
      * @param tiles is the ArrayList of the TilesType to insert into the shelf, the order of the tiles is mantained
      * @param column is the index of the column in which to insert the tiles

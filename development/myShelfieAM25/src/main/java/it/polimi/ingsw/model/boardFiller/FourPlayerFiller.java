@@ -8,7 +8,7 @@ import it.polimi.ingsw.model.exception.*;
 
 /**
  * FourPlayerFiller is the concrete implementation of a BoardFiller responsible for refilling a game board for a four-player game
- * @author ceru
+ * @author andreac01
  */
 public class FourPlayerFiller extends ThreePlayerFiller{
 

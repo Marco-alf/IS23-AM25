@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Player is a class that models the player in a game. This class contains all the information regarding a player of the game.
  * Its active role in the mode is being an hub for the management of the operation regarding the player itself
- * @author ceru
+ * @author andreac01
  */
 public class Player {
     /**
@@ -61,7 +61,7 @@ public class Player {
      * calculatePersonalPoints is the method used by game to retrive the points that a player has done by completing his personal goal
      * @return the points calculated by the personal goal based on the shelf of the player
      */
-    public int calculatePersonalPoints(){
+    public int calculatePersonalPoints() throws OutOfBoundException{
         return personalGoal.calculatePoints(shelf);
     }
 
@@ -83,6 +83,8 @@ public class Player {
 
     /**
      * moveTiles is the core method of player used to take a list of Tile from the living room and placing them into the shelf
+     * Player have to check that adding tiles to the shelf will be legal in order to avoid taking the tiles if the move throws
+     * an exception
      * @param tiles is the list of tiles that the player want to take from the board. The order of the list mirrors the order
      *              in which the player wants to place them into the shelf
      * @param shelfColumn is the index of the column of the shelf in which the player wants to place the tiles
@@ -90,11 +92,18 @@ public class Player {
      * @throws NoFreeEdgeException if one tile has no free adjacent cells
      * @throws OutOfBoundException if one coordinate is out of the board
      * @throws NullPointerException if one cell is empty
-     * @throws TileBadFormattingException
-     * @throws ColumnOutOfBoundsException
-     * @throws PlacementException
+     * @throws FullColumnException if the tiles couldn't fit in the selected column
      */
-    public void moveTiles(ArrayList<Tile> tiles, int shelfColumn) throws NotInLineException, NoFreeEdgeException, OutOfBoundException, NullPointerException, TileBadFormattingException, ColumnOutOfBoundsException, PlacementException{
+    public void moveTiles(ArrayList<Tile> tiles, int shelfColumn) throws NotInLineException, NoFreeEdgeException, OutOfBoundException, NullPointerException, FullColumnException{
+        if(shelfColumn >= shelf.getxBound() || shelfColumn < 0) throw new OutOfBoundException();
+        int curTop=0;
+        for (int i=0; i < shelf.getyBound(); i++){
+            if(shelf.getShelf()[i][shelfColumn]!=null){
+                curTop++;
+            }
+        }
+        if(curTop >= shelf.getyBound()) throw new FullColumnException();
+
         ArrayList<TilesType> tileList = board.takeTiles(tiles);
         shelf.add(tileList, shelfColumn);
     }

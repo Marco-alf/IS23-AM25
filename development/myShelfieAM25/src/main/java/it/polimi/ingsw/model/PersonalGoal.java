@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.exception.OutOfBoundException;
+
 /**
  * PersonalGoal is an enumeration whose instances represents the 12 different type of personal goal present in the game
  * The class has two private attributes: an array of int representing the points given by the card and an array of Tile representing the constraints that the player have to fulfill
@@ -150,14 +152,15 @@ public enum PersonalGoal {
     /**
      * calculatePoints is a method shared by all instances of the enumeration.
      * It is used for calculating the points assigned to a personal goal to a particular shelf configuration.
+     * If getTile return an exception we simply consider that
      * @param shelf the method requires a shelf configuration as input
      * @return points[i] the method returns the points achieved by the shelf in exam
      */
-    public int calculatePoints(Shelf shelf) {
+    public int calculatePoints(Shelf shelf) throws OutOfBoundException{
         int i;
         int count = 0;
         for (i = 0; i < 6; i++) {
-            if (tiles[i].getType() == shelf.getTile(tiles[i].getPosY(), tiles[i].getPosX())) {
+            if (tiles[i].getType() == shelf.getTile(tiles[i].getPosX(), tiles[i].getPosY())) {
                 count++;
             }
         }
