@@ -1,95 +1,120 @@
 package it.polimi.ingsw.model;
 
-public class Shelf {
+import it.polimi.ingsw.model.exception.*;
 
-    private TilesType [][] shelf;
+import javax.imageio.ImageTranscoder;
+import java.util.ArrayList;
+
+/**
+ * class shelf represent a player's shelf
+ */
+public class Shelf {
+    /**
+     * attribute shelf represents the real player shelf
+     */
+    private final TilesType [][] shelf;
+    /**
+     * attributes xBound and yBound represents dimension of the shelf
+     */
     private final int xBound = 5, yBound = 6;
 
+    /**
+     * The constructor of the class initialize an empty TilesTye matrix of the right dimension
+     */
     public Shelf() {
         this.shelf = new TilesType[yBound][xBound];
     }
+
     /**
-    * adds a list of Tiles to the shelf
-    * @param    tiles   List of tiletype, ordered by order of insertion
-    * @param    column  int, destination column
-    * */
-    public void add(List<TileType> tiles, int column) throws
-            TileBadFormattingEcxeption,
-            ColumnOutOfBoundsException,
-            PlacementException
-    {
-        int firstOpen = null;
-        /* (not for javadoc) checking for exceptions*/
-        if(column > xBound) throw ColumnOutOfBoundsException;
-        for(int i=0; i < yBound ; i++){
-            if(shelf[i][column] != null)
-                if(i<tiles.size()) throw PlacementException;
-                else break;
-            else
-                firstOpen = i;
-        }
-        for(int i; i<tiles.size() ;i++){
-            shelf[firstOpen - i][column];
-        }
-    }
-
-
-    int calculatePoints(){
-
-        int concatCount = 0;
-        Stack<Tile> tileStack = new Stack<>();
-
-        for(int j=0; j<yBound; j++){
-            for(int i=0; i<xBound; i++){
-
-                if(shelf[i][j] != null){
-                    TileType usedTypeshelf = shelf[i][j];
-                    tileStack.push(new Tile(usedTypeshelf, i, j));
-                    Do{
-                        Tile explorer
-                        try{
-                            int corrX= 1, corrY = 0;
-                            if(shelf[i+corrX][j+corrY] = concatCount)
-                                tileStack.add(new Tile(usedTypeshelf ,i+corrX,j+corrY));
-                        }
-                        try{
-                            int corrX= -1, corrY = 0;
-                            if(shelf[i+corrX][j+corrY] = concatCount)
-                                tileStack.add(new Tile(usedTypeshelf ,i+corrX,j+corrY));
-                        }
-                        try{
-                            int corrX= 0, corrY = 1;
-                            if(shelf[i+corrX][j+corrY] = concatCount)
-                                tileStack.add(new Tile(usedTypeshelf ,i+corrX,j+corrY));
-                        }
-                        try{
-                            int corrX= 0, corrY = -1;
-                            if(shelf[i+corrX][j+corrY] = concatCount)
-                                tileStack.add(new Tile(usedTypeshelf ,i+corrX,j+corrY));
-                        }
-                    } while( !tileStack.empty() );
-                } else {
-                    concatCount = 0;
-                }
-
+     * add a list of tiles in the shelf
+     * @param tiles is the ArrayList of the TilesType to insert into the shelf, the order of the tiles is mantained
+     * @param column is the index of the column in which to insert the tiles
+     * @throws OutOfBoundException is thrown if the column index is invalid
+     * @throws FullColumnException is thrown if there is no space for the tiles in the selected column
+     */
+    public void add(ArrayList<TilesType> tiles, int column) throws OutOfBoundException, FullColumnException {
+        if(column >= xBound || column < 0) throw new OutOfBoundException();
+        int curTop=0;
+        for (int i=0; i < yBound; i++){
+            if(shelf[i][column]!=null){
+                curTop++;
             }
         }
+        if(curTop >= yBound) throw new FullColumnException();
+
+        for (TilesType el:
+             tiles) {
+            shelf[curTop][column] = el;
+        }
+    }
+
+    /**
+     * support private method used by calculatePoints to get the points of each cluster of similar tiles
+     * @param i is the row of the element whose cluster dimension will be calculated
+     * @param j is the column of the element whose cluster dimension will be calculated
+     * @param checked is used to have a memory of already checked clusters
+     * @return the dimension of the cluster that contains element in position i,j
+     */
+    private int numAdj(int i, int j, boolean[][] checked) {
+        int adj = 0;
+        if(checked[i][j] || shelf[i][j] == null) return 0;
+        adj++;
+        TilesType type = shelf[i][j];
+        checked[i][j] = true;
+        if((j + 1) < xBound && shelf[i][j + 1] == type) {
+            adj = adj + numAdj(i, j + 1, checked);
+        }
+        if((i + 1) < yBound && shelf[i + 1][j] == type) {
+            adj = adj + numAdj(i + 1, j, checked);
+        }
+        if((j - 1) >= 0 && shelf[i][j - 1] == type) {
+            adj = adj + numAdj(i, j - 1, checked);
+        }
+        if((i - 1) >= 0 && shelf[i - 1][j] == type) {
+            adj = adj + numAdj(i - 1, j, checked);
+        }
+        return adj;
+    }
+
+    /**
+     * calculatePoints is used to get the points related to the shelf that are not related to any goal (common or personal)
+     * @return points that are the points achieved by the clustering in the shelf
+     */
+    public int calculatePoints(){
+        int points = 0;
+        boolean[][] checked = new boolean[6][5];
+
+        for (int i = 0; i < yBound; i++) {
+            for (int j = 0; j < xBound; j++) {
+                int dim = numAdj(i, j, checked);
+                points+=dim;
+            }
+        }
+        return points;
     }
 
 
-    /*
-    * Getter for TyleType of a single slot on the shelf, returns null in case it is blank
-    * */
-    TypeType getTile(int x, int y) throws IndexOutOfShelfBound{
-        if(x>=xBound || y>=yBound || x<0 || y<0)
-            throw IndexOutOfShelfBound;
+    /**
+     * getter for a tile in position y, x
+     * @param x is the position of the tile on the x axes, so it represents the column
+     * @param y is the position of the tile on the y axes, so it represents the row
+     * @return the TilesType of the tile in position y, x
+     * @throws OutOfBoundException when the requested position is not valid int the shelf array
+     */
+    public TilesType getTile(int x, int y) throws OutOfBoundException {
+        if(x>=xBound || y>=yBound || x<0 || y<0) throw new OutOfBoundException();
         return shelf[y][x];
     }
 
-    /*
-    * Getter for array representing current state of shelf
-    * */
+    /**
+     * Getter for the current shelf state
+     * @return shelfCopy that is a copy of the current shelf configuration
+     */
     public TilesType[][] getShelf() {
-        return shelf;
+        TilesType[][] shelfCopy = new TilesType[shelf.length][];
+        for(int i = 0; i < shelf.length; i++){
+            shelfCopy[i] = shelf[i].clone();
+        }
+        return shelfCopy;
     }
 }
