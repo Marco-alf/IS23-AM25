@@ -34,7 +34,7 @@ public class ThreePlayerFiller extends TwoPlayerFiller{
             if(board[2][2]==null) board[2][2] = TilesType.values()[getNextType()];
             if(board[2][6]==null) board[2][6] = TilesType.values()[getNextType()];
 
-            if(board[3][6]==null) board[3][8] = TilesType.values()[getNextType()];
+            if(board[3][8]==null) board[3][8] = TilesType.values()[getNextType()];
 
             if(board[5][0]==null) board[5][0] = TilesType.values()[getNextType()];
 
