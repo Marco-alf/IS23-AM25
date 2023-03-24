@@ -3,7 +3,7 @@ package it.polimi.ingsw.model;
 /**
  * PersonalGoal is an enumeration whose instances represents the 12 different type of personal goal present in the game
  * The class has two private attributes: an array of int representing the points given by the card and an array of Tile representing the constraints that the player have to fulfill
- * @author ceru
+ * @author andreac01
  */
 public enum PersonalGoal {
     PERSONALGOAL1(
@@ -157,7 +157,7 @@ public enum PersonalGoal {
         int i;
         int count = 0;
         for (i = 0; i < 6; i++) {
-            if (tiles[i].getType() == shelf.getTile(tiles[i].getPosX(), tiles[i].getPosY()).getType()) {
+            if (tiles[i].getType() == shelf.getTile(tiles[i].getPosY(), tiles[i].getPosX())) {
                 count++;
             }
         }
