@@ -3,8 +3,6 @@ package it.polimi.ingsw.model.commongoal;
 import it.polimi.ingsw.model.exception.*;
 import it.polimi.ingsw.model.*;
 
-import it.polimi.ingsw.model.*;
-
 import java.util.ArrayList;
 
 /**
@@ -58,13 +56,13 @@ public abstract class CommonGoal {
 
     /**
      * This is an abstract method, it is implemented in its subclasses
-     * @param player
+     * @param player is the player
      * @return true if the player completed the goal, false if they didn't
      */
     protected abstract boolean checkPoints(Player player);
 
     /**
-     * @param player
+     * @param player is the player
      * @return the number of points the player accumulated
      */
     public int calculatePoints(Player player) {

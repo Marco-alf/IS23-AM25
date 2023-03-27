@@ -11,8 +11,8 @@ public class FullDiagonalGoal extends CommonGoal {
 
     /**
      * The constructor is the same as the super class
-     * @param numPlayers
-     * @throws InvalidPlayerNumberException
+     * @param numPlayers is the number of players
+     * @throws InvalidPlayerNumberException if the number of players is not valid
      */
     public FullDiagonalGoal(int numPlayers) throws InvalidPlayerNumberException {
         super((numPlayers));

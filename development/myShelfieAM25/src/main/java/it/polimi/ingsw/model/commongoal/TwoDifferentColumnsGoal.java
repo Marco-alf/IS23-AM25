@@ -11,15 +11,15 @@ import java.util.ArrayList;
 public class TwoDifferentColumnsGoal extends CommonGoal {
     /**
      * The constructor is the same as the super class
-     * @param numPlayers
-     * @throws InvalidPlayerNumberException
+     * @param numPlayers is the number of players
+     * @throws InvalidPlayerNumberException if the number of players is not valid
      */
     public TwoDifferentColumnsGoal(int numPlayers) throws InvalidPlayerNumberException {
         super(numPlayers);
     }
 
     /**
-     * @param player
+     * @param player is the player
      * @return true if there actually are 2 columns formed by 6 different types of tiles, false otherwise
      */
     protected boolean checkPoints(Player player) {

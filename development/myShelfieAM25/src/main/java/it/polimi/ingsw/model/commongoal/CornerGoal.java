@@ -10,8 +10,8 @@ import it.polimi.ingsw.model.exception.*;
 public class CornerGoal extends CommonGoal{
     /**
      * The constructor is the same as the super class
-     * @param numPlayers
-     * @throws InvalidPlayerNumberException
+     * @param numPlayers is then number of players in the game
+     * @throws InvalidPlayerNumberException if the number of players is not valid
      */
     public CornerGoal(int numPlayers) throws InvalidPlayerNumberException {
             super(numPlayers);
@@ -19,7 +19,7 @@ public class CornerGoal extends CommonGoal{
 
     /**
      * Checks if the player placed tiles of the same type in the four corners of the bookshelf
-     * @param player
+     * @param player is the player
      * @return true if the player completed the goal, false if they didn't
      */
     protected boolean checkPoints(Player player){

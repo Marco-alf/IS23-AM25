@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.commongoal;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.exception.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is FourRegularRowsGoal. It gives points to a player if their shelf there are four lines each formed
@@ -13,8 +14,8 @@ public class FourRegularRowsGoal extends CommonGoal {
 
     /**
      * The constructor is the same as the super class
-     * @param numPlayers
-     * @throws InvalidPlayerNumberException
+     * @param numPlayers is the number of players in the game
+     * @throws InvalidPlayerNumberException if the number of players is not valid
      */
     public FourRegularRowsGoal(int numPlayers) throws InvalidPlayerNumberException {
         super(numPlayers);
@@ -22,14 +23,14 @@ public class FourRegularRowsGoal extends CommonGoal {
 
     /**
      * This method checks if the shelf contains 4 rows containing three or more different types of tiles
-     * @param player
+     * @param player is the player
      * @return true if there actually are 4 row containing three or more different types of tiles,
      * false otherwise
      */
     protected boolean checkPoints(Player player) {
         TilesType[][] matrixCopy = player.getShelf().clone();
         int matchingRows = 0;
-        ArrayList<TilesType> types = new ArrayList<>();
+        List<TilesType> types = new ArrayList<>();
 
         for (int i = 0; i < MAX_ROW; i++) {
             for (int j = 0; j < MAX_COLUMN; j++) {

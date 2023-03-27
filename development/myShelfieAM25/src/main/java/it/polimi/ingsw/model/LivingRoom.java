@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.commongoal.*;
 import it.polimi.ingsw.model.exception.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -65,7 +66,7 @@ public class LivingRoom {
 
         switch (commonGoalIndex[0]) {
             case 0:
-                commonGoals[0] = new SixCoupleGoal(playerNumber);
+                commonGoals[0] = new EqualGroups(playerNumber, 2, 6);
                 break;
             case 1:
                 commonGoals[0] = new FullDiagonalGoal(playerNumber);
@@ -77,7 +78,7 @@ public class LivingRoom {
                 commonGoals[0] = new FourRegularRowsGoal(playerNumber);
                 break;
             case 4:
-                commonGoals[0] = new FourEqualsGroupGoal(playerNumber);
+                commonGoals[0] = new EqualGroups(playerNumber, 4, 4);
                 break;
             case 5:
                 commonGoals[0] = new TwoDifferentColumnsGoal(playerNumber);
@@ -106,7 +107,7 @@ public class LivingRoom {
 
         switch (commonGoalIndex[1]) {
             case 0:
-                commonGoals[1] = new SixCoupleGoal(playerNumber);
+                commonGoals[1] = new EqualGroups(playerNumber, 2, 6);
                 break;
             case 1:
                 commonGoals[1] = new FullDiagonalGoal(playerNumber);
@@ -118,7 +119,7 @@ public class LivingRoom {
                 commonGoals[1] = new FourRegularRowsGoal(playerNumber);
                 break;
             case 4:
-                commonGoals[1] = new FourEqualsGroupGoal(playerNumber);
+                commonGoals[1] = new EqualGroups(playerNumber, 4, 4);
                 break;
             case 5:
                 commonGoals[1] = new TwoDifferentColumnsGoal(playerNumber);
@@ -196,9 +197,9 @@ public class LivingRoom {
      * @throws OutOfBoundException if one coordinate is out of the board
      * @throws NullPointerException if one cell is empty
      */
-    public ArrayList<TilesType> takeTiles(ArrayList<Tile> tiles) throws NotInLineException, NoFreeEdgeException, OutOfBoundException, NullPointerException {
+    public List<TilesType> takeTiles(List<Tile> tiles) throws NotInLineException, NoFreeEdgeException, OutOfBoundException, NullPointerException {
         int maxX = 0, minX = 0, maxY = 0, minY = 0;
-        ArrayList<TilesType> tilesTypes = new ArrayList<TilesType>();
+        List<TilesType> tilesTypes = new ArrayList<>();
 
         for (Tile tile : tiles) {
             if (board[tile.getPosY()][tile.getPosX()] == null) throw new NullPointerException();

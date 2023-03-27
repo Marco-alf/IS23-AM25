@@ -4,23 +4,35 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.exception.*;
 
 /**
- * This is the FourEqualGroupsGoal. It gives points to a player if in their shelf there are four groups each
- * containing at least 4 tiles of the same type. The tiles of one group can be different from those of
- * another group
+ * This is EqualGroups. It generalizes two common goals (FourEqualsGroupsGoal and SixCoupleGoal). It gives points to
+ * a player if in their shelf there are @quantity groups each containing at least @size tiles of the same type.
+ * The tiles of one group can be different from those of another group
  */
-public class FourEqualsGroupGoal extends CommonGoal {
+public class EqualGroups extends CommonGoal{
     /**
      * This is a matrix of int. It is used to verify whether a slot of the shelf has already been checked
      */
     private final int[][] checked = new int[MAX_ROW][MAX_COLUMN];
-
     /**
-     * The constructor is the same as the super class
+     * This is the size of the groups
+     */
+    private final int size;
+    /**
+     * This is the number of groups
+     */
+    private final int quantity;
+    /**
+     * The constructor is the same as the super class. It adds the number of group of tiles and the size of the
+     * groups to generalize two other common goals.
      * @param numPlayers is the number of players in the game
+     * @param size is the size of the groups
+     * @param quantity is the number of groups
      * @throws InvalidPlayerNumberException if the number of players is not valid
      */
-    public FourEqualsGroupGoal(int numPlayers) throws InvalidPlayerNumberException {
+    public EqualGroups(int numPlayers, int size, int quantity) throws InvalidPlayerNumberException {
         super(numPlayers);
+        this.size = size;
+        this.quantity = quantity;
     }
 
     /**
@@ -55,10 +67,10 @@ public class FourEqualsGroupGoal extends CommonGoal {
 
     /**
      * This method checks every slot of the bookshelf and verifies if the groups of tiles of the same type
-     * contains 4 or more tiles
-     * @param player is the number of players
-     * @return true if the number of groups of tiles of the same type containing 4 tiles is greater or equal to 4,
-     * false otherwise
+     * contains @size or more tiles
+     * @param player is the players
+     * @return true if the number of groups of tiles of the same type containing @size tiles is greater or equal
+     * to @quantity, false otherwise
      */
     protected boolean checkPoints(Player player) {
         TilesType[][] matrixCopy = player.getShelf().clone();
@@ -73,12 +85,10 @@ public class FourEqualsGroupGoal extends CommonGoal {
         for (int i = 0; i < MAX_ROW; i++) {
             for (int j = 0; j < MAX_COLUMN; j++) {
                 int dim = numAdj(matrixCopy, i, j);
-                if (dim >= 4) quartets++;
-                if(quartets >= 4) return true;
+                if (dim >= size) quartets++;
+                if(quartets >= quantity) return true;
             }
         }
-
         return false;
     }
 }
-
