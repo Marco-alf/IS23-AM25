@@ -8,7 +8,7 @@ import it.polimi.ingsw.model.exception.*;
  * a player if in their shelf there are @quantity groups each containing at least @size tiles of the same type.
  * The tiles of one group can be different from those of another group
  */
-public class EqualGroups extends CommonGoal{
+public class EqualGroupsGoal extends CommonGoal{
     /**
      * This is a matrix of int. It is used to verify whether a slot of the shelf has already been checked
      */
@@ -29,7 +29,7 @@ public class EqualGroups extends CommonGoal{
      * @param quantity is the number of groups
      * @throws InvalidPlayerNumberException if the number of players is not valid
      */
-    public EqualGroups(int numPlayers, int size, int quantity) throws InvalidPlayerNumberException {
+    public EqualGroupsGoal(int numPlayers, int size, int quantity) throws InvalidPlayerNumberException {
         super(numPlayers);
         this.size = size;
         this.quantity = quantity;
@@ -74,7 +74,7 @@ public class EqualGroups extends CommonGoal{
      */
     protected boolean checkPoints(Player player) {
         TilesType[][] matrixCopy = player.getShelf().clone();
-        int quartets = 0;
+        int groups = 0;
 
         for (int k = 0; k < MAX_ROW; k++) {
             for (int l = 0; l < MAX_COLUMN; l++) {
@@ -85,8 +85,8 @@ public class EqualGroups extends CommonGoal{
         for (int i = 0; i < MAX_ROW; i++) {
             for (int j = 0; j < MAX_COLUMN; j++) {
                 int dim = numAdj(matrixCopy, i, j);
-                if (dim >= size) quartets++;
-                if(quartets >= quantity) return true;
+                if (dim >= size) groups++;
+                if(groups >= quantity) return true;
             }
         }
         return false;

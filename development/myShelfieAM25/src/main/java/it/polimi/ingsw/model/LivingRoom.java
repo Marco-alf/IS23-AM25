@@ -66,7 +66,7 @@ public class LivingRoom {
 
         switch (commonGoalIndex[0]) {
             case 0:
-                commonGoals[0] = new EqualGroups(playerNumber, 2, 6);
+                commonGoals[0] = new EqualGroupsGoal(playerNumber, 2, 6);
                 break;
             case 1:
                 commonGoals[0] = new FullDiagonalGoal(playerNumber);
@@ -75,22 +75,22 @@ public class LivingRoom {
                 commonGoals[0] = new CornerGoal(playerNumber);
                 break;
             case 3:
-                commonGoals[0] = new FourRegularRowsGoal(playerNumber);
+                commonGoals[0] = new RowsGoal(playerNumber, true);
                 break;
             case 4:
-                commonGoals[0] = new EqualGroups(playerNumber, 4, 4);
+                commonGoals[0] = new EqualGroupsGoal(playerNumber, 4, 4);
                 break;
             case 5:
-                commonGoals[0] = new TwoDifferentColumnsGoal(playerNumber);
+                commonGoals[0] = new ColumnsGoal(playerNumber, false);
                 break;
             case 6:
                 commonGoals[0] = new TwoEqualSquareGoal(playerNumber);
                 break;
             case 7:
-                commonGoals[0] = new TwoDifferentRowsGoal(playerNumber);
+                commonGoals[0] = new RowsGoal(playerNumber, false);
                 break;
             case 8:
-                commonGoals[0] = new ThreeRegularColumnGoal(playerNumber);
+                commonGoals[0] = new ColumnsGoal(playerNumber, true);
                 break;
             case 9:
                 commonGoals[0] = new XGoal(playerNumber);
@@ -107,7 +107,7 @@ public class LivingRoom {
 
         switch (commonGoalIndex[1]) {
             case 0:
-                commonGoals[1] = new EqualGroups(playerNumber, 2, 6);
+                commonGoals[1] = new EqualGroupsGoal(playerNumber, 2, 6);
                 break;
             case 1:
                 commonGoals[1] = new FullDiagonalGoal(playerNumber);
@@ -116,22 +116,22 @@ public class LivingRoom {
                 commonGoals[1] = new CornerGoal(playerNumber);
                 break;
             case 3:
-                commonGoals[1] = new FourRegularRowsGoal(playerNumber);
+                commonGoals[1] = new RowsGoal(playerNumber, true);
                 break;
             case 4:
-                commonGoals[1] = new EqualGroups(playerNumber, 4, 4);
+                commonGoals[1] = new EqualGroupsGoal(playerNumber, 4, 4);
                 break;
             case 5:
-                commonGoals[1] = new TwoDifferentColumnsGoal(playerNumber);
+                commonGoals[1] = new ColumnsGoal(playerNumber, false);
                 break;
             case 6:
                 commonGoals[1] = new TwoEqualSquareGoal(playerNumber);
                 break;
             case 7:
-                commonGoals[1] = new TwoDifferentRowsGoal(playerNumber);
+                commonGoals[1] = new RowsGoal(playerNumber, false);
                 break;
             case 8:
-                commonGoals[1] = new ThreeRegularColumnGoal(playerNumber);
+                commonGoals[1] = new ColumnsGoal(playerNumber, true);
                 break;
             case 9:
                 commonGoals[1] = new XGoal(playerNumber);

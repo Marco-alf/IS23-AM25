@@ -10,15 +10,17 @@ import java.util.List;
  * by 5 tiles of maximum three different types. One line can show the same or a different combination of
  * another line
  */
-public class FourRegularRowsGoal extends CommonGoal {
+public class RowsGoal extends CommonGoal {
+    private final boolean isRegular;
 
     /**
      * The constructor is the same as the super class
      * @param numPlayers is the number of players in the game
      * @throws InvalidPlayerNumberException if the number of players is not valid
      */
-    public FourRegularRowsGoal(int numPlayers) throws InvalidPlayerNumberException {
+    public RowsGoal(int numPlayers, boolean isRegular) throws InvalidPlayerNumberException {
         super(numPlayers);
+        this.isRegular = isRegular;
     }
 
     /**
@@ -29,15 +31,21 @@ public class FourRegularRowsGoal extends CommonGoal {
      */
     protected boolean checkPoints(Player player) {
         TilesType[][] matrixCopy = player.getShelf().clone();
-        int matchingRows = 0;
+        int rows = 0;
         List<TilesType> types = new ArrayList<>();
 
         for (int i = 0; i < MAX_ROW; i++) {
             for (int j = 0; j < MAX_COLUMN; j++) {
                 if(matrixCopy[i][j] != null && !types.contains(matrixCopy[i][j])) types.add(matrixCopy[i][j]);
             }
-            if(types.size() <= 3) matchingRows++;
-            if(matchingRows == 4) return true;
+            if (isRegular && types.size() <= 3) {
+                rows++;
+                if(rows == 4) return true;
+            }
+            if (!isRegular && types.size() == 6) {
+                rows++;
+                if (rows == 2) return true;
+            }
             types.clear();
         }
         return false;
