@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.exception.OutOfBoundException;
 /**
  * PersonalGoal is an enumeration whose instances represents the 12 different type of personal goal present in the game
  * The class has two private attributes: an array of int representing the points given by the card and an array of Tile representing the constraints that the player have to fulfill
- * @author andreac01
  */
 public enum PersonalGoal {
     PERSONALGOAL1(

@@ -10,7 +10,6 @@ import it.polimi.ingsw.model.exception.*;
  * BoardFiller is the abstract class whose subclasses are responsible for refilling the game board with random tiles
  * when ever it is requested by the LivingRoom
  * In order to implement this functionality we'll use a strategy pattern that incrementally fill the board based on the subtype of filler used
- * @author andreac01
  */
 public abstract class BoardFiller {
     /**

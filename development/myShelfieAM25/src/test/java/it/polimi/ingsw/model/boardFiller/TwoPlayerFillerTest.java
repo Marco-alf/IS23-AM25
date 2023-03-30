@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * tester for the two-player board filler
- * @author andreac01
  */
 public class TwoPlayerFillerTest {
     private final int boardSize = 29;

@@ -3,12 +3,11 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.exception.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Player is a class that models the player in a game. This class contains all the information regarding a player of the game.
  * Its active role in the mode is being an hub for the management of the operation regarding the player itself
- * @author andreac01
  */
 public class Player {
     /**
@@ -94,7 +93,7 @@ public class Player {
      * @throws NullPointerException if one cell is empty
      * @throws FullColumnException if the tiles couldn't fit in the selected column
      */
-    public void moveTiles(ArrayList<Tile> tiles, int shelfColumn) throws NotInLineException, NoFreeEdgeException, OutOfBoundException, NullPointerException, FullColumnException{
+    public void moveTiles(List<Tile> tiles, int shelfColumn) throws NotInLineException, NoFreeEdgeException, OutOfBoundException, NullPointerException, FullColumnException{
         if(shelfColumn >= shelf.getxBound() || shelfColumn < 0) throw new OutOfBoundException();
         int curTop=0;
         for (int i=0; i < shelf.getyBound(); i++){
@@ -104,7 +103,7 @@ public class Player {
         }
         if(curTop >= shelf.getyBound()) throw new FullColumnException();
 
-        ArrayList<TilesType> tileList = board.takeTiles(tiles);
+        List<TilesType> tileList = board.takeTiles(tiles);
         shelf.add(tileList, shelfColumn);
     }
 

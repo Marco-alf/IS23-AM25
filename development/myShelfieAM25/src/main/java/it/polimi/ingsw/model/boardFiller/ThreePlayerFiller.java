@@ -8,7 +8,6 @@ import it.polimi.ingsw.model.exception.*;
 
 /**
  * ThreePlayerFiller is the concrete implementation of a BoardFiller responsible for refilling a game board for a three-player game
- * @author andreac01
  */
 public class ThreePlayerFiller extends TwoPlayerFiller{
 

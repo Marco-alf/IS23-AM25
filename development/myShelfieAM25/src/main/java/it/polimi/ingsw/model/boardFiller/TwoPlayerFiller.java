@@ -8,7 +8,6 @@ import it.polimi.ingsw.model.exception.*;
 
 /**
  * TwoPlayerFiller is the concrete implementation of a BoardFiller responsible for refilling a game board for a two-player game
- * @author andreac01
  */
 public class TwoPlayerFiller extends BoardFiller{
 
