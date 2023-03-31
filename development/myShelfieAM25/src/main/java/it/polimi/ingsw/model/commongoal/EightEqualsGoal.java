@@ -11,9 +11,9 @@ public class EightEqualsGoal extends CommonGoal{
         super(numPlayers);
     }
 
-    public boolean checkPoints(Player player) {
+    public boolean checkPoints(TilesType[][] shelf) {
 
-        TilesType[][] matrixCopy = player.getShelf().clone();
+        TilesType[][] matrixCopy = shelf.clone();
 
         int[] occ = new int[]{0,0,0,0,0,0}; //occ[0] = CATS, occ[1] = BOOKS, ..., occ[5] = PLANTS
 

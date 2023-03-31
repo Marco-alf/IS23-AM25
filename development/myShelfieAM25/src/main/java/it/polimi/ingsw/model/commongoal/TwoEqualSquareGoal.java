@@ -10,9 +10,9 @@ public class TwoEqualSquareGoal extends CommonGoal{
         super(numPlayers);
     }
 
-    public boolean checkPoints(Player player){
+    public boolean checkPoints(TilesType[][] shelf){
 
-        TilesType[][] matrixCopy = player.getShelf().clone();
+        TilesType[][] matrixCopy = shelf.clone();
         int con = 0;
 
         for(int i = 0; i < MAX_ROW-1; i++) {

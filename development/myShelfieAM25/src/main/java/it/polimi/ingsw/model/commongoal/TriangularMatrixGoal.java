@@ -10,9 +10,9 @@ public class TriangularMatrixGoal extends CommonGoal{
         super(numPlayers);
     }
 
-    public boolean checkPoints(Player player) {
+    public boolean checkPoints(TilesType[][] shelf) {
 
-        TilesType[][] matrixCopy = player.getShelf().clone();
+        TilesType[][] matrixCopy = shelf.clone();
 
         return (matrixCopy[1][0] != null && matrixCopy[2][1] != null && matrixCopy[3][2] != null && matrixCopy[4][3] != null && matrixCopy[5][4] != null &&
                 matrixCopy[0][0] == null && matrixCopy[1][1] == null && matrixCopy[2][2] == null && matrixCopy[3][3] == null && matrixCopy[4][4] == null) ||

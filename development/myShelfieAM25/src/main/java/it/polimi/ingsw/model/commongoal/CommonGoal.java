@@ -56,10 +56,10 @@ public abstract class CommonGoal {
 
     /**
      * This is an abstract method, it is implemented in its subclasses
-     * @param player is the player
-     * @return true if the player completed the goal, false if they didn't
+     * @param shelf is a TilesType matrix
+     * @return true if the shelf completed the goal, false if they didn't
      */
-    protected abstract boolean checkPoints(Player player);
+    protected abstract boolean checkPoints(TilesType[][] shelf);
 
     /**
      * @param player is the player
@@ -69,7 +69,7 @@ public abstract class CommonGoal {
         if(players.contains(player.getName())){
             return points[players.indexOf(player.getName())];
         }
-        if(checkPoints(player)) {
+        if(checkPoints(player.getShelf())) {
             players.add(player.getName());
             return points[players.indexOf(player.getName())];
         }

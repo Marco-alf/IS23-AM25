@@ -10,9 +10,9 @@ public class XGoal extends CommonGoal{
         super(numPlayers);
     }
 
-    public boolean checkPoints(Player player) {
+    public boolean checkPoints(TilesType[][] shelf) {
 
-        TilesType[][] matrixCopy = player.getShelf().clone();
+        TilesType[][] matrixCopy = shelf.clone();
 
         for(int i = 0; i < MAX_ROW-2; i++){
             for(int j = 0; j < MAX_COLUMN-2; j++){

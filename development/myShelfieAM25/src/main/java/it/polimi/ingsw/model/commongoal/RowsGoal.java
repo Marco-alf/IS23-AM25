@@ -25,12 +25,12 @@ public class RowsGoal extends CommonGoal {
 
     /**
      * This method checks if the shelf contains 4 rows containing three or more different types of tiles
-     * @param player is the player
+     * @param shelf is the player
      * @return true if there actually are 4 row containing three or more different types of tiles,
      * false otherwise
      */
-    protected boolean checkPoints(Player player) {
-        TilesType[][] matrixCopy = player.getShelf().clone();
+    protected boolean checkPoints(TilesType[][] shelf) {
+        TilesType[][] matrixCopy = shelf.clone();
         int rows = 0;
         List<TilesType> types = new ArrayList<>();
 

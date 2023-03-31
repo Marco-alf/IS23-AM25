@@ -21,27 +21,34 @@ public class ColumnsGoal extends CommonGoal {
     }
 
     /**
-     * @param player is the player
+     * @param shelf is the player
      * @return true if there actually are 2 columns formed by 6 different types of tiles, false otherwise
      */
-    protected boolean checkPoints(Player player) {
-        TilesType[][] matrixCopy = player.getShelf().clone();
+    protected boolean checkPoints(TilesType[][] shelf) {
+        TilesType[][] matrixCopy = shelf.clone();
         int columns = 0;
+        int columnSize = 0;
         ArrayList<TilesType> types = new ArrayList<>();
 
         for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 6; i++) {
-                if(matrixCopy[i][j] != null && !types.contains(matrixCopy[i][j])) types.add(matrixCopy[i][j]);
+                if (matrixCopy[i][j] != null) {
+                    columnSize++;
+                    if (!types.contains(matrixCopy[i][j])) {
+                        types.add(matrixCopy[i][j]);
+                    }
+                }
             }
-            if(!isRegular && types.size() == 6) {
+            if (!isRegular && types.size() == 6) {
                 columns++;
                 if (columns == 2) return true;
             }
-            if (isRegular && types.size() <= 3) {
+            if (isRegular && types.size() <= 3 && columnSize == 6) {
                 columns++;
                 if (columns == 3) return true;
             }
             types.clear();
+            columnSize = 0;
         }
 
         return false;

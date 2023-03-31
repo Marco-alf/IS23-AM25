@@ -68,12 +68,12 @@ public class EqualGroupsGoal extends CommonGoal{
     /**
      * This method checks every slot of the bookshelf and verifies if the groups of tiles of the same type
      * contains @size or more tiles
-     * @param player is the players
+     * @param shelf is the players
      * @return true if the number of groups of tiles of the same type containing @size tiles is greater or equal
      * to @quantity, false otherwise
      */
-    protected boolean checkPoints(Player player) {
-        TilesType[][] matrixCopy = player.getShelf().clone();
+    protected boolean checkPoints(TilesType[][] shelf) {
+        TilesType[][] matrixCopy = shelf.clone();
         int groups = 0;
 
         for (int k = 0; k < MAX_ROW; k++) {

@@ -22,11 +22,11 @@ public class FullDiagonalGoal extends CommonGoal {
      * This method checks if a shelf contains five tiles of the same type forming a diagonal.
      * There are four possible diagonals, beginning from the top left, from the top right, from the bottom left
      * or from the bottom right
-     * @param player
+     * @param shelf is a TilesType matrix
      * @return true if there is at least one of the 4 diagonals, false otherwise
      */
-    protected boolean checkPoints(Player player) {
-        TilesType[][] matrixCopy = player.getShelf().clone();
+    protected boolean checkPoints(TilesType[][] shelf) {
+        TilesType[][] matrixCopy = shelf.clone();
         int counterTopLeft = 0;
         int counterBottomLeft = 0;
         int counterTopRight = 0;

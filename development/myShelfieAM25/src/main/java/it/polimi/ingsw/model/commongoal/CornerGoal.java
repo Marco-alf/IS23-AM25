@@ -19,11 +19,11 @@ public class CornerGoal extends CommonGoal{
 
     /**
      * Checks if the player placed tiles of the same type in the four corners of the bookshelf
-     * @param player is the player
+     * @param shelf is the player
      * @return true if the player completed the goal, false if they didn't
      */
-    protected boolean checkPoints(Player player){
-        TilesType[][] matrixCopy = player.getShelf().clone();
+    protected boolean checkPoints(TilesType[][] shelf){
+        TilesType[][] matrixCopy = shelf.clone();
 
         TilesType topLeft = matrixCopy[0][0];
         return topLeft == matrixCopy[0][4] && topLeft == matrixCopy[5][0] && topLeft == matrixCopy[5][4] && topLeft != null;
