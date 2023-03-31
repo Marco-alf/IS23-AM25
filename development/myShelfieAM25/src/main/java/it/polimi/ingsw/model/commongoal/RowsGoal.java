@@ -1,7 +1,8 @@
 package it.polimi.ingsw.model.commongoal;
 
+import it.polimi.ingsw.exception.InvalidPlayerNumberException;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.exception.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,21 +33,28 @@ public class RowsGoal extends CommonGoal {
     protected boolean checkPoints(TilesType[][] shelf) {
         TilesType[][] matrixCopy = shelf.clone();
         int rows = 0;
+        int rowSize = 0;
         List<TilesType> types = new ArrayList<>();
 
         for (int i = 0; i < MAX_ROW; i++) {
             for (int j = 0; j < MAX_COLUMN; j++) {
-                if(matrixCopy[i][j] != null && !types.contains(matrixCopy[i][j])) types.add(matrixCopy[i][j]);
+                if(matrixCopy[i][j] != null) {
+                    rowSize++;
+                    if (!types.contains(matrixCopy[i][j])) {
+                        types.add(matrixCopy[i][j]);
+                    }
+                }
             }
-            if (isRegular && types.size() <= 3) {
+            if (isRegular && types.size() <= 3 && rowSize == 5) {
                 rows++;
                 if(rows == 4) return true;
             }
-            if (!isRegular && types.size() == 6) {
+            if (!isRegular && types.size() == 5) {
                 rows++;
                 if (rows == 2) return true;
             }
             types.clear();
+            rowSize = 0;
         }
         return false;
     }

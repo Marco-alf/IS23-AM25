@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exception.*;
 import it.polimi.ingsw.model.boardFiller.*;
 import it.polimi.ingsw.model.commongoal.*;
-import it.polimi.ingsw.model.exception.*;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.commongoal;
 
+import it.polimi.ingsw.exception.InvalidPlayerNumberException;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.exception.*;
 
 /**
  * This is the CornerGoal. It gives points to a player if they have four tiles of the same type in the four

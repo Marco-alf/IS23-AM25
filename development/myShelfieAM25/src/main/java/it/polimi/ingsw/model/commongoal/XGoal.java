@@ -1,8 +1,7 @@
 package it.polimi.ingsw.model.commongoal;
 
-import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.TilesType;
-import it.polimi.ingsw.model.exception.InvalidPlayerNumberException;
+import it.polimi.ingsw.exception.InvalidPlayerNumberException;
 
 public class XGoal extends CommonGoal{
 

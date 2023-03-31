@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.exception.*;
+import it.polimi.ingsw.exception.FullColumnException;
+import it.polimi.ingsw.exception.OutOfBoundException;
 
-import javax.imageio.ImageTranscoder;
 import java.util.List;
 
 /**

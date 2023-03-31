@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.exception.OutOfBoundException;
+import it.polimi.ingsw.exception.OutOfBoundException;
 
 /**
  * PersonalGoal is an enumeration whose instances represents the 12 different type of personal goal present in the game

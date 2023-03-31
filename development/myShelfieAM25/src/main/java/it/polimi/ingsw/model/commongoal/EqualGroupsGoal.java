@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.commongoal;
 
+import it.polimi.ingsw.exception.InvalidPlayerNumberException;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.exception.*;
 
 /**
  * This is EqualGroups. It generalizes two common goals (FourEqualsGroupsGoal and SixCoupleGoal). It gives points to

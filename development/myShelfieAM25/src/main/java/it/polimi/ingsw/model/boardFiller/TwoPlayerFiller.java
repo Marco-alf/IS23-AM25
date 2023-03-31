@@ -1,10 +1,9 @@
 package it.polimi.ingsw.model.boardFiller;
 
+import it.polimi.ingsw.exception.NoTileLeftException;
 import it.polimi.ingsw.model.TilesType;
 
 import java.util.Random;
-
-import it.polimi.ingsw.model.exception.*;
 
 /**
  * TwoPlayerFiller is the concrete implementation of a BoardFiller responsible for refilling a game board for a two-player game
