@@ -5,12 +5,26 @@ import it.polimi.ingsw.model.exception.*;
 
 import static it.polimi.ingsw.model.TilesType.*;
 
+/**
+ * This is the EightEqualsGoal. It gives points to a player if they have eight tiles of the same type,
+ * they can be in any position.
+ */
 public class EightEqualsGoal extends CommonGoal{
 
+    /**
+     * The constructor is the same as the super class
+     * @param numPlayers is then number of players in the game
+     * @throws InvalidPlayerNumberException if the number of players is not valid
+     */
     public EightEqualsGoal(int numPlayers) throws InvalidPlayerNumberException {
         super(numPlayers);
     }
 
+    /**
+     * Checks if the player placed eight tiles of the same type
+     * @param shelf is a TilesType matrix
+     * @return true if the player completed the goal, false if they didn't
+     */
     public boolean checkPoints(TilesType[][] shelf) {
 
         TilesType[][] matrixCopy = shelf.clone();
