@@ -114,7 +114,7 @@ public class Player {
      * calculateAdjacentPoints is used for calculating the points that a player have done by placing the tiles neatly in the shelf
      * @return the points that a player have done by placing the tiles neatly in the shelf
      */
-    public int calculateAdjacentPoints(){
+    public int calculateAdjacencyPoints(){
         return shelf.calculatePoints();
     }
 }
