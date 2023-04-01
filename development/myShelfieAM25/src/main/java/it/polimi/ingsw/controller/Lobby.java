@@ -21,6 +21,9 @@ public class Lobby {
         this.lobbyCreator = lobbyCreator;
         onlinePlayers = new ArrayList<>();
     }
+    public String getLobbyName() {
+        return lobbyName;
+    }
 
     public void addPlayer(String name) throws NameTakenException, FullLobbyException {
         if (onlinePlayers.stream().map(VirtualPlayer::getName).toList().contains(name)) {
@@ -29,7 +32,7 @@ public class Lobby {
         if (onlinePlayers.size() == playerNumber) {
             throw new FullLobbyException();
         }
-        onlinePlayers.add(new VirtualPlayer(name));
+        onlinePlayers.add(new VirtualPlayer(name, this));
     }
 
     public List<String> getOnlinePlayers() {

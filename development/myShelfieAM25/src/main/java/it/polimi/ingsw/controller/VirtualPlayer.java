@@ -10,10 +10,11 @@ import java.util.List;
  * TODO: getShelf(), update(GameState gameState), update(Message: chatState)
  */
 public class VirtualPlayer {
-    private String name;
-    private Lobby lobby;
-    public VirtualPlayer(String name) {
+    private final String name;
+    private final Lobby lobby;
+    public VirtualPlayer(String name, Lobby lobby) {
         this.name = name;
+        this.lobby = lobby;
     }
 
     public void placeTiles(List<Tile> tiles, int shelfColumn) throws IllegalMoveException {
