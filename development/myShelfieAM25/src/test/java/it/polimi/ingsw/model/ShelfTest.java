@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.exception.FullColumnException;
-import it.polimi.ingsw.model.exception.OutOfBoundException;
+import it.polimi.ingsw.exception.FullColumnException;
+import it.polimi.ingsw.exception.OutOfBoundException;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

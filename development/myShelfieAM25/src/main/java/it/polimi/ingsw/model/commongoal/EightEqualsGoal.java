@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.commongoal;
 
+import it.polimi.ingsw.exception.InvalidPlayerNumberException;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.exception.*;
 
 import static it.polimi.ingsw.model.TilesType.*;
 

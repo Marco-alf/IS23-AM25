@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.commongoal;
 
-import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.exception.*;
+import it.polimi.ingsw.model.TilesType;
+import it.polimi.ingsw.exception.InvalidPlayerNumberException;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

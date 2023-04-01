@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.commongoal;
 
-import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.exception.*;
+import it.polimi.ingsw.model.TilesType;
+import it.polimi.ingsw.exception.InvalidPlayerNumberException;
 
 /**
  * This is the TriangularMatrixGoal. It gives points to a player if they have five columns of increasing or decreasing

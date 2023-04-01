@@ -1,10 +1,9 @@
 package it.polimi.ingsw.model.boardFiller;
 
+import it.polimi.ingsw.exception.NoTileLeftException;
 import it.polimi.ingsw.model.TilesType;
 
 import java.util.Random;
-
-import it.polimi.ingsw.model.exception.*;
 
 /**
  * BoardFiller is the abstract class whose subclasses are responsible for refilling the game board with random tiles

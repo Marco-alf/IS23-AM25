@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.commongoal;
 
+import it.polimi.ingsw.exception.InvalidPlayerNumberException;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.exception.*;
 
 /**
  * This is FullDiagonalGoal. It gives points to a player if their shelf contains five tiles of the same type
@@ -39,9 +39,9 @@ public class FullDiagonalGoal extends CommonGoal {
 
         for (int i = 0; i < 5; i++) {
             if(matrixCopy[i][i] == topLeft && matrixCopy[i][i] != null) counterTopLeft++;
-            if(matrixCopy[5 - i][i] == bottomLeft && matrixCopy[i][i] != null) counterBottomLeft++;
-            if(matrixCopy[i][4 - i] == topRight && matrixCopy[i][i] != null) counterTopRight++;
-            if(matrixCopy[5 - i][4 - i] == bottomRight && matrixCopy[i][i] != null) counterBottomRight++;
+            if(matrixCopy[5 - i][i] == bottomLeft && matrixCopy[5 - i][i] != null) counterBottomLeft++;
+            if(matrixCopy[i][4 - i] == topRight && matrixCopy[i][4 - i] != null) counterTopRight++;
+            if(matrixCopy[5 - i][4 - i] == bottomRight && matrixCopy[5 - i][4 - i] != null) counterBottomRight++;
         }
         return counterBottomLeft == 5 || counterBottomRight == 5 || counterTopLeft == 5 || counterTopRight == 5;
     }
