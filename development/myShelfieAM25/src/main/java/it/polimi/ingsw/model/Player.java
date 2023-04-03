@@ -1,10 +1,7 @@
 //TO DO: add javadoc (and modify) for the exception raised by Shelf
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.exception.FullColumnException;
-import it.polimi.ingsw.exception.NoFreeEdgeException;
-import it.polimi.ingsw.exception.NotInLineException;
-import it.polimi.ingsw.exception.OutOfBoundException;
+import it.polimi.ingsw.exception.*;
 
 import java.util.List;
 
@@ -71,7 +68,7 @@ public class Player {
      * calculateCommonPoints is the method used by game to retrive the points that a player has done by completing common goals
      * @return the points calculated by the living room for this player
      */
-    public int calculateCommonPoints(){
+    public int[] calculateCommonPoints(){
         return board.calculateCommonPoints(this);
     }
 
@@ -96,7 +93,7 @@ public class Player {
      * @throws NullPointerException if one cell is empty
      * @throws FullColumnException if the tiles couldn't fit in the selected column
      */
-    public void moveTiles(List<Tile> tiles, int shelfColumn) throws NotInLineException, NoFreeEdgeException, OutOfBoundException, NullPointerException, FullColumnException{
+    public void moveTiles(List<Tile> tiles, int shelfColumn) throws NotInLineException, NoFreeEdgeException, OutOfBoundException, NullPointerException, FullColumnException, InvalidTileException {
         if(shelfColumn >= shelf.getxBound() || shelfColumn < 0) throw new OutOfBoundException();
         int curTop=0;
         for (int i=0; i < shelf.getyBound(); i++){

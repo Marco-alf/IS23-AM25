@@ -33,7 +33,7 @@ public class LivingRoom {
      * with tiles. After this 2 different common goals are extracted for the game.
      * @param playerNumber is the number of players in the game, it is needed to create different versions of the board.
      */
-    public LivingRoom(int playerNumber) throws InvalidPlayerNumberException, InvalidCommonGoalCardException {
+    public LivingRoom(int playerNumber) throws InvalidPlayerNumberException {
         Random random = new Random(System.currentTimeMillis());
         int[] commonGoalIndex = new int[2];
 
@@ -101,8 +101,6 @@ public class LivingRoom {
             case 11:
                 commonGoals[0] = new TriangularMatrixGoal(playerNumber);
                 break;
-            default:
-                throw new InvalidCommonGoalCardException();
         }
 
         switch (commonGoalIndex[1]) {
@@ -142,8 +140,6 @@ public class LivingRoom {
             case 11:
                 commonGoals[1] = new TriangularMatrixGoal(playerNumber);
                 break;
-            default:
-                throw new InvalidCommonGoalCardException();
         }
     }
 
@@ -196,15 +192,17 @@ public class LivingRoom {
      * @throws NoFreeEdgeException if one tile has no free adjacent cells
      * @throws OutOfBoundException if one coordinate is out of the board
      * @throws NullPointerException if one cell is empty
+     * @throws InvalidTileException if the tile requested is different from the one in the board
      */
-    public List<TilesType> takeTiles(List<Tile> tiles) throws NotInLineException, NoFreeEdgeException, OutOfBoundException, NullPointerException {
-        int maxX = 0, minX = 0, maxY = 0, minY = 0;
+    public List<TilesType> takeTiles(List<Tile> tiles) throws NotInLineException, NoFreeEdgeException, OutOfBoundException, NullPointerException, InvalidTileException {
+        int maxX = 0, minX = 9, maxY = 0, minY = 9;
         List<TilesType> tilesTypes = new ArrayList<>();
 
         for (Tile tile : tiles) {
-            if (board[tile.getPosY()][tile.getPosX()] == null) throw new NullPointerException();
             if (tile.getPosX() >= 9 || tile.getPosX() < 0 || tile.getPosY() >= 9 || tile.getPosY() < 0)
                 throw new OutOfBoundException();
+            if (board[tile.getPosY()][tile.getPosX()] == null) throw new NullPointerException();
+            if (tile.getType()!=board[tile.getPosY()][tile.getPosX()]) throw new InvalidTileException();
             if (numAdj(tile.getPosY(), tile.getPosX()) == 4) throw new NoFreeEdgeException();
             if (tile.getPosX() > maxX) maxX = tile.getPosX();
             if (tile.getPosX() < minX) minX = tile.getPosX();
@@ -212,11 +210,12 @@ public class LivingRoom {
             if (tile.getPosY() < minY) minY = tile.getPosY();
         }
 
-        if((minX == maxX && maxY - minY == tiles.size() - 1) || (minY == maxY && maxX - minX == tiles.size() - 1)) {
+        if((minX == maxX && maxY - minY == tiles.size() - 1) || (minY == maxY && maxX - minX == tiles.size() - 1) || tiles.size()==0) {
             for (Tile tile : tiles) {
                 tilesTypes.add(tile.getType());
                 board[tile.getPosY()][tile.getPosX()] = null;
             }
+            this.checkAndRefill();
             return tilesTypes;
         } else throw new NotInLineException();
     }
@@ -224,10 +223,10 @@ public class LivingRoom {
     /**
      * @return the points from the common goals accumulated by the player
      */
-    public int calculateCommonPoints(Player player) {
-        int points = 0;
+    public int[] calculateCommonPoints(Player player) {
+        int[] points = new int[2];
         for (int i = 0; i < 2; i++) {
-            points += commonGoals[i].calculatePoints(player);
+            points[i] = commonGoals[i].calculatePoints(player);
         }
         return points;
     }

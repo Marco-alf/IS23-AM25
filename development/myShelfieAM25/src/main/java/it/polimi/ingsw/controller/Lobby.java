@@ -43,7 +43,7 @@ public class Lobby {
         try {
             game.moveTiles(tiles, shelfColumn, player);
         } catch (NotInLineException | OutOfBoundException | NoFreeEdgeException | InvalidPlayerNameException |
-                 PlayerNotCurrentException | FullColumnException |NullTilesException | PlayerNotOnlineException e) {
+                 PlayerNotCurrentException | FullColumnException |NullTilesException | PlayerNotOnlineException | InvalidTileException e) {
             throw new IllegalMoveException();
         }
     }

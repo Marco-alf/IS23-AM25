@@ -36,8 +36,6 @@ public class Game
         /* initiating board, catching exceptions as one, stacktrace will do the job in debugging*/
         try{
             this.board = new LivingRoom(players.size());
-        } catch (InvalidCommonGoalCardException e){
-            throw new ShelfCreationException();
         } catch (InvalidPlayerNumberException e) {
             throw new ShelfCreationException();
         }
@@ -86,7 +84,8 @@ public class Game
             NullPointerException,
             FullColumnException,
             NullTilesException,
-            PlayerNotOnlineException
+            PlayerNotOnlineException,
+            InvalidTileException
     {
         /* checking if it IS the turn of the specified player */
         if(!currentPlayer.getName().equals(name)){
@@ -133,9 +132,10 @@ public class Game
      * @return the list of all accumulated points of each player in a list ordered by the same index used for players */
     public List<Integer> getPlayersPoints() throws OutOfBoundException {
         List<Integer> results = new ArrayList<>();
-
+        int[] commonPoints;
         for (Player p : players) {
-            results.add(p.calculateCommonPoints() + p.calculatePersonalPoints());
+            commonPoints = p.calculateCommonPoints();
+            results.add(commonPoints[0] + commonPoints[1] + p.calculatePersonalPoints());
         }
         return results;
     }
