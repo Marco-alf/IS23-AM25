@@ -64,7 +64,7 @@ public class Player {
      * @return the points calculated by the personal goal based on the shelf of the player
      */
     public int calculatePersonalPoints() throws OutOfBoundException {
-        return personalGoal.calculatePoints(shelf);
+        return personalGoal.calculatePoints(shelf.getShelf());
     }
 
     /**

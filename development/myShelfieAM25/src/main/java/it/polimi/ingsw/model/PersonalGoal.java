@@ -14,7 +14,7 @@ public enum PersonalGoal {
                     new Tile(TilesType.CATS, 4, 1),
                     new Tile(TilesType.FRAMES, 2, 0),
                     new Tile(TilesType.GAMES, 1, 3),
-                    new Tile(TilesType.PLANTS, 0, 2),
+                    new Tile(TilesType.PLANTS, 0, 0),
                     new Tile(TilesType.TROPHIES, 2, 5)}
     ),
     PERSONALGOAL2(
@@ -155,11 +155,11 @@ public enum PersonalGoal {
      * @param shelf the method requires a shelf configuration as input
      * @return points[i] the method returns the points achieved by the shelf in exam
      */
-    public int calculatePoints(Shelf shelf) throws OutOfBoundException{
+    public int calculatePoints(TilesType[][] shelf){
         int i;
         int count = 0;
         for (i = 0; i < 6; i++) {
-            if (tiles[i].getType() == shelf.getTile(tiles[i].getPosX(), tiles[i].getPosY())) {
+            if (tiles[i].getType() == shelf[tiles[i].getPosX()][tiles[i].getPosY()]) {
                 count++;
             }
         }
