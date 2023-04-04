@@ -36,10 +36,9 @@ class FourPlayerFillerTest {
         board = new TilesType[9][9];
         board[4][4-random.nextInt(5)]=TilesType.values()[random.nextInt(TilesType.values().length)];
         board[0][4]=TilesType.values()[random.nextInt(TilesType.values().length)];
-        board[6][7]=TilesType.values()[random.nextInt(TilesType.values().length)];
-        board[3][1]=TilesType.values()[random.nextInt(TilesType.values().length)];
+        board[6][6]=TilesType.values()[random.nextInt(TilesType.values().length)];
         filler.fill(board);
-        remaining=remaining-boardSize+4;
+        remaining=remaining-boardSize+3;
         assertEquals(remaining, filler.getRemainingNumber());
 
         board = new TilesType[9][9];
@@ -48,7 +47,6 @@ class FourPlayerFillerTest {
         remaining=0;
         assertEquals(remaining, filler.getRemainingNumber());
     }
-
     @Test
     @DisplayName("fill() method test - TwoPlayerFiller")
     public void testFill(){
@@ -77,9 +75,9 @@ class FourPlayerFillerTest {
         assertNotNull(board[7][3]);
         assertNotNull(board[8][4]);
 
-        //test that there tiles in a wrong cell
+        //test that there are not tiles in a wrong cell
         assertNull(board[2][1]);
-        assertNull(board[3][7]);
+        assertNull(board[2][7]);
         assertNull(board[6][1]);
         assertNull(board[8][3]);
         assertNull(board[7][6]);

@@ -155,7 +155,7 @@ class LivingRoomTest {
             fail();
         }
     }
-
+    //checkAndRefill() is invoked by takeTiles
     @Test
     void checkAndRefill() {
         LivingRoom board;
@@ -163,6 +163,7 @@ class LivingRoomTest {
             board = new LivingRoom(4);
             TilesType[][] boardCopy = board.getEnumArray();
 
+            //first iteration I check the correct behaviour
             List<Tile> tiles = new ArrayList<>();
             tiles.add(new Tile(boardCopy[0][3],3,0));
             tiles.add(new Tile(boardCopy[0][4],4,0));
@@ -274,6 +275,217 @@ class LivingRoomTest {
                 for(int j=0; j<9; j++){
                     if(refilledBoard[i][j]==null) assertNull(boardCopy[i][j]);
                     if(boardCopy[i][j]==null) assertNull(refilledBoard[i][j]);
+                }
+            }
+
+            //second, third and forth iteration in order to get test if the check and refill does not refill when the filler is empty
+            boardCopy=board.getEnumArray();
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[0][3],3,0));
+            tiles.add(new Tile(boardCopy[0][4],4,0));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[1][3],3,1));
+            tiles.add(new Tile(boardCopy[1][4],4,1));
+            tiles.add(new Tile(boardCopy[1][5],5,1));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[2][2],2,2));
+            tiles.add(new Tile(boardCopy[2][3],3,2));
+            tiles.add(new Tile(boardCopy[2][4],4,2));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[2][5],5,2));
+            tiles.add(new Tile(boardCopy[2][6],6,2));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[3][1],1,3));
+            tiles.add(new Tile(boardCopy[3][2],2,3));
+            tiles.add(new Tile(boardCopy[3][3],3,3));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[3][4],4,3));
+            tiles.add(new Tile(boardCopy[3][5],5,3));
+            tiles.add(new Tile(boardCopy[3][6],6,3));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[3][7],7,3));
+            tiles.add(new Tile(boardCopy[3][8],8,3));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[4][0],0,4));
+            tiles.add(new Tile(boardCopy[4][1],1,4));
+            tiles.add(new Tile(boardCopy[4][2],2,4));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[4][6],6,4));
+            tiles.add(new Tile(boardCopy[4][7],7,4));
+            tiles.add(new Tile(boardCopy[4][8],8,4));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[5][1],1,5));
+            tiles.add(new Tile(boardCopy[5][2],2,5));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[5][3],3,5));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[5][6],6,5));
+            tiles.add(new Tile(boardCopy[5][7],7,5));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[5][5],5,5));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[6][2],2,6));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[6][6],6,6));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[8][4],4,8));
+            tiles.add(new Tile(boardCopy[8][5],5,8));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[7][3],3,7));
+            tiles.add(new Tile(boardCopy[7][4],4,7));
+            tiles.add(new Tile(boardCopy[7][5],5,7));
+            board.takeTiles(tiles);
+
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[4][4],4,4));
+            tiles.add(new Tile(boardCopy[5][4],4,5));
+            tiles.add(new Tile(boardCopy[6][4],4,6));
+            board.takeTiles(tiles);
+
+            //third iteration
+            boardCopy=board.getEnumArray();
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[0][3],3,0));
+            tiles.add(new Tile(boardCopy[0][4],4,0));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[1][3],3,1));
+            tiles.add(new Tile(boardCopy[1][4],4,1));
+            tiles.add(new Tile(boardCopy[1][5],5,1));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[2][2],2,2));
+            tiles.add(new Tile(boardCopy[2][3],3,2));
+            tiles.add(new Tile(boardCopy[2][4],4,2));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[2][5],5,2));
+            tiles.add(new Tile(boardCopy[2][6],6,2));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[3][1],1,3));
+            tiles.add(new Tile(boardCopy[3][2],2,3));
+            tiles.add(new Tile(boardCopy[3][3],3,3));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[3][4],4,3));
+            tiles.add(new Tile(boardCopy[3][5],5,3));
+            tiles.add(new Tile(boardCopy[3][6],6,3));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[3][7],7,3));
+            tiles.add(new Tile(boardCopy[3][8],8,3));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[4][0],0,4));
+            tiles.add(new Tile(boardCopy[4][1],1,4));
+            tiles.add(new Tile(boardCopy[4][2],2,4));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[4][6],6,4));
+            tiles.add(new Tile(boardCopy[4][7],7,4));
+            tiles.add(new Tile(boardCopy[4][8],8,4));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[5][1],1,5));
+            tiles.add(new Tile(boardCopy[5][2],2,5));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[5][3],3,5));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[5][6],6,5));
+            tiles.add(new Tile(boardCopy[5][7],7,5));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[5][5],5,5));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[6][2],2,6));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[6][6],6,6));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[8][4],4,8));
+            tiles.add(new Tile(boardCopy[8][5],5,8));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[7][3],3,7));
+            tiles.add(new Tile(boardCopy[7][4],4,7));
+            tiles.add(new Tile(boardCopy[7][5],5,7));
+            board.takeTiles(tiles);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(boardCopy[4][4],4,4));
+            tiles.add(new Tile(boardCopy[5][4],4,5));
+            tiles.add(new Tile(boardCopy[6][4],4,6));
+            board.takeTiles(tiles);
+
+            //fourth iteration removes the tiles
+            for(int i=0; i<9; i++){
+                for(int j=0; j<9; j++){
+                    tiles = new ArrayList<>();
+                    tiles.add(new Tile(boardCopy[i][j],j,i));
+                }
+            }
+            //now thank god I can test if the chekAndRefill does not modify the board when all the tiles where already played
+            boardCopy=board.getEnumArray();
+            board.checkAndRefill();
+            refilledBoard=board.getEnumArray();
+
+            for(int i=0; i<9; i++){
+                for(int j=0; j<9; j++){
+                    boardCopy[i][j] = refilledBoard[i][j];
                 }
             }
 

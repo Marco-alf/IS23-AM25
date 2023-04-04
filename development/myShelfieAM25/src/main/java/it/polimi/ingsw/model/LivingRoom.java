@@ -153,7 +153,9 @@ public class LivingRoom {
                 if (board[i][j] != null && numAdj(i, j) > 0) return;
             }
         }
-        board = boardFiller.fill(board);
+        if(boardFiller.checkRemaining()){
+            board = boardFiller.fill(board);
+        }
     }
 
     /**
