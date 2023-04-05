@@ -5,8 +5,10 @@ import it.polimi.ingsw.model.*;
 
 /**
  * This is EqualGroups. It generalizes two common goals (FourEqualsGroupsGoal and SixCoupleGoal). It gives points to
- * a player if in their shelf there are @quantity groups each containing at least @size tiles of the same type.
- * The tiles of one group can be different from those of another group
+ * a player if in their shelf there are n groups each containing at least m tiles of the same type.
+ * The tiles of one group can be different from those of another group.
+ * n: is the parameter quantity
+ * m: is the parameter size
  */
 public class EqualGroupsGoal extends CommonGoal{
     /**
@@ -67,10 +69,10 @@ public class EqualGroupsGoal extends CommonGoal{
 
     /**
      * This method checks every slot of the bookshelf and verifies if the groups of tiles of the same type
-     * contains @size or more tiles
+     * contains m or more tiles
      * @param shelf is the players
-     * @return true if the number of groups of tiles of the same type containing @size tiles is greater or equal
-     * to @quantity, false otherwise
+     * @return true if the number of groups of tiles of the same type containing m tiles is greater or equal
+     * to n, false otherwise
      */
     protected boolean checkPoints(TilesType[][] shelf) {
         TilesType[][] matrixCopy = shelf.clone();

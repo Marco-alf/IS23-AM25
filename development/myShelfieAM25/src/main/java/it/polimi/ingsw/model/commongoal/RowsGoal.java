@@ -7,16 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is FourRegularRowsGoal. It gives points to a player if their shelf there are four lines each formed
- * by 5 tiles of maximum three different types. One line can show the same or a different combination of
- * another line
+ * This is RowsGoal. There are two versions of this goal depending on the value of the second parameter isRegular.
+ * If it is true, it gives points to a player if their shelf contains four lines each formed by 5 tiles of
+ * maximum three different types. One line can show the same or a different combination of another line.
+ * If it is false, it gives points to a player if their shelf contains two lines each formed by 5 different
+ * types of tiles. One line can show the same or a different combination of the other line.
  */
 public class RowsGoal extends CommonGoal {
+    /**
+     * isRegular defines the common goal
+     */
     private final boolean isRegular;
 
     /**
-     * The constructor is the same as the super class
+     * The constructor is the same as the super class, and it also initializes isRegular
      * @param numPlayers is the number of players in the game
+     * @param isRegular defines the common goal
      * @throws InvalidPlayerNumberException if the number of players is not valid
      */
     public RowsGoal(int numPlayers, boolean isRegular) throws InvalidPlayerNumberException {
@@ -25,10 +31,8 @@ public class RowsGoal extends CommonGoal {
     }
 
     /**
-     * This method checks if the shelf contains 4 rows containing three or more different types of tiles
      * @param shelf is the player
-     * @return true if there actually are 4 row containing three or more different types of tiles,
-     * false otherwise
+     * @return true if the player completed the common goal, false otherwise
      */
     protected boolean checkPoints(TilesType[][] shelf) {
         TilesType[][] matrixCopy = shelf.clone();
