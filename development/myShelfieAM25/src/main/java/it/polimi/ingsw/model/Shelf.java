@@ -126,7 +126,7 @@ public class Shelf {
      */
     public TilesType getTile(int x, int y) throws OutOfBoundException {
         if(x>=xBound || y>=yBound || x<0 || y<0) throw new OutOfBoundException();
-        return shelf[y][x];
+        return shelf[yBound -(y+1)][x];
     }
 
     /**
@@ -137,7 +137,7 @@ public class Shelf {
     public TilesType[][] getShelf() {
         TilesType[][] shelfCopy = new TilesType[shelf.length][];
         for(int i = 0; i < shelf.length; i++){
-            shelfCopy[i] = shelf[i].clone();
+            shelfCopy[yBound-(i+1)] = shelf[i].clone();
         }
         return shelfCopy;
     }

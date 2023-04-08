@@ -66,7 +66,7 @@ class ShelfTest {
         try{
             shelf.add(tiles, column);
             for (TilesType t: tiles) {
-                assertEquals(t, shelf.getTile(column, tiles.indexOf(t)));
+                assertEquals(t, shelf.getTile(column, shelf.getyBound() -1 - tiles.indexOf(t)));
             }
         } catch (OutOfBoundException | FullColumnException e) {
             fail();
@@ -74,7 +74,7 @@ class ShelfTest {
         try{
             shelf.add(tiles, column);
             for (TilesType t: tiles) {
-                assertEquals(t, shelf.getTile(column, tiles.indexOf(t)));
+                assertEquals(t, shelf.getTile(column, shelf.getyBound() -1 - tiles.indexOf(t)));
             }
         } catch (OutOfBoundException | FullColumnException e) {
             fail();
@@ -138,7 +138,24 @@ class ShelfTest {
             shelf.add(tiles, 2);
             shelf.add(tiles, 2);
             assertEquals(shelf.calculatePoints(),18);
-
+            TilesType[][] copy=shelf.getShelf();
+            /*
+            for(int i=0; i<6; i++){
+                for(int j=0; j<5; j++){
+                    if(copy[i][j]==null) System.out.print(" ");
+                    else{
+                        switch(copy[i][j]){
+                            case GAMES -> System.out.print("g");
+                            case CATS -> System.out.print("c");
+                            case BOOKS -> System.out.print("b");
+                            case FRAMES -> System.out.print("f");
+                            case TROPHIES -> System.out.print("t");
+                            case PLANTS -> System.out.print("p");
+                        }
+                    }
+                }
+                System.out.print("\n");
+            }*/
         } catch (OutOfBoundException | FullColumnException e){
             fail();
         }
