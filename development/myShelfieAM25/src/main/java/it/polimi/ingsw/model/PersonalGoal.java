@@ -159,7 +159,7 @@ public enum PersonalGoal {
         int i;
         int count = 0;
         for (i = 0; i < 6; i++) {
-            if (tiles[i].getType() == shelf[tiles[i].getPosX()][tiles[i].getPosY()]) {
+            if (tiles[i].getType() == shelf[tiles[i].getPosY()][tiles[i].getPosX()]) {
                 count++;
             }
         }
