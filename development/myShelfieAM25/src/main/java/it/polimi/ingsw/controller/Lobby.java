@@ -127,6 +127,13 @@ public class Lobby {
         return onlinePlayers.get(index);
     }
 
+    public VirtualPlayer getPlayer(String name) throws PlayerNotInLobbyException {
+        for (VirtualPlayer onlinePlayer : onlinePlayers) {
+            if (onlinePlayer.getName().equals(name)) return onlinePlayer;
+        }
+        throw new PlayerNotInLobbyException();
+    }
+
     /**
      * Disconnects a player from the lobby
      * @param player is the player that is being disconnected
