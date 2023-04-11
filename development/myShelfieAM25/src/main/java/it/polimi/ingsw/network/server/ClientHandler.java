@@ -23,17 +23,53 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class ClientHandler implements Runnable{
+    /**
+     * PING_TIME is the time period of the checking for disconnected player
+     */
     private final int PING_TIME = 5000;
+    /**
+     * reference to the SocketServer that instantiated the ClientHandler
+     */
     private final SocketServer server;
+    /**
+     * reference to the Server class that links the network to the controller of the server
+     */
     private final Server genericServer;
+    /**
+     * reference to the Socket used for the connection
+     */
     private final Socket socket;
+    /**
+     * the Thread used for handling the forced disconnections
+     */
     private final Thread pingThread;
+    /**
+     * flag that is true if the client is connected
+     */
     private boolean activeClient;
+    /**
+     * reference to the input stream of data from the socket
+     */
     private ObjectInputStream inputStream;
+    /**
+     * reference to the output stream of data directed to the socket
+     */
     private ObjectOutputStream outputStream;
+    /**
+     * name of the client
+     */
     private String clientNickname;
+    /**
+     * lobby in which the client plays
+     */
     private Lobby lobby;
 
+    /**
+     * constructor of a ClientHandler that requires the associated socket and tcp server. It initializes the ping thread
+     * and retrive the server that connects to the controller.
+     * @param server is the SocketServer that create the socket connections
+     * @param socket is the socket use for the connection
+     */
     public ClientHandler(SocketServer server, Socket socket) {
         this.server = server;
         genericServer = server.server;
@@ -50,14 +86,26 @@ public class ClientHandler implements Runnable{
         });
     }
 
+    /**
+     * getter for the lobby that the player has joined
+     * @return the lobby joined by the player
+     */
     public Lobby getLobby() {
         return lobby;
     }
 
+    /**
+     * getter for the nickname of the client
+     * @return the nickname of the client
+     */
     public String getClientNickname() {
         return clientNickname;
     }
 
+    /**
+     * method used to handle all the commands and event related to the connection.
+     * ClientHandler.run() is the real link between a socket client and the server
+     */
     @Override
     public void run() {
         try{
@@ -135,6 +183,10 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    /**
+     * method used to send a message to the client associated with the clientHandler
+     * @param msg is the message that is sent
+     */
     public void sendMsgToClient(Serializable msg){
         assert (msg instanceof ServerMessage) || (msg instanceof Ping);
         try {
@@ -146,16 +198,22 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    /**
+     * method used to manage a regular disconnection of a player.
+     */
     public void manageDisconnection() {
         if (activeClient){
             activeClient = false;
             Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: client " + socket.getInetAddress().getHostAddress() + " has disconnected");
-            server.removeClient(this);
             disconnect();
+            server.removeClient(this);
         }
 
     }
 
+    /**
+     * method used to close all the communication stream and the socket itself
+     */
     public void disconnect() {
         activeClient = false;
         try {

@@ -27,14 +27,44 @@ import java.util.logging.Level;
 
 import static it.polimi.ingsw.network.server.Server.SERVER_LOGGER;
 
+/**
+ * is the server that concretely has to handle RMI connections with the players
+ */
 public class RMIServer implements Runnable, RMIServerInterface{
+    /**
+     * is the server that created RMIServer. RMIServer will forward commands to it
+     */
     private final Server server;
+    /**
+     * PING_TIME is the period of the checking for disconnected player
+     */
     private final int PING_TIME = 5000;
+    /**
+     * rmiClients is the list of clients served by the RMIServer
+     */
     private final List<RMIClientInterface> rmiClients = new ArrayList<>();
+    /**
+     * rmiClientsName maps the unique name of every player to the respective network interface
+     */
     private final Map<RMIClientInterface, String> rmiClientsName = new HashMap<>();
+    /**
+     * RMIClientsLobby maps the uniques network interface of the clients to the respective lobby
+     */
     private final Map<RMIClientInterface, Lobby> rmiClientsLobby = new HashMap<>();
+    /**
+     * port is the port number used for rmi connections (server side)
+     */
     private final int port;
+    /**
+     * pingThread is the thread used to perform the periodical ping action
+     */
     private final Thread pingThread;
+
+    /**
+     * constructor of RMIServer used to create a server responsible for handling the rmi connections.
+     * @param server it's the class to which the commands will be forwarded
+     * @param port it's the port that will be used for the communication
+     */
     public RMIServer (Server server, int port) {
         this.server = server;
         this.port = port;
@@ -51,6 +81,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
         });
     }
 
+    /**
+     * method used to start all the services that will handle the connections of new players using rmi
+     */
     @Override
     public void run() {
         try {
@@ -65,6 +98,11 @@ public class RMIServer implements Runnable, RMIServerInterface{
         }
     }
 
+    /**
+     * sendMsgToAllRMI is the method used to send a message to every client that is connected through rmi connection to a specific lobby
+     * @param msg is the forwarded message, it needs to be serializable
+     * @param lobby is the target Lobby
+     */
     public void sendMsgToAllRMI (Serializable msg, Lobby lobby) {
         for (RMIClientInterface rmiClient : rmiClients) {
             try {
@@ -76,7 +114,10 @@ public class RMIServer implements Runnable, RMIServerInterface{
             }
         }
     }
-
+    /**
+     * sendMsgToAllRMI is the method used to send a message to every client that is connected through rmi connection
+     * @param msg is the forwarded message, it needs to be serializable
+     */
     public void sendMsgToAllRMI (Serializable msg) {
         for (RMIClientInterface rmiClient : rmiClients) {
             try {
@@ -87,6 +128,11 @@ public class RMIServer implements Runnable, RMIServerInterface{
         }
     }
 
+    /**
+     * sendMsgToClient is the method used to send a message to a specific rmi client
+     * @param rmiClient is the destinatari of the message
+     * @param msg is the serializable message
+     */
     public void sendMsgToClient (RMIClientInterface rmiClient, ServerMessage msg) {
         try {
             rmiClient.receiveMsgFromServer(msg);
@@ -95,6 +141,11 @@ public class RMIServer implements Runnable, RMIServerInterface{
         }
     }
 
+    /**
+     * receiveMsgFromClient is the method used to handle the requests that arrives from the clients in the form of rmi messages.
+     * It's responsible for the communication between the client and the controller in the server
+     * @param arg is the serializable message received from the client
+     */
     @Override
     public void receiveMsgFromClient (Serializable arg) {
         ClientMessage msg = (ClientMessage) arg;
@@ -155,12 +206,21 @@ public class RMIServer implements Runnable, RMIServerInterface{
         }
     }
 
+    /**
+     * register is the method used to add a new rmi client to the list of the ones using this server
+     * @param rmiClient is the interface of the client to add
+     * @throws RemoteException whenever an error regarding the player connection happened
+     */
     @Override
     public void register(RMIClientInterface rmiClient) throws RemoteException {
         rmiClients.add(rmiClient);
         SERVER_LOGGER.log(Level.INFO, "New RMI client connected");
     }
 
+    /**
+     * manageDisconnection handles the disconnections of rmi clients
+     * @param rmiClient is the interface of the client that is disconnected
+     */
     public void manageDisconnection(RMIClientInterface rmiClient) {
 
             Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: RMI client has disconnected");
