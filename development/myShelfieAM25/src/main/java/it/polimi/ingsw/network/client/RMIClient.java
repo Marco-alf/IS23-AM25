@@ -12,14 +12,26 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/** rmi based implementation of the client */
 public class RMIClient extends GenericClient implements RMIClientInterface {
+    /** server reference object, has methods to register and to receive messages */
     private RMIServerInterface rmiServerInterface;
+    /** server ip */
     private final String ip;
+    /** server port*/
     private final int port;
+    /** view to be bound*/
     private final TextualUI view;
+    /** ping frequency */
     private final int PING_TIME = 5000;
+    /** boolean represents the status of the connection (true means connected) */
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
     private final Thread pingThread;
+    /** constructor sets the parameters and launches the ping thread
+     * @param ip server ip address
+     * @param port server port number
+     * @param view view to be bound
+     */
     public RMIClient (String ip, int port, TextualUI view) {
         this.ip = ip;
         this.port = port;
@@ -36,6 +48,10 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
             }
         });
     }
+
+    /**
+     * initializes the rmi connection, locating the remote server object and running the register method with itself as
+     * the parameter, then sets the connectedStatus to true */
     public void init() {
         try{
             rmiServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, port).lookup(RMIServerInterface.NAME);
@@ -45,6 +61,9 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
             disconnect(true);
         }
     }
+
+    /** sends through rmi the serializable message
+     * @param arg is the message to send */
     @Override
     public void sendMsgToServer (Serializable arg) {
         try {
@@ -53,6 +72,9 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
             disconnect(true);
         }
     }
+
+    /** this method handles all the interpretation of the message received from the server, and propagates the right
+     * commands to the bound view */
     @Override
     public void receiveMsgFromServer(Serializable arg) {
         if (arg instanceof ServerMessage msg) {
@@ -92,6 +114,9 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
 
     }
 
+    /**
+     * signals the disconnection or failed connection to the view and resets the server reference.
+     * @param error true if the reason for disconnection is an error */
     public void disconnect(boolean error) {
         clientConnected.set(false);
         rmiServerInterface = null;

@@ -12,18 +12,35 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
+/** socket based implementation of the client */
 public class SocketClient extends GenericClient{
+    /** server ip address */
     private final String ip;
+    /** server port number */
     private final int port;
+    /** view to be bound*/
     private final TextualUI view;
+    /** boolean represents the status of the connection (true means connected) */
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
+    /** socket object of the client*/
     private Socket clientSocket;
+    /** receiving stream from the server*/
     private ObjectInputStream inputStream;
+    /** target stream to communicate to the server*/
     private ObjectOutputStream outputStream;
+    /** listener thread to manage input stream */
     private final Thread messageListener;
+    /** ping frequency */
     private final int PING_TIME = 5000;
+    /** ping thread */
     private final Thread pingThread;
 
+    /** constructor sets the parameters and launches the ping thread
+     * @param ip server ip address
+     * @param port server port number
+     * @param view view to be bound
+     */
     public SocketClient(String ip, int port, TextualUI view) {
         this.ip = ip;
         this.port = port;
@@ -42,6 +59,8 @@ public class SocketClient extends GenericClient{
         });
     }
 
+    /** method sends serializable object on the output stream
+     * @param message serializable message to be sent*/
     public void sendMsgToServer(Serializable message) {
         if (clientConnected.get()) {
             try {
@@ -54,6 +73,10 @@ public class SocketClient extends GenericClient{
         }
     }
 
+    /**
+     * initializes the socket based connection; creates the socket and establishes the connection to the server, then
+     * assigns the socket streams to the local attributes of the class, sets the connectionStatus to true and starts
+     * the listening and the ping threads */
     @Override
     public void init() {
         try {
@@ -69,6 +92,8 @@ public class SocketClient extends GenericClient{
         }
     }
 
+    /** this method reads the latest object sent from the server on the input stream and forwards the right command to
+     * the view */
     public void readMessages() {
         try {
             while (clientConnected.get()) {
@@ -114,6 +139,10 @@ public class SocketClient extends GenericClient{
         }
     }
 
+    /**
+     * signals the disconnection or failed connection to the view, interrupts the listener thread, closes all streams
+     * and sockets.
+     * @param error true if the reason for disconnection is an error */
     public void disconnect(boolean error) {
         if (clientConnected.get()) {
             clientConnected.set(false);
