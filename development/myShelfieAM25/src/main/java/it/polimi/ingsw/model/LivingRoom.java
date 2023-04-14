@@ -1,12 +1,18 @@
 package it.polimi.ingsw.model;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.exception.*;
 import it.polimi.ingsw.model.boardFiller.*;
 import it.polimi.ingsw.model.commongoal.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static java.lang.Integer.parseInt;
 
 /**
  * Creating a class that represents the living room which contains the board and the two common goals.
@@ -27,6 +33,32 @@ public class LivingRoom {
      * For every game there are 2 common goals, a 2-element array which contains them is created
      */
     private final CommonGoal[] commonGoals = new CommonGoal[2];
+
+    /**
+     * Constructor used for testing, it creates a board based on the json files inside the src/main/resources/json/ folder.
+     * The json file needs to be called board+${playerNumber}+.json
+     * @param playerNumber a String that represents the number of player.
+     * @throws InvalidPlayerNumberException if a wrong playerNumber is passed
+     */
+    public LivingRoom(String playerNumber) throws InvalidPlayerNumberException {
+        switch (playerNumber) {
+            case "2" -> this.boardFiller = new TwoPlayerFiller();
+            case "3" -> this.boardFiller = new ThreePlayerFiller();
+            case "4" -> this.boardFiller = new FourPlayerFiller();
+            default -> throw new InvalidPlayerNumberException();
+        }
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Path filePath = Path.of("src/main/resources/json/board"+playerNumber+".json");
+            String json = Files.readString(filePath);
+            this.board = objectMapper.readValue(json , TilesType[][].class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        commonGoals[0] = new RowsGoal(parseInt(playerNumber), false);
+        commonGoals[1] = new FullDiagonalGoal(parseInt(playerNumber));
+    }
 
     /**
      * In the constructor firstly the board is initialized with null pointers, then boardFiller is used to fill the board
