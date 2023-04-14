@@ -30,4 +30,9 @@ public abstract class GenericClient {
         return isInLobby;
     }
 
+    /**
+     * signals the disconnection or failed connection to the view.
+     * @param error true if the reason for disconnection is an error */
+    public void disconnect(boolean error){}
+
 }
