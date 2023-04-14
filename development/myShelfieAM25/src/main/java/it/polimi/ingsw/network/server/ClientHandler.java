@@ -42,7 +42,7 @@ public class ClientHandler implements Runnable{
     /**
      * the Thread used for handling the forced disconnections
      */
-    private final Thread pingThread;
+    //private final Thread pingThread;
     /**
      * flag that is true if the client is connected
      */
@@ -74,6 +74,7 @@ public class ClientHandler implements Runnable{
         this.server = server;
         genericServer = server.server;
         this.socket = socket;
+        /*
         pingThread = new Thread(()->{
             while (activeClient){
                 try {
@@ -84,6 +85,8 @@ public class ClientHandler implements Runnable{
                 }
             }
         });
+
+         */
     }
 
     /**
@@ -113,7 +116,7 @@ public class ClientHandler implements Runnable{
             inputStream = new ObjectInputStream(socket.getInputStream());
             activeClient = true;
 
-            pingThread.start();
+            //pingThread.start();
 
             while(activeClient){
                 try{

@@ -74,10 +74,10 @@ public class SocketServer implements Runnable{
             while (true){
                 Socket clientSocket = serverSocket.accept();
                 //clientSocket.setSoTimeout(CLIENT_SOCKET_TIMEOUT);
-                SERVER_LOGGER.log(Level.INFO,"New socket client connected from (" + clientSocket.getInetAddress().getHostAddress() + ")");
                 ClientHandler clientConnection = new ClientHandler(this, clientSocket);
                 clientHandlers.add(clientConnection);
                 executor.submit(clientConnection);
+                SERVER_LOGGER.log(Level.INFO,"New socket client connected from (" + clientSocket.getInetAddress().getHostAddress() + ")");
             }
         } catch (IOException e) {
             SERVER_LOGGER.log(Level.SEVERE, "Error during client acceptance");

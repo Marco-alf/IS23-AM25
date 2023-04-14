@@ -26,10 +26,10 @@ public class TextualUI implements ViewInterface {
         System.out.println("Insert /socket if you want to join server with socket");
         String connType = scanner.nextLine();
         if (connType.equals("/rmi")) {
-            client = new RMIClient("localhost", 3100, this);
+            client = new RMIClient("localhost", 1099, this);
             client.init();
         } else if (connType.equals("/socket")) {
-            client = new SocketClient("localhost", 2802, this);
+            client = new SocketClient("localhost", 8088, this);
             boolean socketError = true;
             while (socketError){
                 client.init();

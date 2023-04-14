@@ -23,7 +23,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
     /** view to be bound*/
     private final TextualUI view;
     /** ping frequency */
-    private final int PING_TIME = 5000;
+    private final int PING_TIME = 2000;
     /** boolean represents the status of the connection (true means connected) */
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
     private final Thread pingThread;
@@ -37,16 +37,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
         this.port = port;
         this.view = view;
 
-        pingThread = new Thread(() -> {
-            while (clientConnected.get()) {
-                try {
-                    Thread.sleep(PING_TIME);
-                    sendMsgToServer(new Ping());
-                } catch (InterruptedException ignored) {
-                    break;
-                }
-            }
-        });
+        pingThread = new Thread(this::checkServerAliveness);
     }
 
     /**
@@ -57,6 +48,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
             rmiServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, port).lookup(RMIServerInterface.NAME);
             rmiServerInterface.register((RMIClientInterface) UnicastRemoteObject.exportObject(this, 0));
             clientConnected.set(true);
+            pingThread.start();
         } catch (NotBoundException | RemoteException e) {
             disconnect(true);
         }
@@ -70,6 +62,19 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
             rmiServerInterface.receiveMsgFromClient(arg);
         } catch (RemoteException e) {
             disconnect(true);
+        }
+    }
+
+    public void checkServerAliveness () {
+        while (clientConnected.get()) {
+            try {
+                rmiServerInterface.checkAliveness();
+                Thread.sleep(PING_TIME);
+            } catch (RemoteException e) {
+                disconnect(true);
+            } catch (InterruptedException ignored) {
+
+            }
         }
     }
 
@@ -112,6 +117,11 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
             }
         }
 
+    }
+
+    @Override
+    public boolean checkAliveness() throws RemoteException {
+        return true;
     }
 
     /**

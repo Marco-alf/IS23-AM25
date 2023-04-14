@@ -20,4 +20,6 @@ public interface RMIServerInterface extends Remote {
      */
     void register (RMIClientInterface rmiClient) throws RemoteException;
 
+    boolean checkAliveness () throws RemoteException;
+
 }

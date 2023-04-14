@@ -34,7 +34,7 @@ public class SocketClient extends GenericClient{
     /** ping frequency */
     private final int PING_TIME = 5000;
     /** ping thread */
-    private final Thread pingThread;
+    //private final Thread pingThread;
 
     /** constructor sets the parameters and launches the ping thread
      * @param ip server ip address
@@ -47,6 +47,7 @@ public class SocketClient extends GenericClient{
         this.view = view;
         messageListener = new Thread(this::readMessages);
 
+        /*
         pingThread = new Thread(() -> {
             while (clientConnected.get()) {
                 try {
@@ -57,6 +58,8 @@ public class SocketClient extends GenericClient{
                 }
             }
         });
+
+         */
     }
 
     /** method sends serializable object on the output stream
@@ -86,7 +89,7 @@ public class SocketClient extends GenericClient{
             inputStream = new ObjectInputStream(clientSocket.getInputStream());
             clientConnected.set(true);
             messageListener.start();
-            pingThread.start();
+            //pingThread.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

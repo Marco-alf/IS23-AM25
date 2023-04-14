@@ -38,7 +38,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     /**
      * PING_TIME is the period of the checking for disconnected player
      */
-    private final int PING_TIME = 5000;
+    private final int PING_TIME = 2000;
     /**
      * rmiClients is the list of clients served by the RMIServer
      */
@@ -69,16 +69,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
         this.server = server;
         this.port = port;
 
-        pingThread = new Thread(()->{
-            while (true){
-                try {
-                    Thread.sleep(PING_TIME);
-                    sendMsgToAllRMI(new Ping());
-                } catch (InterruptedException e) {
-                    break;
-                }
-            }
-        });
+        pingThread = new Thread(this::checkClientAliveness);
     }
 
     /**
@@ -114,17 +105,23 @@ public class RMIServer implements Runnable, RMIServerInterface{
             }
         }
     }
-    /**
-     * sendMsgToAllRMI is the method used to send a message to every client that is connected through rmi connection
-     * @param msg is the forwarded message, it needs to be serializable
-     */
-    public void sendMsgToAllRMI (Serializable msg) {
-        for (RMIClientInterface rmiClient : rmiClients) {
-            try {
-                rmiClient.receiveMsgFromServer(msg);
-            } catch (RemoteException e) {
-                manageDisconnection(rmiClient);
+
+
+    public void checkClientAliveness () {
+        while (true) {
+            for (RMIClientInterface rmiClient : rmiClients) {
+                try {
+                    rmiClient.checkAliveness();
+                } catch (RemoteException e) {
+                    manageDisconnection(rmiClient);
+                }
             }
+            try {
+                Thread.sleep(PING_TIME);
+            } catch (InterruptedException ignored) {
+
+            }
+
         }
     }
 
@@ -215,6 +212,11 @@ public class RMIServer implements Runnable, RMIServerInterface{
     public void register(RMIClientInterface rmiClient) throws RemoteException {
         rmiClients.add(rmiClient);
         SERVER_LOGGER.log(Level.INFO, "New RMI client connected");
+    }
+
+    @Override
+    public boolean checkAliveness() throws RemoteException {
+        return true;
     }
 
     /**
