@@ -1,13 +1,13 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exception.*;
-import it.polimi.ingsw.model.commongoal.CommonGoal;
-import it.polimi.ingsw.model.commongoal.TriangularMatrixGoal;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -92,7 +92,7 @@ class LivingRoomTest {
         //test for exceptions
         tiles.add(new Tile(TilesType.BOOKS, 9, 0));
         try {
-            returnedTiles=board.takeTiles(tiles);
+            board.takeTiles(tiles);
             fail();
         } catch (NotInLineException | InvalidTileException | NoFreeEdgeException e) {
             fail();
@@ -105,7 +105,7 @@ class LivingRoomTest {
             tiles.add(new Tile(TilesType.values()[rand.nextInt(6)], 3, 6));
         } while(returnedBoard[6][3]==tiles.get(0).getType());
         try {
-            returnedTiles=board.takeTiles(tiles);
+            board.takeTiles(tiles);
             fail();
         } catch (NotInLineException | NoFreeEdgeException | OutOfBoundException e) {
             fail();
@@ -269,7 +269,7 @@ class LivingRoomTest {
             tiles.add(new Tile(boardCopy[6][4],4,6));
             board.takeTiles(tiles);
 
-            //now the board is refilled so I test that the only null tiles are the one that are null also at the beginning
+            //now the board is refilled, so I test that the only null tiles are the one that are null also at the beginning
             TilesType[][] refilledBoard = board.getEnumArray();
             for(int i=0; i<9; i++){
                 for(int j=0; j<9; j++){
@@ -478,15 +478,13 @@ class LivingRoomTest {
                     tiles.add(new Tile(boardCopy[i][j],j,i));
                 }
             }
-            //now thank god I can test if the chekAndRefill does not modify the board when all the tiles where already played
+            //now thank god I can test if the checkAndRefill does not modify the board when all the tiles where already played
             boardCopy=board.getEnumArray();
             board.checkAndRefill();
             refilledBoard=board.getEnumArray();
 
             for(int i=0; i<9; i++){
-                for(int j=0; j<9; j++){
-                    boardCopy[i][j] = refilledBoard[i][j];
-                }
+                System.arraycopy(refilledBoard[i], 0, boardCopy[i], 0, 9);
             }
 
         }catch (InvalidPlayerNumberException | NotInLineException | InvalidTileException | NoFreeEdgeException |
@@ -494,22 +492,93 @@ class LivingRoomTest {
             fail();
         }
     }
-    /*
-    TO DO, at the moment we have missing some way to identify the different common goals so it's difficult to calculate the respective points
+
+    //test for all the random commonGoal initializations and for the IOException
     @Test
-    void calculateCommonPoints() {
-        try{
-            LivingRoom board = new LivingRoom(2);
-            Player  player = new Player("Pippox11!", board, PersonalGoal.PERSONALGOAL1 );
-            try{
-                CommonGoal goal = new TriangularMatrixGoal(2);
-            }catch (InvalidPlayerNumberException e) {
+    void LivingRoom(){
+        for(int i = 0; i<100; i++){
+            try {
+                new LivingRoom(2);
+                TimeUnit.MILLISECONDS.sleep(1);
+            } catch (InvalidPlayerNumberException | InterruptedException e) {
                 fail();
             }
         }
-        catch (InvalidPlayerNumberException e){
+
+        File file = new File("src/main/resources/json/board2.json");
+        File file2 = new File("src/main/resources/json/board23.json");
+
+        if (file2.exists()) fail();
+
+        // Rename file (or directory)
+        if(!file.renameTo(file2)) fail();
+
+        try{
+            new LivingRoom("2");
+        } catch (InvalidPlayerNumberException e) {
             fail();
         }
+        catch (RuntimeException ignore){
+        }
+        file = new File("src/main/resources/json/board23.json");
+        file2 = new File("src/main/resources/json/board2.json");
+        if (file2.exists()) fail();
+
+        // Rename file (or directory)
+        if(!file.renameTo(file2)) fail();
+
     }
-     */
+    @Test
+    void calculateCommonPoints() {
+        try{
+            LivingRoom board = new LivingRoom("2");
+            Player  player = new Player("Pippo_x11!", board, PersonalGoal.PERSONALGOAL1 );
+
+            ArrayList<Tile> tiles = new ArrayList<>();
+            tiles.add(new Tile(TilesType.TROPHIES,3, 1));
+            tiles.add(new Tile(TilesType.FRAMES,4, 1));
+            player.moveTiles(tiles, 0);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(TilesType.FRAMES,4, 2));
+            tiles.add(new Tile(TilesType.CATS,3, 2));
+            player.moveTiles(tiles, 1);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(TilesType.GAMES,2, 3));
+            tiles.add(new Tile(TilesType.TROPHIES,3, 3));
+            player.moveTiles(tiles, 2);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(TilesType.BOOKS,3, 6));
+            player.moveTiles(tiles, 3);
+
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(TilesType.PLANTS,6, 5));
+            player.moveTiles(tiles, 3);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(TilesType.CATS, 6, 3));
+            player.moveTiles(tiles, 4);
+
+            tiles = new ArrayList<>();
+            tiles.add(new Tile(TilesType.BOOKS, 3, 5));
+            player.moveTiles(tiles, 4);
+
+            assertEquals(8, board.calculateCommonPoints(player)[0]);
+            assertEquals(0, board.calculateCommonPoints(player)[1]);
+
+        }
+        catch (NoFreeEdgeException | OutOfBoundException | FullColumnException | InvalidTileException |
+               NotInLineException | InvalidPlayerNumberException e){
+            fail();
+        }
+        try{
+            new LivingRoom("ciao");
+            fail();
+        } catch (InvalidPlayerNumberException ignored) {
+        }
+
+    }
 }
