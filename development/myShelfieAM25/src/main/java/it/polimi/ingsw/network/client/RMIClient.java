@@ -1,6 +1,5 @@
 package it.polimi.ingsw.network.client;
 
-import it.polimi.ingsw.network.messages.connectionMessages.Ping;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 import it.polimi.ingsw.network.server.RMIClientInterface;
 import it.polimi.ingsw.view.TextualUI;
@@ -114,6 +113,14 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
             if (msg.getType().equals("ChatUpdateMessage")) {
                 assert msg instanceof ChatUpdateMessage;
                 view.addMessage((ChatUpdateMessage) msg);
+            }
+            if (msg.getType().equals("GameCreatedMessage")) {
+                assert msg instanceof GameCreatedMessage;
+                view.updateView(((GameCreatedMessage) msg).getGameInfo());
+                view.displayGameInfo();
+            }
+            if (msg.getType().equals("InvalidMoveMessage")) {
+                view.displayServerMsg("Move is not valid");
             }
         }
 

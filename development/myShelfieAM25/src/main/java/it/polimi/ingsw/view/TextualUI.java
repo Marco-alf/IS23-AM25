@@ -1,5 +1,9 @@
 package it.polimi.ingsw.view;
 
+import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.Tile;
+import it.polimi.ingsw.model.TilesType;
+import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.client.SocketClient;
@@ -20,6 +24,7 @@ Comandi della view
 public class TextualUI implements ViewInterface {
     private final Scanner scanner = new Scanner(System.in);
     private GenericClient client;
+    private GameInfo gameInfo;
     private final List<ChatUpdateMessage> messages = new ArrayList<>();
     public void start() {
         System.out.println("Insert /rmi if you want to join server with rmi");
@@ -118,8 +123,37 @@ public class TextualUI implements ViewInterface {
                     System.out.println("You have to be inside a lobby to use the chat");
                 }
             }
+            if (inputCommand.equals("/move")) {
+                if (client.getIsInLobbyStatus()) {
+                    List<Tile> tiles = new ArrayList<>();
+                    System.out.println("Choose up to 3 tiles from the board to insert in your bookshelf");
+                    System.out.println("Use the format y,x (x is the horizontal axis, y is the vertical axis");
+                    System.out.println("Insert enter key to finish your selection");
+                    String coords = scanner.nextLine();
+                    while (!coords.equals("")) {
+                        tiles.add(getTiles(coords));
+                        coords = scanner.nextLine();
+                    }
+                    System.out.println("Choose the column of the bookshelf where you want to place the tiles");
+                    int column = Integer.parseInt(scanner.nextLine());
+                    MoveMessage clientMessage = new MoveMessage();
+                    clientMessage.setTiles(tiles);
+                    clientMessage.setColumn(column);
+                    if (client instanceof RMIClient) {
+                        clientMessage.setRmiClient((RMIClient) client);
+                    }
+                    client.sendMsgToServer(clientMessage);
+                }
+                else {
+                    System.out.println("You have to be inside a lobby to use the chat");
+                }
+            }
         }
 
+    }
+
+    public void updateView (GameInfo info) {
+        gameInfo = info;
     }
 
     public void displayLobbies (List<String> lobbies) {
@@ -140,6 +174,111 @@ public class TextualUI implements ViewInterface {
             System.out.println(message.getSender() + " at " + message.getTimestamp() + ": " + message.getContent());
         }
     }
+
+    public void displayShelf (TilesType[][] shelf) {
+        System.out.print("+");
+        for (int j = 0; j < 5; j++) {
+            System.out.print("-----+");
+        }
+        System.out.println();
+
+        for (int i = 0; i < 6; i++) {
+            System.out.print("|");
+            for (int j = 0; j < 5; j++) {
+                if (shelf[i][j] == null) {
+                    System.out.print("     |");
+                } else {
+                    System.out.print("  " + printTile(shelf[i][j]) + "  |");
+                }
+            }
+            System.out.println();
+
+            System.out.print("+");
+            for (int j = 0; j < 5; j++) {
+                System.out.print("-----+");
+            }
+            System.out.println();
+        }
+        System.out.println("   0     1     2     3     4   ");
+    }
+
+    public void displayBoard (TilesType[][] matrix) {
+        System.out.println("         0     1     2     3     4     5     6     7     8   ");
+
+        System.out.print("      +");
+        for (int j = 0; j < 9; j++) {
+            System.out.print("-----+");
+        }
+        System.out.println();
+
+        for (int i = 0; i < 9; i++) {
+
+            System.out.print("   " + i + "  |");
+            for (int j = 0; j < 9; j++) {
+                if (matrix[i][j] == null) {
+                    System.out.print("     |");
+                } else {
+                    System.out.print("  " + printTile(matrix[i][j]) + "  |");
+                }
+            }
+            System.out.println();
+
+            System.out.print("      +");
+            for (int j = 0; j < 9; j++) {
+                System.out.print("-----+");
+            }
+            System.out.println();
+        }
+    }
+
+    public void displayGameInfo () {
+        //System.out.println("The game has started");
+        System.out.println();
+        displayBoard(gameInfo.getNewBoard());
+        System.out.println();
+        for (int i = 0; i < gameInfo.getPlayers().size(); i++) {
+            System.out.println(gameInfo.getPlayers().get(i) + "'s bookshelf");
+            System.out.println();
+            displayShelf(gameInfo.getShelves().get(gameInfo.getPlayers().get(i)));
+            System.out.println();
+        }
+        System.out.println("It's " + gameInfo.getCurrentPlayer() + "'s turn");
+
+
+    }
+    public Tile getTiles (String coords) {
+        int y = Integer.parseInt(String.valueOf(coords.charAt(0)));
+        int x = Integer.parseInt(String.valueOf(coords.charAt(2)));
+        return new Tile(gameInfo.getNewBoard()[y][x], x, y);
+    }
+
+    public String printTile (TilesType type) {
+        switch (type) {
+            case TROPHIES -> {
+                return "T";
+            }
+            case FRAMES -> {
+                return "F";
+            }
+            case PLANTS -> {
+                return "P";
+            }
+            case CATS -> {
+                return "C";
+            }
+            case GAMES -> {
+                return "G";
+            }
+            case BOOKS -> {
+                return "B";
+            }
+            default -> {
+                return " ";
+            }
+
+        }
+    }
+
 
     public void addMessage (ChatUpdateMessage msg) {
         messages.add(msg);

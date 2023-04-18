@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exception.*;
+import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.*;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class Lobby {
      * Reference to the game
      */
     private Game game;
+    private GameInfo gameInfo;
 
     /**
      * Constructor for lobby
@@ -55,6 +57,9 @@ public class Lobby {
      */
     public String getLobbyName() {
         return lobbyName;
+    }
+    public int getPlayerNumber() {
+        return playerNumber;
     }
 
     /**
@@ -90,6 +95,8 @@ public class Lobby {
     public void moveTiles(List<Tile> tiles, int shelfColumn, String player) throws IllegalMoveException {
         try {
             game.moveTiles(tiles, shelfColumn, player);
+            currentPlayer = nextPlayer();
+            game.updateCurrentPlayer(currentPlayer.getName());
         } catch (NotInLineException | OutOfBoundException | NoFreeEdgeException | InvalidPlayerNameException |
                  PlayerNotCurrentException | FullColumnException |NullTilesException | PlayerNotOnlineException | InvalidTileException e) {
             throw new IllegalMoveException();
@@ -118,6 +125,9 @@ public class Lobby {
      * @param player is the player that sent the message
      */
     public void writeMessage(String message, String player) {}
+    public GameInfo getGameInfo () {
+        return new GameInfo(game);
+    }
 
     /**
      * @return the next player in the game

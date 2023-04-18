@@ -1,14 +1,10 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.Lobby;
-import it.polimi.ingsw.exception.ExistingLobbyException;
-import it.polimi.ingsw.exception.FullLobbyException;
-import it.polimi.ingsw.exception.NameTakenException;
-import it.polimi.ingsw.exception.NonExistingLobbyException;
-import it.polimi.ingsw.network.messages.clientMessages.ChatMessage;
-import it.polimi.ingsw.network.messages.clientMessages.ClientMessage;
-import it.polimi.ingsw.network.messages.clientMessages.CreateLobbyMessage;
-import it.polimi.ingsw.network.messages.clientMessages.JoinMessage;
+import it.polimi.ingsw.exception.*;
+import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.data.GameInfo;
+import it.polimi.ingsw.network.messages.clientMessages.*;
 import it.polimi.ingsw.network.messages.connectionMessages.Ping;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 
@@ -63,6 +59,7 @@ public class ClientHandler implements Runnable{
      * lobby in which the client plays
      */
     private Lobby lobby;
+    private Game game;
 
     /**
      * constructor of a ClientHandler that requires the associated socket and tcp server. It initializes the ping thread
@@ -155,6 +152,19 @@ public class ClientHandler implements Runnable{
                             serverMessage.setName(specificMessage.getName());
                             serverMessage.setLobbyName(specificMessage.getLobbyName());
                             sendMsgToClient(serverMessage);
+                            if (lobby.getOnlinePlayers().size() == lobby.getPlayerNumber()) {
+                                try {
+                                    GameCreatedMessage createdMessage = new GameCreatedMessage();
+                                    lobby.createGame();
+
+                                    GameInfo info = lobby.getGameInfo();
+
+                                    createdMessage.setGameInfo(info);
+                                    genericServer.sendMsgToAll(createdMessage, lobby);
+                                } catch (GameCreationException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
                         }
                         if (msg.getType().equals("ChatMessage")) {
                             assert msg instanceof ChatMessage;
@@ -166,6 +176,19 @@ public class ClientHandler implements Runnable{
                             serverMessage.setContent(specificMessage.getContent());
                             serverMessage.setSender(clientNickname);
                             genericServer.sendMsgToAll(serverMessage, lobby);
+                        }
+                        if (msg.getType().equals("MoveMessage")) {
+                            assert msg instanceof MoveMessage;
+                            try {
+                                lobby.moveTiles(((MoveMessage) msg).getTiles(), ((MoveMessage) msg).getColumn(), clientNickname);
+                                GameCreatedMessage createdMessage = new GameCreatedMessage();
+                                GameInfo info = lobby.getGameInfo();
+                                createdMessage.setGameInfo(info);
+                                genericServer.sendMsgToAll(createdMessage, lobby);
+                            } catch (IllegalMoveException e) {
+                                sendMsgToClient(new InvalidMoveMessage());
+                            }
+
                         }
                     }
                 } catch (ClassNotFoundException e) {

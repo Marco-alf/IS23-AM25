@@ -55,6 +55,7 @@ public class Game
 
         /* assumption : game starts with every player online and not disconnected */
         onlinePlayers = new ArrayList<>(this.players);
+        currentPlayer = onlinePlayers.get(0);
     }
 
     /**
@@ -109,6 +110,60 @@ public class Game
      */
     public List<String> getOnlinePlayers(){
         return onlinePlayers.stream().map(Player::getName).collect(Collectors.toList());
+    }
+
+    public String getCurrentPlayer() {
+        return currentPlayer.getName();
+    }
+
+    public Map<String, TilesType[][]> getShelves () {
+        Map<String, TilesType[][]> shelves = new HashMap<>();
+        for (Player player : players) {
+            shelves.put(player.getName(), player.getShelf());
+        }
+        return shelves;
+    }
+
+    public Map<String, Integer> getAdjPoints () {
+        Map<String, Integer> adjPoints = new HashMap<>();
+        for (Player player : players) {
+            adjPoints.put(player.getName(), player.calculateAdjPoints());
+        }
+        return adjPoints;
+    }
+
+    public Map<String, Integer> getComm1Points () {
+        Map<String, Integer> comm1Points = new HashMap<>();
+        for (Player player : players) {
+            comm1Points.put(player.getName(), player.calculateCommonPoints()[0]);
+        }
+        return comm1Points;
+    }
+
+    public Map<String, Integer> getComm2Points () {
+        Map<String, Integer> comm2Points = new HashMap<>();
+        for (Player player : players) {
+            comm2Points.put(player.getName(), player.calculateCommonPoints()[1]);
+        }
+        return comm2Points;
+    }
+
+
+
+    public TilesType[][] getNewBoard () {
+        return board.getEnumArray();
+    }
+
+    public int getCommonGoal1Points () {
+        return currentPlayer.calculateCommonPoints()[0];
+    }
+
+    public int getCommonGoal2Points () {
+        return currentPlayer.calculateCommonPoints()[1];
+    }
+
+    public String getFirstPlayer () {
+        return players.get(0).getName();
     }
 
     /**
