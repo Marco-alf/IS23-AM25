@@ -4,6 +4,7 @@ import it.polimi.ingsw.controller.Lobby;
 import it.polimi.ingsw.exception.*;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.data.GameInfo;
+import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.messages.clientMessages.*;
 import it.polimi.ingsw.network.messages.connectionMessages.Ping;
 import it.polimi.ingsw.network.messages.serverMessages.*;
@@ -157,10 +158,14 @@ public class ClientHandler implements Runnable{
                                     GameCreatedMessage createdMessage = new GameCreatedMessage();
                                     lobby.createGame();
 
-                                    GameInfo info = lobby.getGameInfo();
+                                    InitialGameInfo info = lobby.getInitialGameInfo();
 
                                     createdMessage.setGameInfo(info);
                                     genericServer.sendMsgToAll(createdMessage, lobby);
+
+                                    UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
+                                    updatedPlayerMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
+                                    genericServer.sendMsgToAll(updatedPlayerMessage, lobby);
                                 } catch (GameCreationException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -181,10 +186,14 @@ public class ClientHandler implements Runnable{
                             assert msg instanceof MoveMessage;
                             try {
                                 lobby.moveTiles(((MoveMessage) msg).getTiles(), ((MoveMessage) msg).getColumn(), clientNickname);
-                                GameCreatedMessage createdMessage = new GameCreatedMessage();
+                                GameUpdatedMessage updatedMessage = new GameUpdatedMessage();
                                 GameInfo info = lobby.getGameInfo();
-                                createdMessage.setGameInfo(info);
-                                genericServer.sendMsgToAll(createdMessage, lobby);
+                                updatedMessage.setGameInfo(info);
+                                genericServer.sendMsgToAll(updatedMessage, lobby);
+
+                                UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
+                                updatedPlayerMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
+                                genericServer.sendMsgToAll(updatedPlayerMessage, lobby);
                             } catch (IllegalMoveException e) {
                                 sendMsgToClient(new InvalidMoveMessage());
                             }

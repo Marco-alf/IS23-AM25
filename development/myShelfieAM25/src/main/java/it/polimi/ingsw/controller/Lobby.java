@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.exception.*;
 import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.data.InitialGameInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +96,7 @@ public class Lobby {
     public void moveTiles(List<Tile> tiles, int shelfColumn, String player) throws IllegalMoveException {
         try {
             game.moveTiles(tiles, shelfColumn, player);
+            gameInfo = new GameInfo(game);
             currentPlayer = nextPlayer();
             game.updateCurrentPlayer(currentPlayer.getName());
         } catch (NotInLineException | OutOfBoundException | NoFreeEdgeException | InvalidPlayerNameException |
@@ -126,7 +128,14 @@ public class Lobby {
      */
     public void writeMessage(String message, String player) {}
     public GameInfo getGameInfo () {
-        return new GameInfo(game);
+        return gameInfo;
+    }
+    public InitialGameInfo getInitialGameInfo () {
+        return new InitialGameInfo(game);
+    }
+
+    public String getCurrentPlayer() {
+        return currentPlayer.getName();
     }
 
     /**

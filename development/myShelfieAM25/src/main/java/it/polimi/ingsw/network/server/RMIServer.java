@@ -3,6 +3,7 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.controller.Lobby;
 import it.polimi.ingsw.exception.*;
 import it.polimi.ingsw.model.data.GameInfo;
+import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.RMIServerInterface;
 import it.polimi.ingsw.network.messages.clientMessages.*;
 import it.polimi.ingsw.network.messages.connectionMessages.Ping;
@@ -182,9 +183,13 @@ public class RMIServer implements Runnable, RMIServerInterface{
                     try {
                         GameCreatedMessage createdMessage = new GameCreatedMessage();
                         rmiClientsLobby.get(msg.getRmiClient()).createGame();
-                        GameInfo info = rmiClientsLobby.get(msg.getRmiClient()).getGameInfo();
+                        InitialGameInfo info = rmiClientsLobby.get(msg.getRmiClient()).getInitialGameInfo();
                         createdMessage.setGameInfo(info);
                         server.sendMsgToAll(createdMessage, rmiClientsLobby.get(msg.getRmiClient()));
+
+                        UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
+                        updatedPlayerMessage.setUpdatedPlayer(rmiClientsLobby.get(msg.getRmiClient()).getCurrentPlayer());
+                        server.sendMsgToAll(updatedPlayerMessage, rmiClientsLobby.get(msg.getRmiClient()));
                     } catch (GameCreationException e) {
                         throw new RuntimeException(e);
                     }
@@ -206,10 +211,14 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 MoveMessage specificMessage = (MoveMessage) msg;
                 try {
                     rmiClientsLobby.get(msg.getRmiClient()).moveTiles(specificMessage.getTiles(), specificMessage.getColumn(), rmiClientsName.get(msg.getRmiClient()));
-                    GameCreatedMessage createdMessage = new GameCreatedMessage();
+                    GameUpdatedMessage updatedMessage = new GameUpdatedMessage();
                     GameInfo info = rmiClientsLobby.get(msg.getRmiClient()).getGameInfo();
-                    createdMessage.setGameInfo(info);
-                    server.sendMsgToAll(createdMessage, rmiClientsLobby.get(msg.getRmiClient()));
+                    updatedMessage.setGameInfo(info);
+                    server.sendMsgToAll(updatedMessage, rmiClientsLobby.get(msg.getRmiClient()));
+
+                    UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
+                    updatedPlayerMessage.setUpdatedPlayer(rmiClientsLobby.get(msg.getRmiClient()).getCurrentPlayer());
+                    server.sendMsgToAll(updatedPlayerMessage, rmiClientsLobby.get(msg.getRmiClient()));
                 } catch (IllegalMoveException e) {
                     sendMsgToClient(sender, new InvalidMoveMessage());
                 }

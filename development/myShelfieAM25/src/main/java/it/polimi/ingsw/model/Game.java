@@ -116,39 +116,21 @@ public class Game
         return currentPlayer.getName();
     }
 
-    public Map<String, TilesType[][]> getShelves () {
-        Map<String, TilesType[][]> shelves = new HashMap<>();
-        for (Player player : players) {
-            shelves.put(player.getName(), player.getShelf());
-        }
-        return shelves;
+    public TilesType[][] getShelf () {
+        return currentPlayer.getShelf();
     }
 
-    public Map<String, Integer> getAdjPoints () {
-        Map<String, Integer> adjPoints = new HashMap<>();
-        for (Player player : players) {
-            adjPoints.put(player.getName(), player.calculateAdjPoints());
-        }
-        return adjPoints;
+    public int getAdjPoints () {
+        return currentPlayer.calculateAdjPoints();
     }
 
-    public Map<String, Integer> getComm1Points () {
-        Map<String, Integer> comm1Points = new HashMap<>();
-        for (Player player : players) {
-            comm1Points.put(player.getName(), player.calculateCommonPoints()[0]);
+    public List<String> getCommonGoals () {
+        List<String> commonGoals = new ArrayList<>();
+        for (int i = 0; i < board.getCommonGoals().length; i++) {
+            commonGoals.add(board.getCommonGoals()[i].getType());
         }
-        return comm1Points;
+        return commonGoals;
     }
-
-    public Map<String, Integer> getComm2Points () {
-        Map<String, Integer> comm2Points = new HashMap<>();
-        for (Player player : players) {
-            comm2Points.put(player.getName(), player.calculateCommonPoints()[1]);
-        }
-        return comm2Points;
-    }
-
-
 
     public TilesType[][] getNewBoard () {
         return board.getEnumArray();

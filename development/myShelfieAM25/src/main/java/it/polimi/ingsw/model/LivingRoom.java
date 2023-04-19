@@ -169,6 +169,10 @@ public class LivingRoom {
         return boardCopy;
     }
 
+    public CommonGoal[] getCommonGoals() {
+        return commonGoals;
+    }
+
     /**
      * This method is used to return the number of adjacent tiles of a cell on the board
      * @param i is the first parameter of the matrix (es: board[i][...])

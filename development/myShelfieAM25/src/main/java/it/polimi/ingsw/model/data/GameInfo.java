@@ -4,15 +4,12 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.TilesType;
 
 import java.util.List;
-import java.util.Map;
 
 public class GameInfo extends Data{
     private final List<String> onlinePlayers;
     private final String currentPlayer;
-    private final Map<String, TilesType[][]> shelves;
-    private final Map<String, Integer> adjPoints;
-    private final Map<String, Integer> comm1Points;
-    private final Map<String, Integer> comm2Points;
+    private final TilesType[][] shelf;
+    private final int adjPoints;
     private final TilesType[][] newBoard;
     private final int commonGoal1Points;
     private final int commonGoal2Points;
@@ -20,12 +17,9 @@ public class GameInfo extends Data{
     public GameInfo(Game game) {
         this.onlinePlayers = game.getOnlinePlayers();
         this.currentPlayer = game.getCurrentPlayer();
-        this.shelves = game.getShelves();
+        this.shelf = game.getShelf();
         this.newBoard = game.getNewBoard();
-        // array common goal
         this.adjPoints = game.getAdjPoints();
-        this.comm1Points = game.getComm1Points();
-        this.comm2Points = game.getComm2Points();
         this.commonGoal1Points = game.getCommonGoal1Points();
         this.commonGoal2Points = game.getCommonGoal2Points();
     }
@@ -38,8 +32,8 @@ public class GameInfo extends Data{
         return currentPlayer;
     }
 
-    public Map<String, TilesType[][]> getShelves() {
-        return shelves;
+    public TilesType[][] getShelf() {
+        return shelf;
     }
 
     public int getCommonGoal1Points() {
@@ -50,8 +44,12 @@ public class GameInfo extends Data{
         return commonGoal2Points;
     }
 
-    public Map<String, Integer> getAdjPoints() {
+    public int getAdjPoints() {
         return adjPoints;
+    }
+
+    public List<String> getOnlinePlayers() {
+        return onlinePlayers;
     }
 
     public TilesType[][] getNewBoard() {

@@ -137,7 +137,16 @@ public class SocketClient extends GenericClient{
                     if (((ServerMessage) msg).getType().equals("GameCreatedMessage")) {
                         assert msg instanceof GameCreatedMessage;
                         view.updateView(((GameCreatedMessage) msg).getGameInfo());
+                        view.displayInitialGameInfo();
+                    }
+                    if (((ServerMessage) msg).getType().equals("GameUpdatedMessage")) {
+                        assert msg instanceof GameUpdatedMessage;
+                        view.updateView(((GameUpdatedMessage) msg).getGameInfo());
                         view.displayGameInfo();
+                    }
+                    if (((ServerMessage) msg).getType().equals("UpdatedPlayerMessage")) {
+                        assert msg instanceof UpdatedPlayerMessage;
+                        view.displayServerMsg("It's " + ((UpdatedPlayerMessage) msg).getUpdatedPlayer() + "'s turn");
                     }
                     if (((ServerMessage) msg).getType().equals("InvalidMoveMessage")) {
                         view.displayServerMsg("Move is not valid");

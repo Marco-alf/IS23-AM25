@@ -1,15 +1,15 @@
 package it.polimi.ingsw.network.messages.serverMessages;
 
-import it.polimi.ingsw.model.data.GameInfo;
+import it.polimi.ingsw.model.data.InitialGameInfo;
 
 public class GameCreatedMessage extends ServerMessage{
-    private GameInfo gameInfo;
+    private InitialGameInfo gameInfo;
 
-    public void setGameInfo(GameInfo gameInfo) {
+    public void setGameInfo(InitialGameInfo gameInfo) {
         this.gameInfo = gameInfo;
     }
 
-    public GameInfo getGameInfo() {
+    public InitialGameInfo getGameInfo() {
         return gameInfo;
     }
 

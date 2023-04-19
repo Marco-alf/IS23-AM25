@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
 import it.polimi.ingsw.model.data.GameInfo;
+import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.client.SocketClient;
@@ -12,19 +13,15 @@ import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
 import it.polimi.ingsw.network.messages.serverMessages.CreatedLobbyMessage;
 import it.polimi.ingsw.network.messages.serverMessages.JoinedMessage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
-/*
-Comandi della view
-- muovi tiles
- */
 
 public class TextualUI implements ViewInterface {
     private final Scanner scanner = new Scanner(System.in);
     private GenericClient client;
-    private GameInfo gameInfo;
+    private TilesType[][] board;
+    private Map<String, TilesType[][]> shelves = new HashMap<>();
+    private boolean isFirstRound = true;
     private final List<ChatUpdateMessage> messages = new ArrayList<>();
     public void start() {
         System.out.println("Insert /rmi if you want to join server with rmi");
@@ -153,7 +150,15 @@ public class TextualUI implements ViewInterface {
     }
 
     public void updateView (GameInfo info) {
-        gameInfo = info;
+        board = info.getNewBoard();
+        if (isFirstRound) {
+            for (int i = 0; i < info.getOnlinePlayers().size(); i++) {
+                shelves.put(info.getOnlinePlayers().get(i), info.getShelf());
+            }
+            isFirstRound = false;
+        } else {
+            shelves.put(info.getCurrentPlayer(), info.getShelf());
+        }
     }
 
     public void displayLobbies (List<String> lobbies) {
@@ -231,25 +236,28 @@ public class TextualUI implements ViewInterface {
         }
     }
 
+    public void displayInitialGameInfo () {
+        System.out.println("The game has started");
+        System.out.println();
+        displayGameInfo();
+    }
+
     public void displayGameInfo () {
-        //System.out.println("The game has started");
+        displayBoard(board);
         System.out.println();
-        displayBoard(gameInfo.getNewBoard());
-        System.out.println();
-        for (int i = 0; i < gameInfo.getPlayers().size(); i++) {
-            System.out.println(gameInfo.getPlayers().get(i) + "'s bookshelf");
+        for (String name : shelves.keySet()) {
+            System.out.println(name + "'s bookshelf");
             System.out.println();
-            displayShelf(gameInfo.getShelves().get(gameInfo.getPlayers().get(i)));
+            displayShelf(shelves.get(name));
             System.out.println();
         }
-        System.out.println("It's " + gameInfo.getCurrentPlayer() + "'s turn");
-
 
     }
+
     public Tile getTiles (String coords) {
         int y = Integer.parseInt(String.valueOf(coords.charAt(0)));
         int x = Integer.parseInt(String.valueOf(coords.charAt(2)));
-        return new Tile(gameInfo.getNewBoard()[y][x], x, y);
+        return new Tile(board[y][x], x, y);
     }
 
     public String printTile (TilesType type) {

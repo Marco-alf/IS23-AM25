@@ -119,6 +119,15 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
                 view.updateView(((GameCreatedMessage) msg).getGameInfo());
                 view.displayGameInfo();
             }
+            if (msg.getType().equals("GameUpdatedMessage")) {
+                assert msg instanceof GameUpdatedMessage;
+                view.updateView(((GameUpdatedMessage) msg).getGameInfo());
+                view.displayGameInfo();
+            }
+            if (msg.getType().equals("UpdatedPlayerMessage")) {
+                assert msg instanceof UpdatedPlayerMessage;
+                view.displayServerMsg("It's " + ((UpdatedPlayerMessage) msg).getUpdatedPlayer() + "'s turn");
+            }
             if (msg.getType().equals("InvalidMoveMessage")) {
                 view.displayServerMsg("Move is not valid");
             }
