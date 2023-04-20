@@ -73,7 +73,7 @@ public class SocketServer implements Runnable{
         try {
             while (true){
                 Socket clientSocket = serverSocket.accept();
-                //clientSocket.setSoTimeout(CLIENT_SOCKET_TIMEOUT);
+                //clientSocket.setSoTimeout(60000);
                 ClientHandler clientConnection = new ClientHandler(this, clientSocket);
                 clientHandlers.add(clientConnection);
                 executor.submit(clientConnection);

@@ -145,6 +145,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
      * @param error true if the reason for disconnection is an error */
     public void disconnect(boolean error) {
         clientConnected.set(false);
+        isInLobby = false;
         rmiServerInterface = null;
         if (error) view.displayServerMsg("An error occurred during the communication with the server, you're being disconnected! See ya!");
     }

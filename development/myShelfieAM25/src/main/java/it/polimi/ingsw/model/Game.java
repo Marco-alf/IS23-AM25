@@ -120,6 +120,14 @@ public class Game
         return currentPlayer.getShelf();
     }
 
+    public Map<String, TilesType[][]> getShelves () {
+        Map<String, TilesType[][]> shelves = new HashMap<>();
+        for (Player player : players) {
+            shelves.put(player.getName(), player.getShelf());
+        }
+        return shelves;
+    }
+
     public int getAdjPoints () {
         return currentPlayer.calculateAdjPoints();
     }

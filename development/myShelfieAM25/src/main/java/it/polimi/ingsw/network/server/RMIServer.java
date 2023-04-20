@@ -42,6 +42,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * rmiClients is the list of clients served by the RMIServer
      */
     private final List<RMIClientInterface> rmiClients = new ArrayList<>();
+    private final List<RMIClientInterface> rmiClientsToRemove = new ArrayList<>();
     /**
      * rmiClientsName maps the unique name of every player to the respective network interface
      */
@@ -112,9 +113,13 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 try {
                     rmiClient.checkAliveness();
                 } catch (RemoteException e) {
-                    manageDisconnection(rmiClient);
+                    rmiClientsToRemove.add(rmiClient);
                 }
             }
+            for (RMIClientInterface rmiClientInterface : rmiClientsToRemove) {
+                manageDisconnection(rmiClientInterface);
+            }
+            rmiClientsToRemove.clear();
             try {
                 Thread.sleep(PING_TIME);
             } catch (InterruptedException ignored) {
@@ -170,6 +175,10 @@ public class RMIServer implements Runnable, RMIServerInterface{
             }
             if (msg.getType().equals("JoinMessage")) {
                 JoinMessage specificMessage = (JoinMessage) msg;
+                boolean isRejoining = false;
+                if (server.gameBroker.getLobby(specificMessage.getLobbyName()).getDisconnectedPlayers().containsKey(specificMessage.getName())) {
+                    isRejoining = true;
+                }
                 server.gameBroker.addPlayer(specificMessage.getLobbyName(), specificMessage.getName());
 
                 rmiClientsName.put(msg.getRmiClient(), specificMessage.getName());
@@ -179,10 +188,11 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 serverMessage.setName(specificMessage.getName());
                 serverMessage.setLobbyName(specificMessage.getLobbyName());
                 sendMsgToClient(sender, serverMessage);
-                if (rmiClientsLobby.get(msg.getRmiClient()).getOnlinePlayers().size() == rmiClientsLobby.get(msg.getRmiClient()).getPlayerNumber()) {
+                if (rmiClientsLobby.get(msg.getRmiClient()).getOnlinePlayers().size() == rmiClientsLobby.get(msg.getRmiClient()).getPlayerNumber() && !rmiClientsLobby.get(msg.getRmiClient()).isGameCreated()) {
                     try {
-                        GameCreatedMessage createdMessage = new GameCreatedMessage();
                         rmiClientsLobby.get(msg.getRmiClient()).createGame();
+
+                        GameCreatedMessage createdMessage = new GameCreatedMessage();
                         InitialGameInfo info = rmiClientsLobby.get(msg.getRmiClient()).getInitialGameInfo();
                         createdMessage.setGameInfo(info);
                         server.sendMsgToAll(createdMessage, rmiClientsLobby.get(msg.getRmiClient()));
@@ -194,6 +204,17 @@ public class RMIServer implements Runnable, RMIServerInterface{
                         throw new RuntimeException(e);
                     }
                 }
+                if (isRejoining) {
+                    GameCreatedMessage createdMessage = new GameCreatedMessage();
+                    InitialGameInfo info = rmiClientsLobby.get(msg.getRmiClient()).getInitialGameInfo();
+                    createdMessage.setGameInfo(info);
+                    sendMsgToClient(sender, createdMessage);
+
+                    UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
+                    updatedPlayerMessage.setUpdatedPlayer(rmiClientsLobby.get(msg.getRmiClient()).getCurrentPlayer());
+                    sendMsgToClient(sender, updatedPlayerMessage);
+                }
+
             }
             if (msg.getType().equals("ChatMessage")) {
                 assert msg instanceof ChatMessage;
@@ -205,6 +226,15 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 serverMessage.setContent(specificMessage.getContent());
                 serverMessage.setSender(rmiClientsName.get(specificMessage.getRmiClient()));
                 server.sendMsgToAll(serverMessage, rmiClientsLobby.get(specificMessage.getRmiClient()));
+            }
+            if (msg.getType().equals("QuitMessage")) {
+                try {
+                    rmiClientsLobby.get(msg.getRmiClient()).disconnectPlayer(rmiClientsLobby.get(msg.getRmiClient()).getPlayer(rmiClientsName.get(msg.getRmiClient())));
+                    rmiClientsLobby.remove(msg.getRmiClient());
+                    rmiClientsName.remove(msg.getRmiClient());
+                } catch (PlayerNotInLobbyException e) {
+                    throw new RuntimeException(e);
+                }
             }
             if (msg.getType().equals("MoveMessage")) {
                 assert msg instanceof MoveMessage;
@@ -258,17 +288,20 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * @param rmiClient is the interface of the client that is disconnected
      */
     public void manageDisconnection(RMIClientInterface rmiClient) {
-
         Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: RMI client has disconnected");
         Lobby lobby = rmiClientsLobby.get(rmiClient);
         String name = rmiClientsName.get(rmiClient);
         try {
-            lobby.disconnectPlayer(lobby.getPlayer(name));
+            if (lobby != null) {
+                lobby.disconnectPlayer(lobby.getPlayer(name));
+                rmiClientsLobby.remove(rmiClient);
+            }
+            if (name != null) {
+                rmiClientsName.remove(rmiClient);
+            }
             rmiClients.remove(rmiClient);
-            rmiClientsLobby.remove(rmiClient);
-            rmiClientsName.remove(rmiClient);
-        } catch (PlayerNotInLobbyException e) {
-            throw new RuntimeException(e);
+        } catch (PlayerNotInLobbyException ignored) {
+
         }
 
 

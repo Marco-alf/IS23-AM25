@@ -60,7 +60,6 @@ public class ClientHandler implements Runnable{
      * lobby in which the client plays
      */
     private Lobby lobby;
-    private Game game;
 
     /**
      * constructor of a ClientHandler that requires the associated socket and tcp server. It initializes the ping thread
@@ -144,6 +143,10 @@ public class ClientHandler implements Runnable{
                         }
                         if (msg.getType().equals("JoinMessage")) {
                             JoinMessage specificMessage = (JoinMessage) msg;
+                            boolean isRejoining = false;
+                            if (server.gameBroker.getLobby(specificMessage.getLobbyName()).getDisconnectedPlayers().containsKey(specificMessage.getName())) {
+                                isRejoining = true;
+                            }
                             server.gameBroker.addPlayer(specificMessage.getLobbyName(), specificMessage.getName());
 
                             clientNickname = specificMessage.getName();
@@ -153,13 +156,11 @@ public class ClientHandler implements Runnable{
                             serverMessage.setName(specificMessage.getName());
                             serverMessage.setLobbyName(specificMessage.getLobbyName());
                             sendMsgToClient(serverMessage);
-                            if (lobby.getOnlinePlayers().size() == lobby.getPlayerNumber()) {
+                            if (lobby.getOnlinePlayers().size() == lobby.getPlayerNumber() && !lobby.isGameCreated()) {
                                 try {
-                                    GameCreatedMessage createdMessage = new GameCreatedMessage();
                                     lobby.createGame();
-
+                                    GameCreatedMessage createdMessage = new GameCreatedMessage();
                                     InitialGameInfo info = lobby.getInitialGameInfo();
-
                                     createdMessage.setGameInfo(info);
                                     genericServer.sendMsgToAll(createdMessage, lobby);
 
@@ -169,6 +170,16 @@ public class ClientHandler implements Runnable{
                                 } catch (GameCreationException e) {
                                     throw new RuntimeException(e);
                                 }
+                            }
+                            if (isRejoining) {
+                                GameCreatedMessage createdMessage = new GameCreatedMessage();
+                                InitialGameInfo info = lobby.getInitialGameInfo();
+                                createdMessage.setGameInfo(info);
+                                sendMsgToClient(createdMessage);
+
+                                UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
+                                updatedPlayerMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
+                                sendMsgToClient(updatedPlayerMessage);
                             }
                         }
                         if (msg.getType().equals("ChatMessage")) {
@@ -181,6 +192,15 @@ public class ClientHandler implements Runnable{
                             serverMessage.setContent(specificMessage.getContent());
                             serverMessage.setSender(clientNickname);
                             genericServer.sendMsgToAll(serverMessage, lobby);
+                        }
+                        if (msg.getType().equals("QuitMessage")) {
+                            assert msg instanceof QuitMessage;
+                            QuitMessage specificMessage = (QuitMessage) msg;
+                            try {
+                                lobby.disconnectPlayer(lobby.getPlayer(clientNickname));
+                            } catch (PlayerNotInLobbyException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                         if (msg.getType().equals("MoveMessage")) {
                             assert msg instanceof MoveMessage;
@@ -241,6 +261,12 @@ public class ClientHandler implements Runnable{
             activeClient = false;
             Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: client " + socket.getInetAddress().getHostAddress() + " has disconnected");
             disconnect();
+            try {
+                lobby.disconnectPlayer(lobby.getPlayer(clientNickname));
+            } catch (PlayerNotInLobbyException ignored) {
+
+            }
+
             server.removeClient(this);
         }
 

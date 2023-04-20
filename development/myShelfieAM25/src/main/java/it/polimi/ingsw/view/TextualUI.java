@@ -21,7 +21,6 @@ public class TextualUI implements ViewInterface {
     private GenericClient client;
     private TilesType[][] board;
     private Map<String, TilesType[][]> shelves = new HashMap<>();
-    private boolean isFirstRound = true;
     private final List<ChatUpdateMessage> messages = new ArrayList<>();
     public void start() {
         System.out.println("Insert /rmi if you want to join server with rmi");
@@ -38,7 +37,6 @@ public class TextualUI implements ViewInterface {
                 socketError = false;
             }
         }
-
         String inputCommand;
 
         System.out.println("Welcome to my Shelfie!");
@@ -48,6 +46,7 @@ public class TextualUI implements ViewInterface {
         System.out.println("/retrieve: to get a list of the available lobbies");
         System.out.println("/chat: to write a message in the chat");
         System.out.println("/showchat: to show the chat history");
+
 
         while (true) {
             inputCommand = askCommand();
@@ -145,17 +144,31 @@ public class TextualUI implements ViewInterface {
                     System.out.println("You have to be inside a lobby to use the chat");
                 }
             }
+            if (inputCommand.equals("/quit")) {
+                if (client.getIsInLobbyStatus()) {
+                    System.out.println("Are you sure? [Y/n]");
+                    String quit = scanner.nextLine();
+                    if (quit.equals("y") || quit.equals("Y")) {
+                        QuitMessage clientMessage = new QuitMessage();
+                        if (client instanceof RMIClient) {
+                            clientMessage.setRmiClient((RMIClient) client);
+                        }
+                        client.sendMsgToServer(clientMessage);
+                        client.setInLobbyStatus(false);
+                    }
+                }
+                else {
+                    System.out.println("You have to be inside a lobby to use this feature");
+                }
+            }
         }
 
     }
 
     public void updateView (GameInfo info) {
         board = info.getNewBoard();
-        if (isFirstRound) {
-            for (int i = 0; i < info.getOnlinePlayers().size(); i++) {
-                shelves.put(info.getOnlinePlayers().get(i), info.getShelf());
-            }
-            isFirstRound = false;
+        if (info instanceof InitialGameInfo) {
+            shelves = ((InitialGameInfo) info).getShelves();
         } else {
             shelves.put(info.getCurrentPlayer(), info.getShelf());
         }

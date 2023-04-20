@@ -8,7 +8,7 @@ import java.util.List;
 public class GameInfo extends Data{
     private final List<String> onlinePlayers;
     private final String currentPlayer;
-    private final TilesType[][] shelf;
+    private final TilesType[][] newShelf;
     private final int adjPoints;
     private final TilesType[][] newBoard;
     private final int commonGoal1Points;
@@ -17,7 +17,7 @@ public class GameInfo extends Data{
     public GameInfo(Game game) {
         this.onlinePlayers = game.getOnlinePlayers();
         this.currentPlayer = game.getCurrentPlayer();
-        this.shelf = game.getShelf();
+        this.newShelf = game.getShelf();
         this.newBoard = game.getNewBoard();
         this.adjPoints = game.getAdjPoints();
         this.commonGoal1Points = game.getCommonGoal1Points();
@@ -33,7 +33,7 @@ public class GameInfo extends Data{
     }
 
     public TilesType[][] getShelf() {
-        return shelf;
+        return newShelf;
     }
 
     public int getCommonGoal1Points() {

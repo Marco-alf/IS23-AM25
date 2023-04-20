@@ -6,7 +6,9 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -34,10 +36,12 @@ public class Lobby {
      * List of online players
      */
     protected List<VirtualPlayer> onlinePlayers;
+    private Map<String, Integer> disconnectedPlayers = new HashMap<>();
     /**
      * Reference to the game
      */
     private Game game;
+    private boolean isGameCreated = false;
     private GameInfo gameInfo;
 
     /**
@@ -76,7 +80,13 @@ public class Lobby {
         if (onlinePlayers.size() == playerNumber) {
             throw new FullLobbyException();
         }
-        onlinePlayers.add(new VirtualPlayer(name, this));
+        if (disconnectedPlayers.containsKey(name)) {
+            onlinePlayers.add(disconnectedPlayers.get(name), new VirtualPlayer(name, this));
+            disconnectedPlayers.remove(name);
+        } else {
+            onlinePlayers.add(new VirtualPlayer(name, this));
+        }
+
     }
 
     /**
@@ -119,6 +129,7 @@ public class Lobby {
         }
         game = new Game(players);
         currentPlayer = onlinePlayers.get(0);
+        isGameCreated = true;
     }
 
     /**
@@ -136,6 +147,14 @@ public class Lobby {
 
     public String getCurrentPlayer() {
         return currentPlayer.getName();
+    }
+
+    public Map<String, Integer> getDisconnectedPlayers() {
+        return disconnectedPlayers;
+    }
+
+    public boolean isGameCreated() {
+        return isGameCreated;
     }
 
     /**
@@ -158,6 +177,7 @@ public class Lobby {
      * @param player is the player that is being disconnected
      */
     public void disconnectPlayer(VirtualPlayer player) {
+        disconnectedPlayers.put(player.getName(), onlinePlayers.indexOf(player));
         onlinePlayers.remove(player);
     }
 
