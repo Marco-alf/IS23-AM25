@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.RMIServerInterface;
 import it.polimi.ingsw.network.messages.clientMessages.*;
-import it.polimi.ingsw.network.messages.connectionMessages.Ping;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 
 import java.io.Serializable;
@@ -176,7 +175,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
             if (msg.getType().equals("JoinMessage")) {
                 JoinMessage specificMessage = (JoinMessage) msg;
                 boolean isRejoining = false;
-                if (server.gameBroker.getLobby(specificMessage.getLobbyName()).getDisconnectedPlayers().containsKey(specificMessage.getName())) {
+                if (server.gameBroker.getLobby(specificMessage.getLobbyName()).getDisconnectedPlayers().contains(specificMessage.getName())) {
                     isRejoining = true;
                 }
                 server.gameBroker.addPlayer(specificMessage.getLobbyName(), specificMessage.getName());
@@ -228,13 +227,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 server.sendMsgToAll(serverMessage, rmiClientsLobby.get(specificMessage.getRmiClient()));
             }
             if (msg.getType().equals("QuitMessage")) {
-                try {
-                    rmiClientsLobby.get(msg.getRmiClient()).disconnectPlayer(rmiClientsLobby.get(msg.getRmiClient()).getPlayer(rmiClientsName.get(msg.getRmiClient())));
-                    rmiClientsLobby.remove(msg.getRmiClient());
-                    rmiClientsName.remove(msg.getRmiClient());
-                } catch (PlayerNotInLobbyException e) {
-                    throw new RuntimeException(e);
-                }
+                manageDisconnection(msg.getRmiClient());
             }
             if (msg.getType().equals("MoveMessage")) {
                 assert msg instanceof MoveMessage;
@@ -252,9 +245,6 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 } catch (IllegalMoveException e) {
                     sendMsgToClient(sender, new InvalidMoveMessage());
                 }
-
-
-
             }
         } catch (ExistingLobbyException e) {
             sendMsgToClient(sender, new ExistingLobbyMessage());
@@ -291,19 +281,41 @@ public class RMIServer implements Runnable, RMIServerInterface{
         Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: RMI client has disconnected");
         Lobby lobby = rmiClientsLobby.get(rmiClient);
         String name = rmiClientsName.get(rmiClient);
+        rmiClients.remove(rmiClient);
         try {
             if (lobby != null) {
                 lobby.disconnectPlayer(lobby.getPlayer(name));
+
                 rmiClientsLobby.remove(rmiClient);
-            }
-            if (name != null) {
                 rmiClientsName.remove(rmiClient);
+
+                UserDisconnectedMessage serverMessage = new UserDisconnectedMessage();
+                serverMessage.setUser(name);
+                serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
+                server.sendMsgToAll(serverMessage, lobby);
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (lobby.checkNumberOfPlayers()) {
+                            InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
+                            server.sendMsgToAll(insufficientPlayersMessage, lobby);
+                            if (!lobby.waitForPlayers()) {
+                                LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
+                                server.sendMsgToAll(lobbyClosedMessage, lobby);
+                                server.gameBroker.closeLobby(lobby);
+
+                            }
+                        }
+                    }
+                });
+                t.start();
+
             }
-            rmiClients.remove(rmiClient);
+
         } catch (PlayerNotInLobbyException ignored) {
 
         }
 
-
     }
+
 }

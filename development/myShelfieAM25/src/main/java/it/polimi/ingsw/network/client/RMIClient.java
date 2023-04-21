@@ -131,6 +131,17 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
             if (msg.getType().equals("InvalidMoveMessage")) {
                 view.displayServerMsg("Move is not valid");
             }
+            if (msg.getType().equals("InsufficientPlayersMessage")) {
+                view.displayServerMsg("Not enough players to continue... ");
+            }
+            if (msg.getType().equals("LobbyClosedMessage")) {
+                view.displayServerMsg("The lobby is now closed");
+                isInLobby = false;
+            }
+            if (msg.getType().equals("UserDisconnectedMessage")) {
+                view.displayServerMsg(((UserDisconnectedMessage) msg).getUser() + " disconnected");
+                view.displayServerMsg(((UserDisconnectedMessage) msg).getCurrentPlayer() + "'s turn");
+            }
         }
 
     }

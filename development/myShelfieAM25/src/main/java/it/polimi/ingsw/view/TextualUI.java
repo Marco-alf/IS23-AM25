@@ -154,7 +154,12 @@ public class TextualUI implements ViewInterface {
                             clientMessage.setRmiClient((RMIClient) client);
                         }
                         client.sendMsgToServer(clientMessage);
-                        client.setInLobbyStatus(false);
+                        if (client instanceof RMIClient) {
+                            client = new RMIClient("localhost", 1099, this);
+                        } else if (client instanceof SocketClient){
+                            client = new SocketClient("localhost", 8088, this);
+                        }
+                        client.init();
                     }
                 }
                 else {

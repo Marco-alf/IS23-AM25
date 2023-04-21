@@ -144,7 +144,7 @@ public class ClientHandler implements Runnable{
                         if (msg.getType().equals("JoinMessage")) {
                             JoinMessage specificMessage = (JoinMessage) msg;
                             boolean isRejoining = false;
-                            if (server.gameBroker.getLobby(specificMessage.getLobbyName()).getDisconnectedPlayers().containsKey(specificMessage.getName())) {
+                            if (server.gameBroker.getLobby(specificMessage.getLobbyName()).getDisconnectedPlayers().contains(specificMessage.getName())) {
                                 isRejoining = true;
                             }
                             server.gameBroker.addPlayer(specificMessage.getLobbyName(), specificMessage.getName());
@@ -194,13 +194,7 @@ public class ClientHandler implements Runnable{
                             genericServer.sendMsgToAll(serverMessage, lobby);
                         }
                         if (msg.getType().equals("QuitMessage")) {
-                            assert msg instanceof QuitMessage;
-                            QuitMessage specificMessage = (QuitMessage) msg;
-                            try {
-                                lobby.disconnectPlayer(lobby.getPlayer(clientNickname));
-                            } catch (PlayerNotInLobbyException e) {
-                                throw new RuntimeException(e);
-                            }
+                            manageDisconnection();
                         }
                         if (msg.getType().equals("MoveMessage")) {
                             assert msg instanceof MoveMessage;
@@ -261,13 +255,40 @@ public class ClientHandler implements Runnable{
             activeClient = false;
             Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: client " + socket.getInetAddress().getHostAddress() + " has disconnected");
             disconnect();
+            server.removeClient(this);
+
             try {
-                lobby.disconnectPlayer(lobby.getPlayer(clientNickname));
+                if (lobby != null) {
+                    lobby.disconnectPlayer(lobby.getPlayer(clientNickname));
+
+                    UserDisconnectedMessage serverMessage = new UserDisconnectedMessage();
+                    serverMessage.setUser(clientNickname);
+                    serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
+                    genericServer.sendMsgToAll(serverMessage, lobby);
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (lobby.checkNumberOfPlayers()) {
+                                InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
+                                genericServer.sendMsgToAll(insufficientPlayersMessage, lobby);
+                                if (!lobby.waitForPlayers()) {
+                                    LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
+                                    genericServer.sendMsgToAll(lobbyClosedMessage, lobby);
+                                    server.gameBroker.closeLobby(lobby);
+
+                                }
+                            }
+                        }
+                    });
+                    t.start();
+
+                }
+
             } catch (PlayerNotInLobbyException ignored) {
 
             }
 
-            server.removeClient(this);
+
         }
 
     }

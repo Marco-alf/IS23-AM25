@@ -5,4 +5,5 @@ public class QuitMessage extends ClientMessage{
     public String getType() {
         return "QuitMessage";
     }
+
 }

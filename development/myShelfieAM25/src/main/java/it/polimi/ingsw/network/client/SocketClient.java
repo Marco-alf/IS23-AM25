@@ -151,6 +151,17 @@ public class SocketClient extends GenericClient{
                     if (((ServerMessage) msg).getType().equals("InvalidMoveMessage")) {
                         view.displayServerMsg("Move is not valid");
                     }
+                    if (((ServerMessage) msg).getType().equals("InsufficientPlayersMessage")) {
+                        view.displayServerMsg("Not enough players to continue the game");
+                    }
+                    if (((ServerMessage) msg).getType().equals("LobbyClosedMessage")) {
+                        view.displayServerMsg("Lobby has been closed");
+                        isInLobby = false;
+                    }
+                    if (((ServerMessage) msg).getType().equals("UserDisconnectedMessage")) {
+                        view.displayServerMsg(((UserDisconnectedMessage) msg).getUser() + " disconnected");
+                        view.displayServerMsg(((UserDisconnectedMessage) msg).getCurrentPlayer() + "'s turn");
+                    }
                 }
 
             }

@@ -6,9 +6,8 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -36,7 +35,7 @@ public class Lobby {
      * List of online players
      */
     protected List<VirtualPlayer> onlinePlayers;
-    private Map<String, Integer> disconnectedPlayers = new HashMap<>();
+    private List<String> disconnectedPlayers = new ArrayList<>();
     /**
      * Reference to the game
      */
@@ -55,6 +54,7 @@ public class Lobby {
         this.lobbyName = lobbyName;
         this.lobbyCreator = lobbyCreator;
         onlinePlayers = new ArrayList<>();
+
     }
 
     /**
@@ -74,19 +74,18 @@ public class Lobby {
      * @throws FullLobbyException if the lobby is full
      */
     public void addPlayer(String name) throws NameTakenException, FullLobbyException {
+        if (disconnectedPlayers.contains(name)) {
+            disconnectedPlayers.remove(name);
+            return;
+        }
         if (onlinePlayers.stream().map(VirtualPlayer::getName).toList().contains(name)) {
             throw new NameTakenException();
         }
         if (onlinePlayers.size() == playerNumber) {
             throw new FullLobbyException();
         }
-        if (disconnectedPlayers.containsKey(name)) {
-            onlinePlayers.add(disconnectedPlayers.get(name), new VirtualPlayer(name, this));
-            disconnectedPlayers.remove(name);
-        } else {
-            onlinePlayers.add(new VirtualPlayer(name, this));
-        }
 
+        onlinePlayers.add(new VirtualPlayer(name, this));
     }
 
     /**
@@ -132,6 +131,25 @@ public class Lobby {
         isGameCreated = true;
     }
 
+    public boolean checkNumberOfPlayers () {
+        return isGameCreated && (onlinePlayers.size() - disconnectedPlayers.size()) < 2;
+    }
+
+    public boolean waitForPlayers () {
+        for (int i = 0; i < 20; i++) {
+            try  {
+                TimeUnit.SECONDS.sleep(1);
+                System.err.println(i);
+                if (onlinePlayers.size() - disconnectedPlayers.size() > 1) return true;
+            } catch (InterruptedException ignored) {
+
+            }
+        }
+        return false;
+    }
+
+
+
     /**
      * Writes a message on the chat
      * @param message is the content of the message (String)
@@ -149,7 +167,7 @@ public class Lobby {
         return currentPlayer.getName();
     }
 
-    public Map<String, Integer> getDisconnectedPlayers() {
+    public List<String> getDisconnectedPlayers() {
         return disconnectedPlayers;
     }
 
@@ -162,6 +180,11 @@ public class Lobby {
      */
     public VirtualPlayer nextPlayer() {
         int index = (onlinePlayers.indexOf(currentPlayer) + 1) % onlinePlayers.size();
+        VirtualPlayer player = onlinePlayers.get(index);
+        while (disconnectedPlayers.contains(player.getName())) {
+            index = (onlinePlayers.indexOf(player) + 1) % onlinePlayers.size();
+            player = onlinePlayers.get(index);
+        }
         return onlinePlayers.get(index);
     }
 
@@ -177,8 +200,15 @@ public class Lobby {
      * @param player is the player that is being disconnected
      */
     public void disconnectPlayer(VirtualPlayer player) {
-        disconnectedPlayers.put(player.getName(), onlinePlayers.indexOf(player));
-        onlinePlayers.remove(player);
+        disconnectedPlayers.add(player.getName());
+        if (currentPlayer.getName().equals(player.getName())) {
+            try {
+                currentPlayer = nextPlayer();
+                game.updateCurrentPlayer(currentPlayer.getName());
+            } catch (InvalidPlayerNameException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }
