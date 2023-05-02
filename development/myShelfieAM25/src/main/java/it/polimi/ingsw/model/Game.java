@@ -140,6 +140,14 @@ public class Game
         return commonGoals;
     }
 
+    public Map<String, PersonalGoal> getPersonalGoals () {
+        Map<String, PersonalGoal> personalGoals = new HashMap<>();
+        for (Player player : players) {
+            personalGoals.put(player.getName(), player.getPersonalGoal());
+        }
+        return personalGoals;
+    }
+
     public TilesType[][] getNewBoard () {
         return board.getEnumArray();
     }
@@ -150,10 +158,6 @@ public class Game
 
     public int getCommonGoal2Points () {
         return currentPlayer.calculateCommonPoints()[1];
-    }
-
-    public String getFirstPlayer () {
-        return players.get(0).getName();
     }
 
     /**

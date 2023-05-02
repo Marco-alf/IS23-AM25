@@ -291,8 +291,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
 
                 UserDisconnectedMessage serverMessage = new UserDisconnectedMessage();
                 serverMessage.setUser(name);
-                serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
+                if (lobby.isGameCreated()) serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
                 server.sendMsgToAll(serverMessage, lobby);
+
                 Thread t = new Thread(new Runnable() {
                     @Override
                     public void run() {

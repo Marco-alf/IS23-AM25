@@ -14,6 +14,7 @@ public class XGoal extends CommonGoal{
      */
     public XGoal(int numPlayers) throws InvalidPlayerNumberException {
         super(numPlayers);
+        type = "XGoal";
     }
 
     /**

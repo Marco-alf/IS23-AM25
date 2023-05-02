@@ -263,7 +263,7 @@ public class ClientHandler implements Runnable{
 
                     UserDisconnectedMessage serverMessage = new UserDisconnectedMessage();
                     serverMessage.setUser(clientNickname);
-                    serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
+                    if (lobby.isGameCreated()) serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
                     genericServer.sendMsgToAll(serverMessage, lobby);
                     Thread t = new Thread(new Runnable() {
                         @Override

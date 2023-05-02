@@ -56,6 +56,10 @@ public class Player {
         return name;
     }
 
+    public PersonalGoal getPersonalGoal() {
+        return personalGoal;
+    }
+
     /**
      * calculatePersonalPoints is the method used by game to retrive the points that a player has done by completing his personal goal
      * @return the points calculated by the personal goal based on the shelf of the player

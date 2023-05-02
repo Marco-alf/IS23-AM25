@@ -16,6 +16,7 @@ public class FullDiagonalGoal extends CommonGoal {
      */
     public FullDiagonalGoal(int numPlayers) throws InvalidPlayerNumberException {
         super((numPlayers));
+        type = "FullDiagonalGoal";
     }
 
     /**

@@ -16,6 +16,7 @@ public class TwoEqualSquareGoal extends CommonGoal{
      */
     public TwoEqualSquareGoal(int numPlayers) throws InvalidPlayerNumberException {
         super(numPlayers);
+        type = "TwoEqualSquareGoal";
     }
 
     /**

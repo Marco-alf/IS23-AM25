@@ -35,7 +35,7 @@ public class Lobby {
      * List of online players
      */
     protected List<VirtualPlayer> onlinePlayers;
-    private List<String> disconnectedPlayers = new ArrayList<>();
+    private final List<String> disconnectedPlayers = new ArrayList<>();
     /**
      * Reference to the game
      */
@@ -132,15 +132,16 @@ public class Lobby {
     }
 
     public boolean checkNumberOfPlayers () {
-        return isGameCreated && (onlinePlayers.size() - disconnectedPlayers.size()) < 2;
+        return (onlinePlayers.size() - disconnectedPlayers.size()) < 2;
     }
 
     public boolean waitForPlayers () {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 200; i++) {
             try  {
                 TimeUnit.SECONDS.sleep(1);
                 System.err.println(i);
                 if (onlinePlayers.size() - disconnectedPlayers.size() > 1) return true;
+                if (onlinePlayers.size() - disconnectedPlayers.size() == 0) return false;
             } catch (InterruptedException ignored) {
 
             }
@@ -201,7 +202,7 @@ public class Lobby {
      */
     public void disconnectPlayer(VirtualPlayer player) {
         disconnectedPlayers.add(player.getName());
-        if (currentPlayer.getName().equals(player.getName())) {
+        if (isGameCreated && currentPlayer.getName().equals(player.getName())) {
             try {
                 currentPlayer = nextPlayer();
                 game.updateCurrentPlayer(currentPlayer.getName());

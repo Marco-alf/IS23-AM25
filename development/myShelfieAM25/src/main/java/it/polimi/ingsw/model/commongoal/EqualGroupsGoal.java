@@ -35,6 +35,7 @@ public class EqualGroupsGoal extends CommonGoal{
         super(numPlayers);
         this.size = size;
         this.quantity = quantity;
+        type = "EqualGroupsGoal ("+ quantity +" groups, "+ size +" in size)";
     }
 
     /**
