@@ -102,9 +102,12 @@ public class Lobby {
      * @param player is the player that moves the tiles
      * @throws IllegalMoveException if the move is not valid
      */
-    public void moveTiles(List<Tile> tiles, int shelfColumn, String player) throws IllegalMoveException {
+    public void moveTiles(List<Tile> tiles, int shelfColumn, String player) throws
+            IllegalMoveException, GameEndedException {
         try {
+            if (game.getEndGame()) throw new GameEndedException();
             game.moveTiles(tiles, shelfColumn, player);
+            if (isLastTurn()) game.setGameEnded();
             gameInfo = new GameInfo(game);
             currentPlayer = nextPlayer();
             game.updateCurrentPlayer(currentPlayer.getName());
@@ -149,6 +152,10 @@ public class Lobby {
         return false;
     }
 
+    private boolean isLastTurn () {
+        return game.isLastRound() && isLastPlayer();
+    }
+
 
 
     /**
@@ -188,6 +195,15 @@ public class Lobby {
         }
         return onlinePlayers.get(index);
     }
+
+    public boolean isLastPlayer () {
+        List<String> roundPlayers = new ArrayList<>();
+        for (int i = 0; i < onlinePlayers.size(); i++) {
+            if (!disconnectedPlayers.contains(onlinePlayers.get(i).getName())) roundPlayers.add(onlinePlayers.get(i).getName());
+        }
+        return currentPlayer.getName() == roundPlayers.get(roundPlayers.size() - 1);
+    }
+
 
     public VirtualPlayer getPlayer(String name) throws PlayerNotInLobbyException {
         for (VirtualPlayer onlinePlayer : onlinePlayers) {

@@ -17,6 +17,7 @@ public class Shelf {
      * attributes xBound and yBound represents dimension of the shelf
      */
     private static final int xBound = 5, yBound = 6;
+    private boolean isFull;
 
     /**
      * The constructor of the class initialize an empty TilesTye matrix of the right dimension
@@ -140,5 +141,18 @@ public class Shelf {
             shelfCopy[yBound-(i+1)] = shelf[i].clone();
         }
         return shelfCopy;
+    }
+
+    public void setFull() {
+        for (int i = 0; i < yBound; i++) {
+            for (int j = 0; j < xBound; j++) {
+                if (shelf[i][j] == null) return;
+            }
+        }
+        isFull = true;
+    }
+
+    public boolean isFullStatus() {
+        return isFull;
     }
 }

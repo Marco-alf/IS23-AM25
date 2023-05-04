@@ -60,6 +60,7 @@ public class ClientHandler implements Runnable{
      * lobby in which the client plays
      */
     private Lobby lobby;
+    private ClientState state = ClientState.CONNECTED;
 
     /**
      * constructor of a ClientHandler that requires the associated socket and tcp server. It initializes the ping thread
@@ -118,15 +119,16 @@ public class ClientHandler implements Runnable{
             while(activeClient){
                 try{
                     Object object = inputStream.readObject();
-                    if(!(object instanceof Ping)) {
+                    //if(!(object instanceof Ping)) {
                         ClientMessage msg = (ClientMessage) object;
-                        if (msg.getType().equals("CreateLobbyMessage")) {
+                        if (msg.getType().equals("CreateLobbyMessage") && state == ClientState.CONNECTED) {
                             CreateLobbyMessage specificMessage = (CreateLobbyMessage) msg;
                             String lobbyName = specificMessage.getLobbyName();
                             String lobbyCreator = specificMessage.getLobbyCreator();
                             int numPlayers = specificMessage.getPlayerNumber();
                             server.gameBroker.createLobby(lobbyCreator, lobbyName, numPlayers);
 
+                            state = ClientState.IN_LOBBY;
                             clientNickname = lobbyCreator;
                             lobby = server.gameBroker.getLobby(lobbyName);
 
@@ -135,13 +137,13 @@ public class ClientHandler implements Runnable{
                             serverMessage.setLobbyName(specificMessage.getLobbyName());
                             sendMsgToClient(serverMessage);
                         }
-                        if (msg.getType().equals("RetrieveLobbiesMessage")) {
+                        if (msg.getType().equals("RetrieveLobbiesMessage") && state == ClientState.CONNECTED) {
                             List<String> lobbies = server.gameBroker.getLobbies();
                             RetrievedLobbiesMessage message = new RetrievedLobbiesMessage();
                             message.setLobbies(lobbies);
                             sendMsgToClient(message);
                         }
-                        if (msg.getType().equals("JoinMessage")) {
+                        if (msg.getType().equals("JoinMessage") && state == ClientState.CONNECTED) {
                             JoinMessage specificMessage = (JoinMessage) msg;
                             boolean isRejoining = false;
                             if (server.gameBroker.getLobby(specificMessage.getLobbyName()).getDisconnectedPlayers().contains(specificMessage.getName())) {
@@ -149,6 +151,7 @@ public class ClientHandler implements Runnable{
                             }
                             server.gameBroker.addPlayer(specificMessage.getLobbyName(), specificMessage.getName());
 
+                            state = ClientState.IN_LOBBY;
                             clientNickname = specificMessage.getName();
                             lobby = server.gameBroker.getLobby(specificMessage.getLobbyName());
 
@@ -159,6 +162,7 @@ public class ClientHandler implements Runnable{
                             if (lobby.getOnlinePlayers().size() == lobby.getPlayerNumber() && !lobby.isGameCreated()) {
                                 try {
                                     lobby.createGame();
+                                    state = ClientState.IN_GAME;
                                     GameCreatedMessage createdMessage = new GameCreatedMessage();
                                     InitialGameInfo info = lobby.getInitialGameInfo();
                                     createdMessage.setGameInfo(info);
@@ -182,7 +186,7 @@ public class ClientHandler implements Runnable{
                                 sendMsgToClient(updatedPlayerMessage);
                             }
                         }
-                        if (msg.getType().equals("ChatMessage")) {
+                        if (msg.getType().equals("ChatMessage")  && (state == ClientState.IN_LOBBY || state == ClientState.IN_GAME)) {
                             assert msg instanceof ChatMessage;
                             ChatMessage specificMessage = (ChatMessage) msg;
                             ChatUpdateMessage serverMessage = new ChatUpdateMessage();
@@ -193,10 +197,10 @@ public class ClientHandler implements Runnable{
                             serverMessage.setSender(clientNickname);
                             genericServer.sendMsgToAll(serverMessage, lobby);
                         }
-                        if (msg.getType().equals("QuitMessage")) {
+                        if (msg.getType().equals("QuitMessage") && (state == ClientState.IN_LOBBY || state == ClientState.IN_GAME)) {
                             manageDisconnection();
                         }
-                        if (msg.getType().equals("MoveMessage")) {
+                        if (msg.getType().equals("MoveMessage") && state == ClientState.IN_GAME) {
                             assert msg instanceof MoveMessage;
                             try {
                                 lobby.moveTiles(((MoveMessage) msg).getTiles(), ((MoveMessage) msg).getColumn(), clientNickname);
@@ -210,10 +214,12 @@ public class ClientHandler implements Runnable{
                                 genericServer.sendMsgToAll(updatedPlayerMessage, lobby);
                             } catch (IllegalMoveException e) {
                                 sendMsgToClient(new InvalidMoveMessage());
+                            } catch (GameEndedException ignored) {
+
                             }
 
                         }
-                    }
+                    //}
                 } catch (ClassNotFoundException e) {
                     manageDisconnection();
                 } catch (ExistingLobbyException e) {

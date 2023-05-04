@@ -13,6 +13,7 @@ public class GameInfo extends Data{
     private final TilesType[][] newBoard;
     private final int commonGoal1Points;
     private final int commonGoal2Points;
+    private final boolean gameEnded;
 
     public GameInfo(Game game) {
         this.onlinePlayers = game.getOnlinePlayers();
@@ -22,6 +23,7 @@ public class GameInfo extends Data{
         this.adjPoints = game.getAdjPoints();
         this.commonGoal1Points = game.getCommonGoal1Points();
         this.commonGoal2Points = game.getCommonGoal2Points();
+        this.gameEnded = game.getEndGame();
     }
 
     public List<String> getPlayers() {
@@ -50,6 +52,10 @@ public class GameInfo extends Data{
 
     public List<String> getOnlinePlayers() {
         return onlinePlayers;
+    }
+
+    public boolean isGameEnded() {
+        return gameEnded;
     }
 
     public TilesType[][] getNewBoard() {

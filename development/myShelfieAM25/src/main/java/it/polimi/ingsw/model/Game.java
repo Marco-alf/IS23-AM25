@@ -26,6 +26,9 @@ public class Game
     /**
      * currentPlayer is the reference to the player that is supposed to move next, the player of the current turn*/
     private Player currentPlayer;
+    private Player firstPlayer;
+    private boolean lastRound = false;
+    private boolean endGame = false;
     
 
     /**
@@ -55,7 +58,8 @@ public class Game
 
         /* assumption : game starts with every player online and not disconnected */
         onlinePlayers = new ArrayList<>(this.players);
-        currentPlayer = onlinePlayers.get(0);
+        firstPlayer = onlinePlayers.get(0);
+        currentPlayer = firstPlayer;
     }
 
     /**
@@ -102,6 +106,7 @@ public class Game
             throw new PlayerNotOnlineException();
         }
         p.moveTiles(tiles, shelfColumn);
+        setLastRound();
     }
 
     /**
@@ -159,6 +164,9 @@ public class Game
     public int getCommonGoal2Points () {
         return currentPlayer.calculateCommonPoints()[1];
     }
+    public boolean getEndGame () {
+        return endGame;
+    }
 
     /**
      * removes the player with the specified name from the OnlinePlayers list
@@ -199,5 +207,17 @@ public class Game
                 return p;
         }
         throw new InvalidPlayerNameException();
+    }
+
+    public boolean isLastRound() {
+        return lastRound;
+    }
+
+    private void setLastRound() {
+        if (currentPlayer.isBookshelfFull()) lastRound = true;
+    }
+
+    public void setGameEnded () {
+        endGame = true;
     }
 }

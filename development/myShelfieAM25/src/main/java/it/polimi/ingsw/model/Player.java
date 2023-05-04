@@ -112,6 +112,11 @@ public class Player {
 
         List<TilesType> tileList = board.takeTiles(tiles);
         shelf.add(tileList, shelfColumn);
+        shelf.setFull();
+    }
+
+    public boolean isBookshelfFull(){
+        return shelf.isFullStatus();
     }
 
     /**
