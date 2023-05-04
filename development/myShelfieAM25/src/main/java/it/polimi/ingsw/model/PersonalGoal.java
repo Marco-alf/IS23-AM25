@@ -165,4 +165,23 @@ public enum PersonalGoal {
         }
         return points[count];
     }
+
+    /**
+     * getMatrix is a getter for a representation of a personal goal as a shelf
+     * @return a TilesTipe[][] that represents the personal goal as a shelf
+     */
+    public TilesType[][] getMatrix(){
+        TilesType[][] matrix = new TilesType[6][5];
+        for(int y = 0; y < 6; y ++){
+            for(int x = 0; x < 5; x ++){
+                matrix[y][x] = null;
+                for(int i = 0; i < 6; i++){
+                    if(tiles[i].getPosY() == y && tiles[i].getPosX() == x){
+                        matrix[y][x] = tiles[i].getType();
+                    }
+                }
+            }
+        }
+        return matrix;
+    }
 }

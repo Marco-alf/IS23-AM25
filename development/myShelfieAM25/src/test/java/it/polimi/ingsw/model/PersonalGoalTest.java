@@ -205,4 +205,21 @@ class PersonalGoalTest {
         assertEquals(PersonalGoal.PERSONALGOAL1, PersonalGoal.valueOf("PERSONALGOAL1"));
         assertNotEquals(PersonalGoal.PERSONALGOAL5, PersonalGoal.valueOf("PERSONALGOAL6"));
     }
+
+    @Test
+    void getMatrixTest(){
+        TilesType[][] shelf = new TilesType[][]{{null, null, TilesType.BOOKS, null, null},
+                {null, TilesType.PLANTS, null, null, null},
+                {null, null, TilesType.FRAMES, null, null},
+                {null, null, null, TilesType.TROPHIES, null},
+                {null, null, null, null, TilesType.GAMES},
+                {TilesType.CATS, null, null, null, null},
+        };
+        TilesType[][] matrix = PersonalGoal.PERSONALGOAL12.getMatrix();
+        for(int i = 0; i < 6; i++){
+            for(int j = 0; j < 5; j++){
+                assertEquals(shelf[i][j], matrix[i][j]);
+            }
+        }
+    }
 }
