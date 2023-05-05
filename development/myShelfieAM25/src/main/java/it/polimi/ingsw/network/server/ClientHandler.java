@@ -55,11 +55,11 @@ public class ClientHandler implements Runnable{
     /**
      * name of the client
      */
-    private String clientNickname;
+    private String clientNickname = null;
     /**
      * lobby in which the client plays
      */
-    private Lobby lobby;
+    private Lobby lobby = null;
     private ClientState state = ClientState.CONNECTED;
 
     /**
@@ -146,7 +146,7 @@ public class ClientHandler implements Runnable{
                         if (msg.getType().equals("JoinMessage") && state == ClientState.CONNECTED) {
                             JoinMessage specificMessage = (JoinMessage) msg;
                             boolean isRejoining = false;
-                            if (server.gameBroker.getLobby(specificMessage.getLobbyName()).getDisconnectedPlayers().contains(specificMessage.getName())) {
+                            if (server.gameBroker.getLobbies().contains(specificMessage.getLobbyName()) && server.gameBroker.getLobby(specificMessage.getLobbyName()).getDisconnectedPlayers().contains(specificMessage.getName())) {
                                 isRejoining = true;
                             }
                             server.gameBroker.addPlayer(specificMessage.getLobbyName(), specificMessage.getName());
@@ -231,6 +231,7 @@ public class ClientHandler implements Runnable{
                 } catch (NonExistingLobbyException e) {
                     sendMsgToClient(new NotExistingLobbyMessage());
                 }
+
             }
 
         } catch (IOException e) {
