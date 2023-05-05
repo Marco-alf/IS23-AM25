@@ -103,6 +103,10 @@ public class ClientHandler implements Runnable{
         return clientNickname;
     }
 
+    public void setStatus (ClientState state) {
+        this.state = state;
+    }
+
     /**
      * method used to handle all the commands and event related to the connection.
      * ClientHandler.run() is the real link between a socket client and the server
@@ -162,7 +166,7 @@ public class ClientHandler implements Runnable{
                             if (lobby.getOnlinePlayers().size() == lobby.getPlayerNumber() && !lobby.isGameCreated()) {
                                 try {
                                     lobby.createGame();
-                                    state = ClientState.IN_GAME;
+                                    genericServer.setInGameStatus(specificMessage.getLobbyName());
                                     GameCreatedMessage createdMessage = new GameCreatedMessage();
                                     InitialGameInfo info = lobby.getInitialGameInfo();
                                     createdMessage.setGameInfo(info);

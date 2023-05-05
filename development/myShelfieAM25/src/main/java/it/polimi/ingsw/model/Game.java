@@ -136,6 +136,9 @@ public class Game
     public int getAdjPoints () {
         return currentPlayer.calculateAdjPoints();
     }
+    public int getPersonalPoints () {
+        return currentPlayer.calculatePersonalPoints();
+    }
 
     public List<String> getCommonGoals () {
         List<String> commonGoals = new ArrayList<>();

@@ -106,6 +106,14 @@ public class RMIServer implements Runnable, RMIServerInterface{
         }
     }
 
+    public void setInGameStatus (String lobby) {
+        for (RMIClientInterface rmiClient : rmiClients) {
+            if (rmiClientsLobby.get(rmiClient).getLobbyName().equals(lobby)) {
+                rmiClientsStates.put(rmiClient, ClientState.IN_GAME);
+            }
+        }
+    }
+
 
     public void checkClientAliveness () {
         while (true) {
@@ -167,14 +175,12 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 serverMessage.setName(specificMessage.getLobbyCreator());
                 serverMessage.setLobbyName(specificMessage.getLobbyName());
                 sendMsgToClient(sender, serverMessage);
-            }
-            if (msg.getType().equals("RetrieveLobbiesMessage") && rmiClientsStates.get(sender) == ClientState.CONNECTED) {
+            } else if (msg.getType().equals("RetrieveLobbiesMessage") && rmiClientsStates.get(sender) == ClientState.CONNECTED) {
                 List<String> lobbies = server.gameBroker.getLobbies();
                 RetrievedLobbiesMessage specificMessage = new RetrievedLobbiesMessage();
                 specificMessage.setLobbies(lobbies);
                 sendMsgToClient(sender, specificMessage);
-            }
-            if (msg.getType().equals("JoinMessage") && rmiClientsStates.get(sender) == ClientState.CONNECTED) {
+            } else if (msg.getType().equals("JoinMessage") && rmiClientsStates.get(sender) == ClientState.CONNECTED) {
                 JoinMessage specificMessage = (JoinMessage) msg;
                 boolean isRejoining = false;
                 if (server.gameBroker.getLobbies().contains(specificMessage.getLobbyName()) && server.gameBroker.getLobby(specificMessage.getLobbyName()).getDisconnectedPlayers().contains(specificMessage.getName())) {
@@ -193,7 +199,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 if (rmiClientsLobby.get(msg.getRmiClient()).getOnlinePlayers().size() == rmiClientsLobby.get(msg.getRmiClient()).getPlayerNumber() && !rmiClientsLobby.get(msg.getRmiClient()).isGameCreated()) {
                     try {
                         rmiClientsLobby.get(msg.getRmiClient()).createGame();
-                        rmiClientsStates.put(sender, ClientState.IN_GAME);
+                        server.setInGameStatus(specificMessage.getLobbyName());
 
                         GameCreatedMessage createdMessage = new GameCreatedMessage();
                         InitialGameInfo info = rmiClientsLobby.get(msg.getRmiClient()).getInitialGameInfo();
@@ -217,8 +223,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                     updatedPlayerMessage.setUpdatedPlayer(rmiClientsLobby.get(msg.getRmiClient()).getCurrentPlayer());
                     sendMsgToClient(sender, updatedPlayerMessage);
                 }
-            }
-            if (msg.getType().equals("ChatMessage") && (rmiClientsStates.get(sender) == ClientState.IN_LOBBY || rmiClientsStates.get(sender) == ClientState.IN_GAME)) {
+            } else if (msg.getType().equals("ChatMessage") && (rmiClientsStates.get(sender) == ClientState.IN_LOBBY || rmiClientsStates.get(sender) == ClientState.IN_GAME)) {
                 assert msg instanceof ChatMessage;
                 ChatMessage specificMessage = (ChatMessage) msg;
                 ChatUpdateMessage serverMessage = new ChatUpdateMessage();
@@ -228,11 +233,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 serverMessage.setContent(specificMessage.getContent());
                 serverMessage.setSender(rmiClientsName.get(specificMessage.getRmiClient()));
                 server.sendMsgToAll(serverMessage, rmiClientsLobby.get(specificMessage.getRmiClient()));
-            }
-            if (msg.getType().equals("QuitMessage") && (rmiClientsStates.get(sender) == ClientState.IN_LOBBY || rmiClientsStates.get(sender) == ClientState.IN_GAME)) {
+            }else if (msg.getType().equals("QuitMessage") && (rmiClientsStates.get(sender) == ClientState.IN_LOBBY || rmiClientsStates.get(sender) == ClientState.IN_GAME)) {
                 manageDisconnection(msg.getRmiClient());
-            }
-            if (msg.getType().equals("MoveMessage") && rmiClientsStates.get(sender) == ClientState.IN_GAME) {
+            }else if (msg.getType().equals("MoveMessage") && rmiClientsStates.get(sender) == ClientState.IN_GAME) {
                 assert msg instanceof MoveMessage;
                 MoveMessage specificMessage = (MoveMessage) msg;
                 try {
@@ -250,6 +253,8 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 } catch (GameEndedException ignored) {
                     // code here
                 }
+            } else {
+                sendMsgToClient(sender, new InvalidCommandMessage());
             }
         } catch (ExistingLobbyException e) {
             sendMsgToClient(sender, new ExistingLobbyMessage());

@@ -64,7 +64,7 @@ public class Player {
      * calculatePersonalPoints is the method used by game to retrive the points that a player has done by completing his personal goal
      * @return the points calculated by the personal goal based on the shelf of the player
      */
-    public int calculatePersonalPoints() throws OutOfBoundException {
+    public int calculatePersonalPoints() {
         return personalGoal.calculatePoints(shelf.getShelf());
     }
 

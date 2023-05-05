@@ -162,6 +162,9 @@ public class SocketClient extends GenericClient{
                         view.displayServerMsg(((UserDisconnectedMessage) msg).getUser() + " disconnected");
                         view.displayServerMsg(((UserDisconnectedMessage) msg).getCurrentPlayer() + "'s turn");
                     }
+                    if (((ServerMessage) msg).getType().equals("InvalidCommandMessage")) {
+                        view.displayServerMsg("Command not recognized, try again");
+                    }
                 }
 
             }

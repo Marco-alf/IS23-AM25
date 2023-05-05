@@ -13,6 +13,7 @@ public class GameInfo extends Data{
     private final TilesType[][] newBoard;
     private final int commonGoal1Points;
     private final int commonGoal2Points;
+    private final int personalGoalPoints;
     private final boolean gameEnded;
 
     public GameInfo(Game game) {
@@ -23,6 +24,7 @@ public class GameInfo extends Data{
         this.adjPoints = game.getAdjPoints();
         this.commonGoal1Points = game.getCommonGoal1Points();
         this.commonGoal2Points = game.getCommonGoal2Points();
+        this.personalGoalPoints = game.getPersonalPoints();
         this.gameEnded = game.getEndGame();
     }
 
@@ -44,6 +46,9 @@ public class GameInfo extends Data{
 
     public int getCommonGoal2Points() {
         return commonGoal2Points;
+    }
+    public int getPersonalGoalPoints () {
+        return personalGoalPoints;
     }
 
     public int getAdjPoints() {

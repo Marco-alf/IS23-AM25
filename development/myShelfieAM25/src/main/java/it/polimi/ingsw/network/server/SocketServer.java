@@ -96,6 +96,14 @@ public class SocketServer implements Runnable{
         }
     }
 
+    public void setInGameStatus (String lobby) {
+        for (ClientHandler clientHandler : clientHandlers) {
+            if (clientHandler.getLobby().getLobbyName().equals(lobby)) {
+                clientHandler.setStatus(ClientState.IN_GAME);
+            }
+        }
+    }
+
     /**
      * removeClient remove the connection with a client that uses the TCP Socket
      * @param clientHandler is the handler of the connections that are using the socket

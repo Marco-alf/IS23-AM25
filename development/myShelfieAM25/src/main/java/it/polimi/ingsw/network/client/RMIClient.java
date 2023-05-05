@@ -142,6 +142,9 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
                 view.displayServerMsg(((UserDisconnectedMessage) msg).getUser() + " disconnected");
                 view.displayServerMsg(((UserDisconnectedMessage) msg).getCurrentPlayer() + "'s turn");
             }
+            if (msg.getType().equals("InvalidCommandMessage")) {
+                view.displayServerMsg("Command not recognized, try again");
+            }
         }
 
     }

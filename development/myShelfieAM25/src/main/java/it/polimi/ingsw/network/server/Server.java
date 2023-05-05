@@ -69,5 +69,10 @@ public class Server implements Runnable{
         rmiServer.sendMsgToAllRMI(arg, lobby);
     }
 
+    public void setInGameStatus (String lobby) {
+        socketServer.setInGameStatus(lobby);
+        rmiServer.setInGameStatus(lobby);
+    }
+
 
 }
