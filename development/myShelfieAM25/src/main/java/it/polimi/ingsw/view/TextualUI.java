@@ -1,6 +1,5 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.PersonalGoal;
 import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
@@ -22,22 +21,16 @@ import static java.lang.Thread.sleep;
 public class TextualUI implements ViewInterface {
     private final Integer FRAMESB = 25;
     private final Integer FRAMESF = 15;
-
     private final Integer GAMEB = 11;
     private final Integer GAMEF = 0;
-
     private final Integer CATSB = 112;
     private final Integer CATSF = 0;
-
     private final Integer BOOKSB = 230;
     private final Integer BOOKSF = 0;
-
     private final Integer PLANTSB = 126;
     private final Integer PLANTSF = 15;
-
     private final Integer TROPHIESB = 44;
     private final Integer TROPHIESF = 0;
-
     private final Integer BROWN = 59; //52
     private final Scanner scanner = new Scanner(System.in);
     private GenericClient client;
@@ -46,7 +39,9 @@ public class TextualUI implements ViewInterface {
     private Map<String, Integer[]> commonGoals = new HashMap<>();
     private String commonGoal1;
     private String commonGoal2;
+    private Integer personalPoints;
     private String nickname;
+    private String curPlayer;
     private PersonalGoal personalGoal;
     private final List<ChatUpdateMessage> messages = new ArrayList<>();
     private static final List<String> commands = List.of("/create", "/join", "/retrive","/chat","/showchat", "/help", "/move", "/quit");
@@ -54,7 +49,6 @@ public class TextualUI implements ViewInterface {
     private static final String whiteBack = "\u001B[48;5;" + 15 + "m";
     private static final String red = "\u001B[38;5;" + 9 + "m";
     private final static String yellow = "\u001B[38;5;" + 11 + "m";
-
     private static final String out = rst + yellow + " > " + rst;
     private static final String in = rst + "\u001B[38;5;" + 6 + "m >>> ";
     private static final String bold = "\u001B[1m";
@@ -91,7 +85,7 @@ public class TextualUI implements ViewInterface {
         while (true) {
             inputCommand = askCommand();
             switch (inputCommand) {
-                case "/create":
+                case "/create" -> {
                     if (client.getIsInLobbyStatus()) {
                         System.out.print(out + "You are already in a lobby\n");
                     } else {
@@ -108,15 +102,15 @@ public class TextualUI implements ViewInterface {
                         }
                         client.sendMsgToServer(clientMessageC);
                     }
-                    break;
-                case "/retrive":
+                }
+                case "/retrive" -> {
                     RetrieveLobbiesMessage clientMessageR = new RetrieveLobbiesMessage();
                     if (client instanceof RMIClient) {
                         clientMessageR.setRmiClient((RMIClient) client);
                     }
                     client.sendMsgToServer(clientMessageR);
-                    break;
-                case "/join":
+                }
+                case "/join" -> {
                     if (client.getIsInLobbyStatus()) {
                         System.out.print(rst + err + "already in a lobby!\n");
                     } else {
@@ -130,8 +124,8 @@ public class TextualUI implements ViewInterface {
                         }
                         client.sendMsgToServer(clientMessageJ);
                     }
-                    break;
-                case "/chat":
+                }
+                case "/chat" -> {
                     if (client.getIsInLobbyStatus()) {
                         System.out.print(out + "You have entered the chat. Write a message\n" + in);
                         String chatMessage = askChatMessage();
@@ -144,31 +138,30 @@ public class TextualUI implements ViewInterface {
                         client.sendMsgToServer(clientMessageCh);
 
                     } else {
-                        System.out.print(rst + err +"You have to be inside a lobby to use the chat\n");
+                        System.out.print(rst + err + "You have to be inside a lobby to use the chat\n");
                     }
-                    break;
-                case "/showchat":
+                }
+                case "/showchat" -> {
                     if (client.getIsInLobbyStatus()) {
                         displayChat();
+                    } else {
+                        System.out.print(rst + err + "You have to be inside a lobby to use the chat\n");
                     }
-                    else {
-                        System.out.print(rst + err +"You have to be inside a lobby to use the chat\n");
-                    }
-                    break;
-                case "/move":
+                }
+                case "/move" -> {
                     if (client.getIsInLobbyStatus()) {
                         List<Tile> tiles = new ArrayList<>();
                         System.out.println(out + "Choose up to 3 tiles from the board to insert in your bookshelf");
                         System.out.print(out + "For each tile use the format x,y (x is the horizontal axis, y is the vertical axis) then press enter\n");
-                        System.out.print(out + "To end the sequenze press enter twice\n"+ in);
+                        System.out.print(out + "To end the sequenze press enter twice\n" + in);
                         getMoves(tiles);
                         System.out.print(out + "Choose the column of the bookshelf where you want to place the tiles\n" + in);
                         int column;
                         boolean flag = false;
-                        while(!flag){
+                        while (!flag) {
                             try {
                                 column = Integer.parseInt(scanner.nextLine());
-                                if(column >= 0 && column < 5){
+                                if (column >= 0 && column < 5) {
                                     flag = true;
                                     MoveMessage clientMessageM = new MoveMessage();
                                     clientMessageM.setTiles(tiles);
@@ -177,20 +170,18 @@ public class TextualUI implements ViewInterface {
                                         clientMessageM.setRmiClient((RMIClient) client);
                                     }
                                     client.sendMsgToServer(clientMessageM);
-                                }
-                                else{
+                                } else {
                                     System.out.print(rst + err + "Invalid Number, retry\n" + in);
                                 }
-                            }catch(NumberFormatException e){
+                            } catch (NumberFormatException e) {
                                 System.out.print(rst + err + "Invalid Number, retry\n" + in);
                             }
                         }
+                    } else {
+                        System.out.print(rst + err + "You have to be inside a game to make a move\n");
                     }
-                    else {
-                        System.out.print(rst + err +"You have to be inside a game to make a move\n");
-                    }
-                    break;
-                case "/quit":
+                }
+                case "/quit" -> {
                     if (client.getIsInLobbyStatus()) {
                         System.out.print(out + bold + "Are you sure? [y/N]\n" + in);
                         String quit = scanner.nextLine();
@@ -202,20 +193,18 @@ public class TextualUI implements ViewInterface {
                             client.sendMsgToServer(clientMessageQ);
                             if (client instanceof RMIClient) {
                                 client = new RMIClient("localhost", 1099, this);
-                            } else if (client instanceof SocketClient){
+                            } else if (client instanceof SocketClient) {
                                 client = new SocketClient("localhost", 8088, this);
                             }
                             client.init();
                             System.out.print(out + " ");
                         }
 
+                    } else {
+                        System.out.println(rst + err + "You have to be inside a lobby to use this feature");
                     }
-                    else {
-                        System.out.println(rst + err +"You have to be inside a lobby to use this feature");
-                    }
-                    break;
-                case "/help":
-                    printCommands();
+                }
+                case "/help" -> printCommands();
             }
             try {
                 sleep(100);
@@ -227,18 +216,17 @@ public class TextualUI implements ViewInterface {
 
     }
 
-
     public void restoreWindow(){
         System.out.println();
         System.out.print("\033[H\033[2J");
         System.out.flush();
-        System.out.println(yellow + "" +
-                "███╗   ███╗██╗   ██╗        ███████╗██╗  ██╗███████╗██╗     ███████╗██╗███████╗\n"+
-                "████╗ ████║╚██╗ ██╔╝        ██╔════╝██║  ██║██╔════╝██║     ██╔════╝██║██╔════╝\n"+
-                "██╔████╔██║ ╚████╔╝         ███████╗███████║█████╗  ██║     █████╗  ██║█████╗\n"+
-                "██║╚██╔╝██║  ╚██╔╝          ╚════██║██╔══██║██╔══╝  ██║     ██╔══╝  ██║██╔══╝\n"+
-                "██║ ╚═╝ ██║   ██║           ███████║██║  ██║███████╗███████╗██║     ██║███████╗\n"+
-                "╚═╝     ╚═╝   ╚═╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚═╝╚══════╝\n\n");
+        System.out.println(yellow  +
+                "                             ███╗   ███╗██╗   ██╗        ███████╗██╗  ██╗███████╗██╗     ███████╗██╗███████╗\n"+
+                "                             ████╗ ████║╚██╗ ██╔╝        ██╔════╝██║  ██║██╔════╝██║     ██╔════╝██║██╔════╝\n"+
+                "                             ██╔████╔██║ ╚████╔╝         ███████╗███████║█████╗  ██║     █████╗  ██║█████╗\n"+
+                "                             ██║╚██╔╝██║  ╚██╔╝          ╚════██║██╔══██║██╔══╝  ██║     ██╔══╝  ██║██╔══╝\n"+
+                "                             ██║ ╚═╝ ██║   ██║           ███████║██║  ██║███████╗███████╗██║     ██║███████╗\n"+
+                "                             ╚═╝     ╚═╝   ╚═╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚═╝╚══════╝\n");
     }
     public void getMoves(List<Tile> tiles){
         for(int i=0; i < 3; i++){
@@ -283,27 +271,25 @@ public class TextualUI implements ViewInterface {
             shelves.put(info.getCurrentPlayer(), info.getShelf());
             commonGoals.replace(info.getCurrentPlayer(), new Integer[]{info.getCommonGoal1Points(), info.getCommonGoal2Points()});
         }
+        curPlayer = info.getCurrentPlayer();
+        //personalPoints = info.
     }
-
     public void displayLobbies (List<String> lobbies) {
         System.out.println(rst + bold + out + "Available lobbies:" + rst);
         for (String lobby : lobbies) {
-            System.out.println(rst + "   " +lobby);
+            System.out.println(rst + "   "+ out +lobby);
         }
     }
-
     public void displayCreatedLobbyMsg (CreatedLobbyMessage msg) {
         System.out.println(out + "A lobby has been created");
         System.out.println("   Lobby name: " + bold + msg.getLobbyName() + unBold);
         System.out.print("   Lobby creator: " + bold + msg.getName() + unBold + "\n");
     }
-
     public void displayChat () {
         for (ChatUpdateMessage message : messages) {
-            System.out.println(out + bold + message.getSender() + " at " + message.getTimestamp() + unBold + ": \n" + message.getContent());
+            System.out.println(out + bold + message.getSender() + " at " + message.getTimestamp() + unBold + ": \n      " + message.getContent());
         }
     }
-
     public void displayShelf (TilesType[][] shelf) {
         System.out.print(rst + yellow + "+");
         for (int j = 0; j < 5; j++) {
@@ -325,7 +311,6 @@ public class TextualUI implements ViewInterface {
         }
         System.out.println(rst + "   0     1     2     3     4   ");
     }
-
     public void displayInLineShelf () {
         TilesType[][] shelf;
 
@@ -378,7 +363,6 @@ public class TextualUI implements ViewInterface {
         System.out.println();
 
     }
-
     public void displayBoard (TilesType[][] matrix) {
         restoreWindow();
         System.out.println("\u001B[38;5;" + 246 +"m         0     1     2     3     4     5     6     7     8   " );
@@ -404,7 +388,6 @@ public class TextualUI implements ViewInterface {
         }
         System.out.print(rst);
     }
-
     public void displayInitialGameInfo () {
         //System.out.println(out + "The game has started \n" + in);
         System.out.println();
@@ -422,30 +405,18 @@ public class TextualUI implements ViewInterface {
         System.out.print(info);
 
         output = personalGoalConstructor(personalGoal);
+        output = concatStringArrays(output, commonGoalConstructor(commonGoal1, 1));
+        output = concatStringArrays(output, commonGoalConstructor(commonGoal2, 2));
+
         info = convertStringArray(output);
 
         System.out.println(info);
-
     }
-    /*
-    public void displayGameInfo () {
-        displayBoard(board);
-        System.out.println();
-        //for (String name : shelves.keySet()) {
-            //System.out.println(bold + name + "'s bookshelf: "+ unBold);
-            //System.out.println();
-            //displayShelf(shelves.get(name));
-        //}
-        displayInLineShelf();
-        System.out.println();
-    }*/
-
     public Tile getTiles (String coords) {
         int x = Integer.parseInt(String.valueOf(coords.charAt(0)));
         int y = Integer.parseInt(String.valueOf(coords.charAt(2)));
         return new Tile(board[y][x], x, y);
     }
-
     public void printTile (TilesType type) {
         if(type==null) {
             System.out.print((char) 27 + "[48;5;" + BROWN + "m     ");
@@ -477,7 +448,6 @@ public class TextualUI implements ViewInterface {
         }
         System.out.print("\u001B[0m");
     }
-
     public String getTile (TilesType type) {
         String s = "";
         if(type==null) {
@@ -511,20 +481,16 @@ public class TextualUI implements ViewInterface {
         s += "\u001B[0m";
         return s;
     }
-
     public void addMessage (ChatUpdateMessage msg) {
         messages.add(msg);
     }
-
     public void displayJoinedMsg (JoinedMessage msg) {
         System.out.print(out + "You joined " + msg.getLobbyName() + "\n" + in);
     }
-
     public void displayServerMsg (String string) {
         System.out.println(rst + err + string);
         System.out.print(in);
     }
-
     public String askCommand() {
         String command;
         command = scanner.nextLine();
@@ -535,7 +501,6 @@ public class TextualUI implements ViewInterface {
         }
         return command;
     }
-
     public String askName() {
         String name;
         String confirm;
@@ -548,13 +513,11 @@ public class TextualUI implements ViewInterface {
         nickname = name;
         return name;
     }
-
     public String askChatMessage() {
         String chatMessage;
         chatMessage = scanner.nextLine();
         return chatMessage;
     }
-
     public String askLobbyName() {
         String name;
         String confirm;
@@ -566,7 +529,6 @@ public class TextualUI implements ViewInterface {
         } while(confirm.equals("n") || confirm.equals("N"));
         return name;
     }
-
     public int askNumPlayers() {
         int numPlayers;
 
@@ -577,9 +539,8 @@ public class TextualUI implements ViewInterface {
         }
         return numPlayers;
     }
-
     public String[] boardConstructor (TilesType[][] matrix) {
-        String[] board = new String[21];
+        String[] board = new String[20];
         board[0] = "\u001B[38;5;" + 246 +"m        0     1     2     3     4     5     6     7     8   ";
 
         board[1] = rst + yellow + "     +";
@@ -600,40 +561,46 @@ public class TextualUI implements ViewInterface {
             }
             h++;
         }
-        board[20] = rst;
-        for(int i = 0; i < 61; i++) board[20] += " ";
         return board;
     }
     public String[] shelfConstructor(TilesType[][] matrix, String player, int goal1, int goal2) {
-        String[] shelf = new String[19]; //length = 31 + space
+        String[] shelf = new String[18]; //length = 31 + space
         shelf[0] = rst;
         int l;
-        l = player.length();
+        int delta = 0;
+        shelf[1] =rst + "    " + bold + player + ": " + unBold + rst;
+        if(player.equals(nickname)){
+            shelf[1] += red + bold + "< you" + rst;
+            delta = 5;
+        }
+        if (player.equals(curPlayer)) {
+            shelf[1] += yellow + bold + "< cur" + rst;
+            delta+=5;
+        }
+        l = player.length() + delta;
         if(l < 37) l = 37;
         for(int i = 0; i < l; i++) {
             shelf[0] += " ";
         }
-        shelf[1] =rst + "    " + bold + player + ":" + unBold;
-        for(int i = player.length() + 5; i < l; i++) {
+
+        for(int i = (player.length() + delta + 6); i < l; i++) {
             shelf[1] += " ";
         }
-        shelf[2] = rst + "      common goal 1:  " + whiteBack + red + bold + " " + commonGoals.get(player)[0].toString() + " " + unBold + rst;
-        for(int i = 25; i < l; i++){
+        shelf[2] = rst + "      common goals 1: " + whiteBack + red + bold + " " + commonGoals.get(player)[0].toString() + " "
+                + unBold + rst + "  2: " + whiteBack + red + bold + " " + commonGoals.get(player)[0].toString() + " " + rst;
+        for(int i = 33; i < l; i++){
             shelf[2] += " ";
         }
-        shelf[3] = rst + "      common goal 2:  " + whiteBack + red + bold + " " + commonGoals.get(player)[1].toString() + " " + unBold + rst;
-        for(int i = 25; i < l; i++){
+
+        shelf[3] = rst + "      shelf:";
+        for(int i = 12; i < l; i++){
             shelf[3] += " ";
         }
-        shelf[4] = rst + "      shelf:";
-        for(int i = 12; i < l; i++){
-            shelf[4] += " ";
-        }
-        shelf[5] = rst + yellow + "      +";
+        shelf[4] = rst + yellow + "      +";
         for (int j = 0; j < 5; j++) {
-            shelf[5] += "-----+";
+            shelf[4] += "-----+";
         }
-        int h = 6;
+        int h = 5;
         for (int i = 0; i < 6; i ++) {
             shelf[h] = rst + "    " + i + yellow + " |";
             for (int j = 0; j < 5; j++) {
@@ -648,7 +615,7 @@ public class TextualUI implements ViewInterface {
             }
             h++;
         }
-        shelf[18] = rst + "         0     1     2     3     4   ";
+        shelf[17] = rst + "         0     1     2     3     4   ";
         return shelf;
     }
     public String[] concatStringArrays(String[] left, String[] right){
@@ -692,82 +659,507 @@ public class TextualUI implements ViewInterface {
     public String[] personalGoalConstructor(PersonalGoal personalGoal){
         String[] shelf = new String[17]; //length = 31 + 7 space
         TilesType[][] matrix = personalGoal.getMatrix();
-
+        int length = 55;
         shelf[0] = rst;
-        for(int i = 0; i < 38; i++) {
+        for(int i = 0; i < length; i++) {
             shelf[0] += " ";
         }
-        shelf[1] =rst + "   your personal goal:                ";
-
-        shelf[2] = rst + yellow + "       +";
-        for (int j = 0; j < 5; j++) {
-            shelf[2] += "-----+";
+        shelf[1] =rst + bold + "   your personal goal:                                 " + unBold;
+        shelf[2] = rst + "    points: ";
+        for (int j = 12; j < length; j++) {
+            shelf[2] += " ";
         }
-        int h = 3;
+        shelf[3] = rst + yellow + "       +";
+        for (int j = 0; j < 5; j++) {
+            shelf[3] += "-----+";
+        }
+        shelf[3] += "                 ";
+        int h = 4;
         for (int i = 0; i < 6; i ++) {
             shelf[h] = rst + "     " + i + yellow + " |";
             for (int j = 0; j < 5; j++) {
                 shelf[h] += getTile(matrix[i][j]);
                 shelf[h] += rst + yellow + "|";
             }
+            for(int j = 38; j < length; j++) shelf[h]+=" ";
             h++;
             shelf[h] = "       +";
             for (int j = 0; j < 5; j++) {
                 shelf[h] +=  "-----+";
             }
+            for(int j = 38; j < length; j++) shelf[h]+=" ";
             h++;
         }
-        shelf[15] = rst + "          0     1     2     3     4   ";
-        shelf[16] = rst + "common goals: 1 -> "+commonGoal1+"   2 -> "+commonGoal2;
+        shelf[16] = rst + "          0     1     2     3     4                    ";
+        //shelf[17] = rst + "common goals: 1 -> "+commonGoal1+"   2 -> "+commonGoal2;
         return shelf;
     }
-    public String[] commonGoalConstructor(String commmonGoal){
-        String[] goal;
+    public String[] commonGoalConstructor(String commmonGoal, int pos){
+        String[] goal = new String[16];;
         int length = 55;
-        switch (commmonGoal){
-            case "ColumnsGoal (isRegular: false)":
-                goal = new String[20];
+        int h;
+        switch (commmonGoal) {
+            case "ColumnsGoal (isRegular: true)" -> {
                 goal[0] = "";
-                for(int i = 0; i < length; i++) goal[0] += " ";
-                goal[1] = rst + bold + "Common goal 1:";
-                for(int i = 14; i < length; i++){
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
                     goal[1] += " ";
                 }
                 goal[2] = rst + "  3 column with at most 3 different types of tile";
-                for(int i = 49; i < length; i++){
+                for (int i = 49; i < length; i++) {
                     goal[2] += " ";
                 }
-                int h = 3;
-                for(int y = 0; y < 6; y++){
-                    //goal[h] =
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if (j%2 == 0) goal[h] += rst + whiteBack + bold + red + "  ~  " + rst;
+                        //else if (j == 2) goal[h] += rst + "\u001B[48;5;187m" + bold + red + "  ~  " + rst;
+                        //else if (j == 4) goal[h] += rst + "\u001B[48;5;145m" + bold + red + "  ~  " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
                 }
-                break;
-            case "ColumnsGoal (isRegular: true)":
-                break;
-            case "CornerGoal":
-                break;
-            case "EightEqualsGoal":
-                break;
-            case "FullDiagonalGoal":
-                break;
-            case "RowsGoal (isRegular: true)":
-                break;
-            case "RowsGoal (isRegular: false)":
-                break;
-            case "TriangularMatrixGoal":
-                break;
-            case "TwoEqualSquareGoal":
-                break;
-            case "XGoal":
-                break;
-            case "EqualGroupsGoal (4 groups, 4 in size)":
-                break;
-            case "EqualGroupsGoal (6 groups, 2 in size)":
-                break;
-            default:
-
-
+            }
+            case "ColumnsGoal (isRegular: false)" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  2 column with all different types of tile";
+                for (int i = 49; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if (j == 1 || j == 3) goal[h] += rst + whiteBack + bold + red + "  "+ (char)8800 +"  " + rst;
+                        //else if (j == 3) goal[h] += rst + "\u001B[48;5;181m" + bold + red + "  "+ (char)8800 +"  " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
+            case "CornerGoal" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  all corner of the shelf are of the same type";
+                for (int i = 46; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if ((i == 0 || i == 5) && (j == 0 || j == 4))
+                            goal[h] += rst + whiteBack + bold + red + "  =  " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
+            case "EightEqualsGoal" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  eight tiles are of the same tile type";
+                for (int i = 39; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if ((i == 1 && j % 2 == 1) || ((i == 3 || i == 5) && j % 2 == 0))
+                            goal[h] += rst + whiteBack + bold + red + "  =  " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
+            case "FullDiagonalGoal" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  a full diagonal has only one tile type";
+                for (int i = 40; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if (i == (j + 1)) goal[h] += rst + whiteBack + bold + red + "  =  " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
+            case "RowsGoal (isRegular: true)" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  4 rows with at most 3 different type of tile";
+                for (int i = 46; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if (i != 1 && i != 3) goal[h] += rst + whiteBack + bold + red + "  ~  " + rst;
+                        //if (i == 2) goal[h] += rst + "\u001B[48;5;187m" + bold + red + "     " + rst;
+                        //if (i == 4) goal[h] += rst + "\u001B[48;5;141m" + bold + red + "     " + rst;
+                        //if (i == 5) goal[h] += rst + "\u001B[48;5;110m" + bold + red + "     " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
+            case "RowsGoal (isRegular: false)" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  2 rows with all different type of tile";
+                for (int i = 40; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = " ";
+                for (int i = 0; i < length; i++) {
+                    goal[3] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if (i == 0 || i == 5) goal[h] += rst + whiteBack + bold + red + "  "+ (char)8800 +"  " + rst;
+                        //else if (i == 5) goal[h] += rst + "\u001B[48;5;187m" + bold + red + "  "+ (char)8800 +"  " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
+            case "TriangularMatrixGoal" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  the shelf forms a triangle as in the figure";
+                for (int i = 45; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if (i > j) goal[h] += rst + whiteBack + "     " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
+            case "TwoEqualSquareGoal" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  two squares of at least 4 tiles each";
+                for (int i = 38; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if ((i > 0 && i < 3 && j < 2) || (i > 3 && j > 1 && j < 4))
+                            goal[h] += rst + whiteBack + bold + red + "  =  " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
+            case "XGoal" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  an X shape made of tiles of the same type";
+                for (int i = 43; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if ((i == 3 && j == 2) || (i == 2 && j == 1) || (i == 2 && j == 3) || (i == 4 && j == 1) || (i == 4 && j == 3))
+                            goal[h] += rst + whiteBack + bold + red + "  =  " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
+            case "EqualGroupsGoal (4 groups, 4 in size)" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  4 groups of different shapes with 4 equal tiles";
+                for (int i = 49; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if (i > 1 && j == 0) goal[h] += rst + whiteBack + bold + red + "  =  " + rst;
+                        else if (i == 0 && j > 0) goal[h] += rst + "\u001B[48;5;189m" + bold + red + "  =  " + rst;
+                        else if ((i == 2 && j > 1) || (i == 3 && j == 2))
+                            goal[h] += rst + "\u001B[48;5;146m" + bold + red + "  =  " + rst;
+                        else if (i > 3 && j > 2) goal[h] += rst + "\u001B[48;5;140m" + bold + red + "  =  " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
+            case "EqualGroupsGoal (6 groups, 2 in size)" -> {
+                goal[0] = "";
+                for (int i = 0; i < length; i++) goal[0] += " ";
+                goal[1] = rst + bold + "Common goal " + pos + ":";
+                for (int i = 14; i < length; i++) {
+                    goal[1] += " ";
+                }
+                goal[2] = rst + "  6 couples of equal tiles";
+                for (int i = 26; i < length; i++) {
+                    goal[2] += " ";
+                }
+                goal[3] = rst + yellow + "  +";
+                for (int i = 0; i < 5; i++) goal[3] += "-----+";
+                for (int i = 33; i < length; i++) goal[3] += " ";
+                h = 4;
+                for (int i = 0; i < 6; i++) {
+                    goal[h] = rst + yellow + "  |";
+                    for (int j = 0; j < 5; j++) {
+                        if (i > 3 && j == 0) goal[h] += rst + whiteBack + bold + red + "  =  " + rst;
+                        else if (i == 0 && j < 2) goal[h] += rst + "\u001B[48;5;189m" + bold + red + "  =  " + rst;
+                        else if (i == 1 && (j == 2 || j == 3))
+                            goal[h] += rst + "\u001B[48;5;146m" + bold + red + "  =  " + rst;
+                        else if ((i == 3 || i == 2) && j == 2)
+                            goal[h] += rst + "\u001B[48;5;187m" + bold + red + "  =  " + rst;
+                        else if (i == 4 && j < 3)
+                            goal[h] += rst + "\u001B[48;5;254m" + bold + red + "  =  " + rst;
+                        else if (i > 3 && j > 2) goal[h] += rst + "\u001B[48;5;194m" + bold + red + "  =  " + rst;
+                        else goal[h] += rst + getTile(null);
+                        goal[h] += rst + yellow + "|";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                    goal[h] = rst + yellow + "  +";
+                    for (int j = 0; j < 5; j++) {
+                        goal[h] += "-----+";
+                    }
+                    for (int k = 33; k < length; k++) {
+                        goal[h] += " ";
+                    }
+                    h++;
+                }
+            }
         }
-        return goal = new String[5];
+        return goal;
     }
+
 }
