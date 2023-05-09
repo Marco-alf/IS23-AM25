@@ -26,6 +26,7 @@ public class ColumnsGoal extends CommonGoal {
     public ColumnsGoal(int numPlayers, boolean isRegular) throws InvalidPlayerNumberException {
         super(numPlayers);
         this.isRegular = isRegular;
+        type = "ColumnsGoal (isRegular: "+ isRegular +")";
     }
 
     /**

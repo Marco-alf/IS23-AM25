@@ -15,6 +15,7 @@ public class CornerGoal extends CommonGoal{
      */
     public CornerGoal(int numPlayers) throws InvalidPlayerNumberException {
             super(numPlayers);
+            type = "CornerGoal";
     }
 
     /**

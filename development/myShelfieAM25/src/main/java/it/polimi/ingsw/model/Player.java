@@ -56,11 +56,15 @@ public class Player {
         return name;
     }
 
+    public PersonalGoal getPersonalGoal() {
+        return personalGoal;
+    }
+
     /**
      * calculatePersonalPoints is the method used by game to retrive the points that a player has done by completing his personal goal
      * @return the points calculated by the personal goal based on the shelf of the player
      */
-    public int calculatePersonalPoints() throws OutOfBoundException {
+    public int calculatePersonalPoints() {
         return personalGoal.calculatePoints(shelf.getShelf());
     }
 
@@ -78,6 +82,9 @@ public class Player {
      */
     public TilesType[][] getShelf(){
         return shelf.getShelf();
+    }
+    public int calculateAdjPoints () {
+        return shelf.calculatePoints();
     }
 
     /**
@@ -105,6 +112,11 @@ public class Player {
 
         List<TilesType> tileList = board.takeTiles(tiles);
         shelf.add(tileList, shelfColumn);
+        shelf.setFull();
+    }
+
+    public boolean isBookshelfFull(){
+        return shelf.isFullStatus();
     }
 
     /**

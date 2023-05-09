@@ -1,9 +1,6 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.exception.ExistingLobbyException;
-import it.polimi.ingsw.exception.FullLobbyException;
-import it.polimi.ingsw.exception.NameTakenException;
-import it.polimi.ingsw.exception.NonExistingLobbyException;
+import it.polimi.ingsw.exception.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +33,13 @@ public class GameBroker {
             throw new RuntimeException(e);
         }
     }
+
+    public void closeLobby(Lobby lobby) {
+        lobbies.remove(lobby.getLobbyName());
+        System.out.println("lobby closed");
+
+    }
+
     public void addPlayer(String lobby, String player) throws NonExistingLobbyException, NameTakenException, FullLobbyException {
         if(lobbies.get(lobby)==null) throw new NonExistingLobbyException();
         lobbies.get(lobby).addPlayer(player);

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.exception.GameEndedException;
 import it.polimi.ingsw.exception.IllegalMoveException;
 import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
@@ -17,7 +18,7 @@ public class VirtualPlayer {
         this.lobby = lobby;
     }
 
-    public void placeTiles(List<Tile> tiles, int shelfColumn) throws IllegalMoveException {
+    public void placeTiles(List<Tile> tiles, int shelfColumn) throws IllegalMoveException, GameEndedException {
         lobby.moveTiles(tiles, shelfColumn, name);
     }
 

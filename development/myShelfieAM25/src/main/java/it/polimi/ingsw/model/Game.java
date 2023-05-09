@@ -26,6 +26,9 @@ public class Game
     /**
      * currentPlayer is the reference to the player that is supposed to move next, the player of the current turn*/
     private Player currentPlayer;
+    private Player firstPlayer;
+    private boolean lastRound = false;
+    private boolean endGame = false;
     
 
     /**
@@ -55,6 +58,8 @@ public class Game
 
         /* assumption : game starts with every player online and not disconnected */
         onlinePlayers = new ArrayList<>(this.players);
+        firstPlayer = onlinePlayers.get(0);
+        currentPlayer = firstPlayer;
     }
 
     /**
@@ -101,6 +106,7 @@ public class Game
             throw new PlayerNotOnlineException();
         }
         p.moveTiles(tiles, shelfColumn);
+        setLastRound();
     }
 
     /**
@@ -109,6 +115,60 @@ public class Game
      */
     public List<String> getOnlinePlayers(){
         return onlinePlayers.stream().map(Player::getName).collect(Collectors.toList());
+    }
+
+    public String getCurrentPlayer() {
+        return currentPlayer.getName();
+    }
+
+    public TilesType[][] getShelf () {
+        return currentPlayer.getShelf();
+    }
+
+    public Map<String, TilesType[][]> getShelves () {
+        Map<String, TilesType[][]> shelves = new HashMap<>();
+        for (Player player : players) {
+            shelves.put(player.getName(), player.getShelf());
+        }
+        return shelves;
+    }
+
+    public int getAdjPoints () {
+        return currentPlayer.calculateAdjPoints();
+    }
+    public int getPersonalPoints () {
+        return currentPlayer.calculatePersonalPoints();
+    }
+
+    public List<String> getCommonGoals () {
+        List<String> commonGoals = new ArrayList<>();
+        for (int i = 0; i < board.getCommonGoals().length; i++) {
+            commonGoals.add(board.getCommonGoals()[i].getType());
+        }
+        return commonGoals;
+    }
+
+    public Map<String, PersonalGoal> getPersonalGoals () {
+        Map<String, PersonalGoal> personalGoals = new HashMap<>();
+        for (Player player : players) {
+            personalGoals.put(player.getName(), player.getPersonalGoal());
+        }
+        return personalGoals;
+    }
+
+    public TilesType[][] getNewBoard () {
+        return board.getEnumArray();
+    }
+
+    public int getCommonGoal1Points () {
+        return currentPlayer.calculateCommonPoints()[0];
+    }
+
+    public int getCommonGoal2Points () {
+        return currentPlayer.calculateCommonPoints()[1];
+    }
+    public boolean getEndGame () {
+        return endGame;
     }
 
     /**
@@ -150,5 +210,17 @@ public class Game
                 return p;
         }
         throw new InvalidPlayerNameException();
+    }
+
+    public boolean isLastRound() {
+        return lastRound;
+    }
+
+    private void setLastRound() {
+        if (currentPlayer.isBookshelfFull()) lastRound = true;
+    }
+
+    public void setGameEnded () {
+        endGame = true;
     }
 }

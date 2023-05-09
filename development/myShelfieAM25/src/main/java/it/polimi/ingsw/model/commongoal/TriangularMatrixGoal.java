@@ -16,6 +16,7 @@ public class TriangularMatrixGoal extends CommonGoal{
      */
     public TriangularMatrixGoal(int numPlayers) throws InvalidPlayerNumberException {
         super(numPlayers);
+        type = "TriangularMatrixGoal";
     }
 
     /**

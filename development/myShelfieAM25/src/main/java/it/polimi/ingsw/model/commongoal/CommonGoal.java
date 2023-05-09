@@ -29,6 +29,7 @@ public abstract class CommonGoal {
      * ArrayList players matches the index of points in this array
      */
     protected int[] points; // stack of points, it varies with the number of players in the game
+    protected String type;
 
     /**
      * The constructor initializes the ArrayList players and creates the array points based on the number
@@ -52,6 +53,10 @@ public abstract class CommonGoal {
                 throw new InvalidPlayerNumberException();
         }
 
+    }
+
+    public String getType () {
+        return type;
     }
 
     /**

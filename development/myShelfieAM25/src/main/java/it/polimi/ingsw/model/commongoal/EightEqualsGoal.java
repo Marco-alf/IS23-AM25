@@ -18,6 +18,7 @@ public class EightEqualsGoal extends CommonGoal{
      */
     public EightEqualsGoal(int numPlayers) throws InvalidPlayerNumberException {
         super(numPlayers);
+        type = "EightEqualsGoal";
     }
 
     /**
