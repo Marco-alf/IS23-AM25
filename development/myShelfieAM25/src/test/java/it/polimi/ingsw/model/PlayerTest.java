@@ -62,11 +62,7 @@ class PlayerTest {
             fail();
         }
 
-        try {
-            assertEquals(0, p1.calculatePersonalPoints());
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        assertEquals(0, p1.calculatePersonalPoints());
 
         //seconda mossa
         Tile tileOne2 = new Tile(TilesType.CATS, 3, 2);
@@ -91,11 +87,7 @@ class PlayerTest {
             fail();
         }
 
-        try {
-            assertEquals(1, p1.calculatePersonalPoints());
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        assertEquals(1, p1.calculatePersonalPoints());
     }
 
     @Test

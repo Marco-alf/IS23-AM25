@@ -139,10 +139,9 @@ public class Lobby {
     }
 
     public boolean waitForPlayers () {
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 2000; i++) {
             try  {
-                TimeUnit.SECONDS.sleep(1);
-                System.err.println(i);
+                TimeUnit.MILLISECONDS.sleep(100);
                 if (onlinePlayers.size() - disconnectedPlayers.size() > 1) return true;
                 if (onlinePlayers.size() - disconnectedPlayers.size() == 0) return false;
             } catch (InterruptedException ignored) {

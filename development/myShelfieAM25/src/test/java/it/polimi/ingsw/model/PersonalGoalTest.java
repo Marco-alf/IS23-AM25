@@ -16,18 +16,9 @@ class PersonalGoalTest {
                 {null, null, null, null, null},
                 {null, null, TilesType.TROPHIES, null, null}
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL1.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        assertEquals(12, PersonalGoal.PERSONALGOAL1.calculatePoints(shelf));
 
-        shelf = new TilesType[][]{{TilesType.PLANTS},{TilesType.CATS}};
-        try{
-            PersonalGoal.PERSONALGOAL1.calculatePoints(shelf);
-            fail();
-        } catch (OutOfBoundException ignored){
-        }
+
 
         shelf = new TilesType[][]{{TilesType.PLANTS, TilesType.PLANTS, TilesType.PLANTS, null, null},
                 {TilesType.BOOKS, TilesType.PLANTS, TilesType.PLANTS, TilesType.CATS, null},
@@ -36,14 +27,10 @@ class PersonalGoalTest {
                 {TilesType.TROPHIES, TilesType.TROPHIES, TilesType.CATS, TilesType.CATS, TilesType.CATS},
                 {TilesType.TROPHIES, TilesType.TROPHIES, TilesType.TROPHIES, TilesType.CATS, TilesType.CATS}
         };
-        try {
-            assertEquals(6, PersonalGoal.PERSONALGOAL1.calculatePoints(shelf));
+        assertEquals(6, PersonalGoal.PERSONALGOAL1.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL1.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL1.calculatePoints(shelf));
     }
 
     @Test
@@ -55,14 +42,11 @@ class PersonalGoalTest {
                 {null, null, null, TilesType.TROPHIES, null},
                 {null, null, null, null, TilesType.FRAMES},
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL2.calculatePoints(shelf));
+        assertEquals(12, PersonalGoal.PERSONALGOAL2.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL2.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL2.calculatePoints(shelf));
+
     }
 
     @Test
@@ -74,14 +58,11 @@ class PersonalGoalTest {
                 {null, null, null, null, null},
                 {TilesType.BOOKS, null, null, null, null},
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL3.calculatePoints(shelf));
+        assertEquals(12, PersonalGoal.PERSONALGOAL3.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL3.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL3.calculatePoints(shelf));
+
     }
 
     @Test
@@ -93,14 +74,11 @@ class PersonalGoalTest {
                 {null, TilesType.BOOKS, TilesType.CATS, null, null},
                 {null, null, null, null, null},
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL4.calculatePoints(shelf));
+        assertEquals(12, PersonalGoal.PERSONALGOAL4.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL4.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL4.calculatePoints(shelf));
+
     }
 
     @Test
@@ -112,14 +90,11 @@ class PersonalGoalTest {
                 {null, null, null, null, TilesType.PLANTS},
                 {TilesType.GAMES, null, null, TilesType.CATS, null},
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL5.calculatePoints(shelf));
+        assertEquals(12, PersonalGoal.PERSONALGOAL5.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL5.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL5.calculatePoints(shelf));
+
     }
 
     @Test
@@ -131,14 +106,11 @@ class PersonalGoalTest {
                 {null, TilesType.GAMES, null, TilesType.FRAMES, null},
                 {TilesType.PLANTS, null, null, null, null},
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL6.calculatePoints(shelf));
+        assertEquals(12, PersonalGoal.PERSONALGOAL6.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL6.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL6.calculatePoints(shelf));
+
     }
 
     @Test
@@ -150,14 +122,11 @@ class PersonalGoalTest {
                 {null, null, null, null, TilesType.GAMES},
                 {null, null, TilesType.BOOKS, null, null},
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL7.calculatePoints(shelf));
+        assertEquals(12, PersonalGoal.PERSONALGOAL7.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL7.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL7.calculatePoints(shelf));
+
     }
 
     @Test
@@ -169,14 +138,11 @@ class PersonalGoalTest {
                 {null, null, null, TilesType.BOOKS, null},
                 {null, null, null, TilesType.GAMES, null},
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL8.calculatePoints(shelf));
+        assertEquals(12, PersonalGoal.PERSONALGOAL8.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL8.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL8.calculatePoints(shelf));
+
     }
 
     @Test
@@ -188,14 +154,11 @@ class PersonalGoalTest {
                 {null, TilesType.TROPHIES, null, null, TilesType.PLANTS},
                 {TilesType.FRAMES, null, null, null, null},
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL9.calculatePoints(shelf));
+        assertEquals(12, PersonalGoal.PERSONALGOAL9.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL9.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL9.calculatePoints(shelf));
+
     }
 
     @Test
@@ -207,14 +170,11 @@ class PersonalGoalTest {
                 {null, TilesType.FRAMES, null, null, null},
                 {null, null, null, TilesType.PLANTS, null},
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL10.calculatePoints(shelf));
+        assertEquals(12, PersonalGoal.PERSONALGOAL10.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL10.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL10.calculatePoints(shelf));
+
     }
 
     @Test
@@ -227,14 +187,11 @@ class PersonalGoalTest {
                 {null, null, null, TilesType.TROPHIES, null},
         };
 
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL11.calculatePoints(shelf));
+        assertEquals(12, PersonalGoal.PERSONALGOAL11.calculatePoints(shelf));
 
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL11.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL11.calculatePoints(shelf));
+
     }
 
     @Test
@@ -246,13 +203,10 @@ class PersonalGoalTest {
                 {null, null, null, null, TilesType.GAMES},
                 {TilesType.CATS, null, null, null, null},
         };
-        try {
-            assertEquals(12, PersonalGoal.PERSONALGOAL12.calculatePoints(shelf));
-            shelf = new TilesType[6][5];
-            assertEquals(0, PersonalGoal.PERSONALGOAL12.calculatePoints(shelf));
-        } catch (OutOfBoundException e) {
-            fail();
-        }
+        assertEquals(12, PersonalGoal.PERSONALGOAL12.calculatePoints(shelf));
+        shelf = new TilesType[6][5];
+        assertEquals(0, PersonalGoal.PERSONALGOAL12.calculatePoints(shelf));
+
     }
 
     @Test

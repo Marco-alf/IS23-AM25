@@ -155,12 +155,10 @@ public enum PersonalGoal {
      * @param shelf the method requires a shelf configuration as input
      * @return points[i] the method returns the points achieved by the shelf in exam
      */
-    public int calculatePoints(TilesType[][] shelf) throws OutOfBoundException{
+    public int calculatePoints(TilesType[][] shelf){
         int i;
         int count = 0;
-        if(shelf.length != 6) throw new OutOfBoundException();
         for (i = 0; i < 6; i++) {
-            if(shelf[i].length != 5) throw new OutOfBoundException();
             if (tiles[i].getType() == shelf[tiles[i].getPosY()][tiles[i].getPosX()]) {
                 count++;
             }

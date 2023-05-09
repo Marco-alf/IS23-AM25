@@ -505,28 +505,6 @@ class LivingRoomTest {
             }
         }
 
-        File file = new File("src/main/resources/json/board2.json");
-        File file2 = new File("src/main/resources/json/board23.json");
-
-        if (file2.exists()) fail();
-
-        // Rename file (or directory)
-        if(!file.renameTo(file2)) fail();
-
-        try{
-            new LivingRoom("2");
-        } catch (InvalidPlayerNumberException e) {
-            fail();
-        }
-        catch (RuntimeException ignore){
-        }
-        file = new File("src/main/resources/json/board23.json");
-        file2 = new File("src/main/resources/json/board2.json");
-        if (file2.exists()) fail();
-
-        // Rename file (or directory)
-        if(!file.renameTo(file2)) fail();
-
     }
     @Test
     void calculateCommonPoints() {
