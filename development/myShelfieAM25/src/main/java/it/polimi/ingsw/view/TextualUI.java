@@ -745,7 +745,7 @@ public class TextualUI implements ViewInterface {
                     goal[1] += " ";
                 }
                 goal[2] = rst + "  2 column with all different types of tile";
-                for (int i = 49; i < length; i++) {
+                for (int i = 43; i < length; i++) {
                     goal[2] += " ";
                 }
                 goal[3] = rst + yellow + "  +";
