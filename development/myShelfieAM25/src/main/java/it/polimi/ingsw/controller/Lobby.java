@@ -111,7 +111,7 @@ public class Lobby {
             gameInfo = new GameInfo(game);
             currentPlayer = nextPlayer();
             game.updateCurrentPlayer(currentPlayer.getName());
-        } catch (NotInLineException | OutOfBoundException | NoFreeEdgeException | InvalidPlayerNameException |
+        } catch (NotInLineException | OutOfBoundException | NoFreeEdgeException | InvalidPlayerNameException | NullPointerException |
                  PlayerNotCurrentException | FullColumnException |NullTilesException | PlayerNotOnlineException | InvalidTileException e) {
             throw new IllegalMoveException();
         }
