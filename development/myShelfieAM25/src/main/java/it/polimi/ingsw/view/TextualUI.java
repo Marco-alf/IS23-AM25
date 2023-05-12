@@ -9,9 +9,7 @@ import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.client.SocketClient;
 import it.polimi.ingsw.network.messages.clientMessages.*;
-import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
-import it.polimi.ingsw.network.messages.serverMessages.CreatedLobbyMessage;
-import it.polimi.ingsw.network.messages.serverMessages.JoinedMessage;
+import it.polimi.ingsw.network.messages.serverMessages.*;
 
 import java.util.*;
 
@@ -587,7 +585,7 @@ public class TextualUI implements ViewInterface {
             shelf[1] += " ";
         }
         shelf[2] = rst + "      common goals 1: " + whiteBack + red + bold + " " + commonGoals.get(player)[0].toString() + " "
-                + unBold + rst + "  2: " + whiteBack + red + bold + " " + commonGoals.get(player)[0].toString() + " " + rst;
+                + unBold + rst + "  2: " + whiteBack + red + bold + " " + commonGoals.get(player)[1].toString() + " " + rst;
         for(int i = 33; i < l; i++){
             shelf[2] += " ";
         }
@@ -1162,4 +1160,95 @@ public class TextualUI implements ViewInterface {
         return goal;
     }
 
+    //the next methods are added to not create errors but will probably be deleted
+
+    @Override
+    public void receiveCreatedLobbyMsg(CreatedLobbyMessage msg) {
+
+    }
+
+    @Override
+    public void receiveJoinedMsg(JoinedMessage msg) {
+
+    }
+
+    @Override
+    public void receiveExistingLobbyMsg(ExistingLobbyMessage msg) {
+
+    }
+
+    @Override
+    public void receiveLobbyNotCreatedMsg(LobbyNotCreatedMessage msg) {
+
+    }
+
+    @Override
+    public void receiveNameTakenMsg(NameTakenMessage msg) {
+
+    }
+
+    @Override
+    public void receiveNotExistingLobbyMsg(NotExistingLobbyMessage msg) {
+
+    }
+
+    @Override
+    public void receiveFullLobbyMsg(FullLobbyMessage msg) {
+
+    }
+
+    @Override
+    public void receiveRetrievedLobbiesMsg(RetrievedLobbiesMessage msg) {
+
+    }
+
+    @Override
+    public void receiveChatUpdateMsg(ChatUpdateMessage msg) {
+
+    }
+
+    @Override
+    public void receiveGameCreatedMsg(GameCreatedMessage msg) {
+
+    }
+
+    @Override
+    public void receiveGameUpdatedMsg(GameUpdatedMessage msg) {
+
+    }
+
+    @Override
+    public void receiveUpdatedPlayerMsg(UpdatedPlayerMessage msg) {
+
+    }
+
+    @Override
+    public void receiveInvalidMoveMsg(InvalidMoveMessage msg) {
+
+    }
+
+    @Override
+    public void receiveInsufficientPlayersMsg(InsufficientPlayersMessage msg) {
+
+    }
+
+    @Override
+    public void receiveLobbyClosedMsg(LobbyClosedMessage msg) {
+
+    }
+
+    @Override
+    public void receiveUserDisconnectedMsg(UserDisconnectedMessage msg) {
+
+    }
+
+    @Override
+    public void receiveInvalidCommandMsg(InvalidCommandMessage msg) {
+
+    }
+
+    @Override
+    public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
+
+    }
 }
