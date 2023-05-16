@@ -40,7 +40,5 @@ public interface ViewInterface {
 
     void receiveInvalidCommandMsg (InvalidCommandMessage msg);
 
-    void receiveConnectionErrorMsg(ConnectionErrorMessage msg); //////////////
-
-    //void displayServerMsg (String string); ////////////////
+    void receiveConnectionErrorMsg(ConnectionErrorMessage msg);
 }
