@@ -3,6 +3,7 @@ package it.polimi.ingsw.network.client;
 import it.polimi.ingsw.network.messages.connectionMessages.Ping;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 import it.polimi.ingsw.view.TextualUI;
+import it.polimi.ingsw.view.ViewInterface;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,7 +21,7 @@ public class SocketClient extends GenericClient{
     /** server port number */
     private final int port;
     /** view to be bound*/
-    private final TextualUI view;
+    private final ViewInterface view;
     /** boolean represents the status of the connection (true means connected) */
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
     /** socket object of the client*/
@@ -41,7 +42,7 @@ public class SocketClient extends GenericClient{
      * @param port server port number
      * @param view view to be bound
      */
-    public SocketClient(String ip, int port, TextualUI view) {
+    public SocketClient(String ip, int port, ViewInterface view) {
         this.ip = ip;
         this.port = port;
         this.view = view;
@@ -104,66 +105,62 @@ public class SocketClient extends GenericClient{
                 if(msg instanceof ServerMessage){
                     if (((ServerMessage) msg).getType().equals("CreatedLobbyMessage")) {
                         isInLobby = true;
-                        view.displayCreatedLobbyMsg((CreatedLobbyMessage) msg);
+                        view.receiveCreatedLobbyMsg((CreatedLobbyMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("JoinedMessage")) {
                         isInLobby = true;
                         assert msg instanceof JoinedMessage;
-                        view.displayJoinedMsg((JoinedMessage) msg);
+                        view.receiveJoinedMsg((JoinedMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("ExistingLobbyMessage")) {
-                        view.displayServerMsg("Already existing lobby");
+                        view.receiveExistingLobbyMsg((ExistingLobbyMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("LobbyNotCreatedMessage")) {
-                        view.displayServerMsg("Lobby has not been created");
+                        view.receiveLobbyNotCreatedMsg((LobbyNotCreatedMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("NameTakenMessage")) {
-                        view.displayServerMsg("Name is already taken, insert another one");
+                        view.receiveNameTakenMsg((NameTakenMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("NotExistingLobbyMessage")) {
-                        view.displayServerMsg("This lobby does not exist, try another one or creating a new lobby");
+                        view.receiveNotExistingLobbyMsg((NotExistingLobbyMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("FullLobbyMessage")) {
-                        view.displayServerMsg("Lobby is full");
+                        view.receiveFullLobbyMsg((FullLobbyMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("RetrievedLobbiesMessage")) {
-                        RetrievedLobbiesMessage specificMessage = (RetrievedLobbiesMessage) msg;
-                        view.displayLobbies(specificMessage.getLobbies());
+                        view.receiveRetrievedLobbiesMsg((RetrievedLobbiesMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("ChatUpdateMessage")) {
                         assert msg instanceof ChatUpdateMessage;
-                        view.addMessage((ChatUpdateMessage) msg);
+                        view.receiveChatUpdateMsg((ChatUpdateMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("GameCreatedMessage")) {
                         assert msg instanceof GameCreatedMessage;
-                        view.updateView(((GameCreatedMessage) msg).getGameInfo());
-                        view.displayInitialGameInfo();
+                        view.receiveGameCreatedMsg((GameCreatedMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("GameUpdatedMessage")) {
                         assert msg instanceof GameUpdatedMessage;
-                        view.updateView(((GameUpdatedMessage) msg).getGameInfo());
-                        view.displayGameInfo();
+                        view.receiveGameUpdatedMsg((GameUpdatedMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("UpdatedPlayerMessage")) {
                         assert msg instanceof UpdatedPlayerMessage;
-                        view.displayServerMsg("It's " + ((UpdatedPlayerMessage) msg).getUpdatedPlayer() + "'s turn");
+                        view.receiveUpdatedPlayerMsg((UpdatedPlayerMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("InvalidMoveMessage")) {
-                        view.displayServerMsg("Move is not valid");
+                        view.receiveInvalidMoveMsg((InvalidMoveMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("InsufficientPlayersMessage")) {
-                        view.displayServerMsg("Not enough players to continue the game");
+                        view.receiveInsufficientPlayersMsg((InsufficientPlayersMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("LobbyClosedMessage")) {
-                        view.displayServerMsg("Lobby has been closed");
-                        isInLobby = false;
+                        view.receiveLobbyClosedMsg((LobbyClosedMessage) msg);
+                        isInLobby = false; /////////////
                     }
                     if (((ServerMessage) msg).getType().equals("UserDisconnectedMessage")) {
-                        view.displayServerMsg(((UserDisconnectedMessage) msg).getUser() + " disconnected");
-                        view.displayServerMsg(((UserDisconnectedMessage) msg).getCurrentPlayer() + "'s turn");
+                        view.receiveUserDisconnectedMsg((UserDisconnectedMessage) msg);
                     }
                     if (((ServerMessage) msg).getType().equals("InvalidCommandMessage")) {
-                        view.displayServerMsg("Command not recognized, try again");
+                        view.receiveInvalidCommandMsg((InvalidCommandMessage) msg);
                     }
                 }
 
@@ -194,7 +191,7 @@ public class SocketClient extends GenericClient{
                 clientSocket.close();
             } catch (IOException ignored) {}
 
-            if (error) view.displayServerMsg("An error occurred during the communication with the server, you're being disconnected! See ya!");
+            if (error) view.receiveConnectionErrorMsg(new ConnectionErrorMessage());
         }
     }
 

@@ -221,7 +221,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
 
                     UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
                     updatedPlayerMessage.setUpdatedPlayer(rmiClientsLobby.get(msg.getRmiClient()).getCurrentPlayer());
-                    sendMsgToClient(sender, updatedPlayerMessage);
+                    server.sendMsgToAll(updatedPlayerMessage, rmiClientsLobby.get(msg.getRmiClient()));
                 }
             } else if (msg.getType().equals("ChatMessage") && (rmiClientsStates.get(sender) == ClientState.IN_LOBBY || rmiClientsStates.get(sender) == ClientState.IN_GAME)) {
                 assert msg instanceof ChatMessage;

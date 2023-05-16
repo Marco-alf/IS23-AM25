@@ -3,6 +3,7 @@ package it.polimi.ingsw.network.client;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 import it.polimi.ingsw.network.server.RMIClientInterface;
 import it.polimi.ingsw.view.TextualUI;
+import it.polimi.ingsw.view.ViewInterface;
 
 import java.io.Serializable;
 import java.rmi.NotBoundException;
@@ -20,7 +21,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
     /** server port*/
     private final int port;
     /** view to be bound*/
-    private final TextualUI view;
+    private final ViewInterface view;
     /** ping frequency */
     private final int PING_TIME = 2000;
     /** boolean represents the status of the connection (true means connected) */
@@ -31,7 +32,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
      * @param port server port number
      * @param view view to be bound
      */
-    public RMIClient (String ip, int port, TextualUI view) {
+    public RMIClient (String ip, int port, ViewInterface view) {
         this.ip = ip;
         this.port = port;
         this.view = view;
@@ -84,66 +85,62 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
         if (arg instanceof ServerMessage msg) {
             if (msg.getType().equals("CreatedLobbyMessage")) {
                 isInLobby = true;
-                view.displayCreatedLobbyMsg((CreatedLobbyMessage) msg);
+                view.receiveCreatedLobbyMsg((CreatedLobbyMessage) msg);
             }
             if (msg.getType().equals("JoinedMessage")) {
                 isInLobby = true;
                 assert msg instanceof JoinedMessage;
-                view.displayJoinedMsg((JoinedMessage) msg);
+                view.receiveJoinedMsg((JoinedMessage) msg);
             }
             if (msg.getType().equals("ExistingLobbyMessage")) {
-                view.displayServerMsg("A lobby with this name already exists");
+                view.receiveExistingLobbyMsg((ExistingLobbyMessage) msg);
             }
             if (msg.getType().equals("LobbyNotCreatedMessage")) {
-                view.displayServerMsg("Lobby has not been created");
+                view.receiveLobbyNotCreatedMsg((LobbyNotCreatedMessage) msg);
             }
             if (msg.getType().equals("NameTakenMessage")) {
-                view.displayServerMsg("Name is already taken, insert another one");
+                view.receiveNameTakenMsg((NameTakenMessage) msg);
             }
             if (msg.getType().equals("NotExistingLobbyMessage")) {
-                view.displayServerMsg("This lobby does not exist, try another one or creating a new lobby");
+                view.receiveNotExistingLobbyMsg((NotExistingLobbyMessage) msg);
             }
             if (msg.getType().equals("FullLobbyMessage")) {
-                view.displayServerMsg("Lobby is full");
+                view.receiveFullLobbyMsg((FullLobbyMessage) msg);
             }
             if (msg.getType().equals("RetrievedLobbiesMessage")) {
-                RetrievedLobbiesMessage specificMessage = (RetrievedLobbiesMessage) msg;
-                view.displayLobbies(specificMessage.getLobbies());
+                view.receiveRetrievedLobbiesMsg((RetrievedLobbiesMessage) msg);
             }
             if (msg.getType().equals("ChatUpdateMessage")) {
                 assert msg instanceof ChatUpdateMessage;
-                view.addMessage((ChatUpdateMessage) msg);
+                view.receiveChatUpdateMsg((ChatUpdateMessage) msg);
             }
             if (msg.getType().equals("GameCreatedMessage")) {
                 assert msg instanceof GameCreatedMessage;
-                view.updateView(((GameCreatedMessage) msg).getGameInfo());
-                view.displayGameInfo();
+                view.receiveGameCreatedMsg((GameCreatedMessage) msg);
             }
             if (msg.getType().equals("GameUpdatedMessage")) {
                 assert msg instanceof GameUpdatedMessage;
-                view.updateView(((GameUpdatedMessage) msg).getGameInfo());
-                view.displayGameInfo();
+                view.receiveGameUpdatedMsg((GameUpdatedMessage) msg);
             }
             if (msg.getType().equals("UpdatedPlayerMessage")) {
                 assert msg instanceof UpdatedPlayerMessage;
-                view.displayServerMsg("It's " + ((UpdatedPlayerMessage) msg).getUpdatedPlayer() + "'s turn");
+                view.receiveUpdatedPlayerMsg((UpdatedPlayerMessage) msg);
             }
             if (msg.getType().equals("InvalidMoveMessage")) {
-                view.displayServerMsg("Move is not valid");
+                view.receiveInvalidMoveMsg((InvalidMoveMessage) msg);
             }
             if (msg.getType().equals("InsufficientPlayersMessage")) {
-                view.displayServerMsg("Not enough players to continue... ");
+                view.receiveInsufficientPlayersMsg((InsufficientPlayersMessage) msg);
             }
             if (msg.getType().equals("LobbyClosedMessage")) {
-                view.displayServerMsg("The lobby is now closed");
-                isInLobby = false;
+                view.receiveLobbyClosedMsg((LobbyClosedMessage) msg);
+                isInLobby = false; /////////////////
             }
             if (msg.getType().equals("UserDisconnectedMessage")) {
-                view.displayServerMsg(((UserDisconnectedMessage) msg).getUser() + " disconnected");
-                view.displayServerMsg(((UserDisconnectedMessage) msg).getCurrentPlayer() + "'s turn");
+                view.receiveUserDisconnectedMsg((UserDisconnectedMessage) msg);
             }
             if (msg.getType().equals("InvalidCommandMessage")) {
-                view.displayServerMsg("Command not recognized, try again");
+                view.receiveInvalidCommandMsg((InvalidCommandMessage) msg);
             }
         }
 
@@ -161,7 +158,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
         clientConnected.set(false);
         isInLobby = false;
         rmiServerInterface = null;
-        if (error) view.displayServerMsg("An error occurred during the communication with the server, you're being disconnected! See ya!");
+        if (error) view.receiveConnectionErrorMsg(new ConnectionErrorMessage());
     }
 
 }

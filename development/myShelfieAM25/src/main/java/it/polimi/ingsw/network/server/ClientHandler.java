@@ -187,7 +187,7 @@ public class ClientHandler implements Runnable{
 
                                 UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
                                 updatedPlayerMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
-                                sendMsgToClient(updatedPlayerMessage);
+                                genericServer.sendMsgToAll(updatedPlayerMessage, lobby);
                             }
                         }
                         if (msg.getType().equals("ChatMessage")  && (state == ClientState.IN_LOBBY || state == ClientState.IN_GAME)) {
