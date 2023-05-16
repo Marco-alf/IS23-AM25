@@ -43,7 +43,7 @@ public class TextualUI implements ViewInterface {
     private PersonalGoal personalGoal;
     private boolean isEndGame = false;
     private final List<ChatUpdateMessage> messages = new ArrayList<>();
-    private static final List<String> commands = List.of("/create", "/join", "/retrive","/chat","/showchat", "/help", "/move", "/quit");
+    private static final List<String> commands = List.of("/create", "/join", "/retrieve","/chat","/showchat", "/help", "/move", "/quit", "/gameState");
     private static final String rst = "\u001B[0m";
     private static final String whiteBack = "\u001B[48;5;" + 15 + "m";
     private static final String red = "\u001B[38;5;" + 9 + "m";
@@ -103,7 +103,7 @@ public class TextualUI implements ViewInterface {
                         client.sendMsgToServer(clientMessageC);
                     }
                 }
-                case "/retrive" -> {
+                case "/retrieve" -> {
                     RetrieveLobbiesMessage clientMessageR = new RetrieveLobbiesMessage();
                     if (client instanceof RMIClient) {
                         clientMessageR.setRmiClient((RMIClient) client);
@@ -201,7 +201,7 @@ public class TextualUI implements ViewInterface {
                                 client = new SocketClient("localhost", 8088, this);
                             }
                             client.init();
-                            System.out.print(out + " ");
+                            System.out.print(in + " ");
                         }
 
                     } else {
@@ -211,6 +211,13 @@ public class TextualUI implements ViewInterface {
                 case "/help" -> {
                     printCommands();
                     System.out.print(in);
+                }
+                case "/gameState"->{
+                    if(client.getIsInLobbyStatus()){
+                        displayGameInfo();
+                    }else{
+                        System.out.print(rst + err + "You have to be inside a game to use this functionality\n");
+                    }
                 }
             }
             try {
@@ -427,11 +434,22 @@ public class TextualUI implements ViewInterface {
     }
     public int askNumPlayers() {
         int numPlayers;
-
-        numPlayers = Integer.parseInt(scanner.nextLine());
-        while(numPlayers < 2 || numPlayers > 4){
-            System.out.print(rst + err + "Invalid player number. Player number needs to be between 2 and 4\n" + in);
+        boolean flag;
+        try{
             numPlayers = Integer.parseInt(scanner.nextLine());
+            flag = true;
+        } catch (NumberFormatException e){
+            flag = false;
+            numPlayers = 0;
+        }
+        while(!flag || (numPlayers < 2 || numPlayers > 4)){
+            System.out.print(rst + err + "Invalid player number. Player number needs to be between 2 and 4\n" + in);
+            try{
+                numPlayers = Integer.parseInt(scanner.nextLine());
+                flag = true;
+            }catch (NumberFormatException e){
+                flag = false;
+            }
         }
         return numPlayers;
     }
@@ -597,11 +615,11 @@ public class TextualUI implements ViewInterface {
         //shelf[17] = rst + "common goals: 1 -> "+commonGoal1+"   2 -> "+commonGoal2;
         return shelf;
     }
-    public String[] commonGoalConstructor(String commmonGoal, int pos){
+    public String[] commonGoalConstructor(String commonGoal, int pos){
         String[] goal = new String[16];;
         int length = 55;
         int h;
-        switch (commmonGoal) {
+        switch (commonGoal) {
             case "ColumnsGoal (isRegular: true)" -> {
                 goal[0] = "";
                 for (int i = 0; i < length; i++) goal[0] += " ";
@@ -1101,13 +1119,13 @@ public class TextualUI implements ViewInterface {
     @Override
     public void receiveNotExistingLobbyMsg(NotExistingLobbyMessage msg) {
         restoreWindow();
-        System.out.print(err + "No existing lobby matches the selected name! You can get the names of existing lobbies with the command /retrive\n" + in);
+        System.out.print(err + "No existing lobby matches the selected name! You can get the names of existing lobbies with the command /retrieve\n" + in);
     }
 
     @Override
     public void receiveFullLobbyMsg(FullLobbyMessage msg) {
         restoreWindow();
-        System.out.print(err + "The selected lobby is full. To see all available lobbies you can use /retrive\n" + in);
+        System.out.print(err + "The selected lobby is full. To see all available lobbies you can use /retrieve\n" + in);
     }
 
     @Override
