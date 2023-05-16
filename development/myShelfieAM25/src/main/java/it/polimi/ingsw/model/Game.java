@@ -35,7 +35,7 @@ public class Game
      * @param players is list containing every player name (takes as guaranteed they are unique)
      * @param isTest used to differentiate the constructor used only for tests, it has to be true to use the constructor
      * @throws ShelfCreationException if the number of players is not correct
-     * @throws PlayersEmptyException //////////never thrown
+     * @throws PlayersEmptyException if a player is null
      * @throws NotTestException if this constructor is used but isTest is false
      */
     public Game(List<String> players, boolean isTest) throws ShelfCreationException, PlayersEmptyException, NotTestException {
@@ -47,14 +47,14 @@ public class Game
                 throw new ShelfCreationException();
             }
 
-            if (players.contains(null) || players.contains("")) {
+            if (players.contains(null)) {
                 throw new PlayersEmptyException();
             }
 
             PersonalGoal[] allgoals = PersonalGoal.values();
             List<Player> allPlayers = new ArrayList<>();
             for (int i = 0; i < players.size(); i++) {
-                Player player = new Player(players.get(i), board, allgoals[i + 1]);
+                Player player = new Player(players.get(i), board, allgoals[i]);
                 allPlayers.add(player);
             }
             this.players = allPlayers;
@@ -79,7 +79,7 @@ public class Game
         }
 
         /* checking consistency of passed strings, every string contained in list must be non-null and non-empty */
-        if( players.contains(null) || players.contains("")){
+        if( players.contains(null)){
             throw new PlayersEmptyException();
         }
 
