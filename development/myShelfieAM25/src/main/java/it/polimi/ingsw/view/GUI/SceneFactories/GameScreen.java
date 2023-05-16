@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
 import it.polimi.ingsw.view.GUI.SceneState;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -10,6 +11,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.TilePane;
 import javafx.scene.transform.Scale;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.Objects;
+
 public class GameScreen extends SceneHandler implements SceneFactory{
 
     ImageView board;
@@ -18,14 +25,20 @@ public class GameScreen extends SceneHandler implements SceneFactory{
 
         board = new ImageView(new Image("17_MyShelfie_BGA/boards/livingroom.png"));
 
-        board.setPreserveRatio(true);
-        board.setFitHeight(720);
-        TilePane r = new TilePane();
+        Path res = Path.of("development/myShelfieAM25/src/main/resources/fxml_files/playGameScreen.fxml");
+        //                      "C:\Users\marco\sweng\idontknowanymore\IS23-AM25\development\myShelfieAM25\src\main\resources\fxml_files\playGameScreen.fxml"
 
-        r.getChildren().add(board);
-        r.setAlignment(Pos.CENTER);
-        adjustScaling(r);
-        scene = new Scene(r);
+        Parent r = null;
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            r = FXMLLoader.load(res.toUri().toURL());
+            scene = new Scene(r);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
     }
 
 

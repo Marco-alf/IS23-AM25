@@ -57,11 +57,13 @@
       <artifactId>javafx-fxml</artifactId>
       <version>19-ea+7</version>
     </dependency>
+
     <dependency>
       <groupId>org.controlsfx</groupId>
       <artifactId>controlsfx</artifactId>
       <version>11.1.1</version>
     </dependency>
+
 
   </dependencies>
 

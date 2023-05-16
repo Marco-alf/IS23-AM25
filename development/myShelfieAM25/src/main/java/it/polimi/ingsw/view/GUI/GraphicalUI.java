@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.GUI;
 
+import it.polimi.ingsw.view.GUI.SceneFactories.GameScreen;
 import it.polimi.ingsw.view.GUI.SceneFactories.PlayScreen;
 import it.polimi.ingsw.view.GUI.SceneFactories.SceneFactory;
 import javafx.application.Application;
@@ -24,7 +25,7 @@ public class GraphicalUI extends Application implements SceneState{
         Rectangle2D screen = Screen.getPrimary().getBounds();
         mainStage = stage;
         stage.setTitle("MyShelfie");
-        factory = new PlayScreen(this, screen);
+        factory = new GameScreen(this, screen);
         stage.setScene(factory.getScene());
         stage.setHeight(screen.getHeight());
         stage.setWidth(screen.getWidth());
