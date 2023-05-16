@@ -180,6 +180,7 @@ public class ClientHandler implements Runnable{
                                 }
                             }
                             if (isRejoining) {
+                                state = ClientState.IN_GAME;
                                 GameCreatedMessage createdMessage = new GameCreatedMessage();
                                 InitialGameInfo info = lobby.getInitialGameInfo();
                                 createdMessage.setGameInfo(info);

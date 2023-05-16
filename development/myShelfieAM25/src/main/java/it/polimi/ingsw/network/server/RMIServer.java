@@ -214,6 +214,8 @@ public class RMIServer implements Runnable, RMIServerInterface{
                     }
                 }
                 if (isRejoining) {
+                    rmiClientsStates.put(sender, ClientState.IN_GAME);
+
                     GameCreatedMessage createdMessage = new GameCreatedMessage();
                     InitialGameInfo info = rmiClientsLobby.get(msg.getRmiClient()).getInitialGameInfo();
                     createdMessage.setGameInfo(info);
