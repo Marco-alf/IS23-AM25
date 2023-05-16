@@ -202,6 +202,18 @@ public class ClientHandler implements Runnable{
                             serverMessage.setSender(clientNickname);
                             genericServer.sendMsgToAll(serverMessage, lobby);
                         }
+                        if (msg.getType().equals("PrivateChatMessage")  && (state == ClientState.IN_LOBBY || state == ClientState.IN_GAME)) {
+                            assert msg instanceof PrivateChatMessage;
+                            PrivateChatMessage specificMessage = (PrivateChatMessage) msg;
+                            PrivateChatUpdateMessage serverMessage = new PrivateChatUpdateMessage();
+                            LocalDateTime timestamp = LocalDateTime.now();
+                            String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+                            serverMessage.setTimestamp(formattedTimestamp);
+                            serverMessage.setContent(specificMessage.getContent());
+                            serverMessage.setSender(clientNickname);
+                            serverMessage.setReceiver(specificMessage.getReceiver());
+                            genericServer.sendMsgToAll(serverMessage, lobby);
+                        }
                         if (msg.getType().equals("QuitMessage") && (state == ClientState.IN_LOBBY || state == ClientState.IN_GAME)) {
                             manageDisconnection();
                         }

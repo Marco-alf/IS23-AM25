@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.client.SocketClient;
+import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.clientMessages.*;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 
@@ -33,6 +34,7 @@ public class TextualUI implements ViewInterface {
     private final Scanner scanner = new Scanner(System.in);
     private GenericClient client;
     private TilesType[][] board;
+    private List<String> onlinePlayers = new ArrayList<>();
     private Map<String, TilesType[][]> shelves = new HashMap<>();
     private Map<String, Integer[]> commonGoals = new HashMap<>();
     private String commonGoal1;
@@ -43,7 +45,7 @@ public class TextualUI implements ViewInterface {
     private PersonalGoal personalGoal;
     private boolean isEndGame = false;
     private final List<ChatUpdateMessage> messages = new ArrayList<>();
-    private static final List<String> commands = List.of("/create", "/join", "/retrive","/chat","/showchat", "/help", "/move", "/quit");
+    private static final List<String> commands = List.of("/create", "/join", "/retrieve","/chat","/showchat", "/help", "/move", "/quit", "/gamestate");
     private static final String rst = "\u001B[0m";
     private static final String whiteBack = "\u001B[48;5;" + 15 + "m";
     private static final String red = "\u001B[38;5;" + 9 + "m";
@@ -54,176 +56,175 @@ public class TextualUI implements ViewInterface {
     private static final String unBold = "\u001B[2m";
     private static final String err = "\u001B[1m\u001B[38;5;" + 1 + "m ERROR: \u001B[2m";
     public void start() {
-        System.out.println(out + "m Insert \u001B[1m/rmi\u001B[2m if you want to join server with rmi \u001B[1m/socket\u001B[2m if you want to access it with socket");
-        System.out.print(in);
-
-        String connType = scanner.nextLine();
-
-        while(!connType.equals("/rmi") && !connType.equals("/socket")){
-            System.out.print(rst + err + "This type of connection is not supported\n" + in);
-            connType = scanner.nextLine();
-        }
-        if (connType.equals("/rmi")) {
-            client = new RMIClient("localhost", 1099, this);
-            client.init();
-        }
-        else{
-            client = new SocketClient("localhost", 8088, this);
-            boolean socketError = true;
-            while (socketError){
-                client.init();
-                socketError = false;
-            }
-        }
         String inputCommand = "";
-        restoreWindow();
+        boolean hasMessage;
+        ClientMessage clientMessageOut = null;
+        synchronized (this) {
+            System.out.println(out + "m Insert \u001B[1m/rmi\u001B[2m if you want to join server with rmi \u001B[1m/socket\u001B[2m if you want to access it with socket");
+            System.out.print(in);
 
-        printCommands();
-        System.out.print(in);
+            String connType = scanner.nextLine();
 
+            while (!connType.equals("/rmi") && !connType.equals("/socket")) {
+                System.out.print(rst + err + "This type of connection is not supported\n" + in);
+                connType = scanner.nextLine();
+            }
+            if (connType.equals("/rmi")) {
+                client = new RMIClient("localhost", 1099, this);
+                client.init();
+            } else {
+                client = new SocketClient("localhost", 8088, this);
+                boolean socketError = true;
+                while (socketError) {
+                    client.init();
+                    socketError = false;
+                }
+            }
+            restoreWindow();
+
+            printCommands();
+            System.out.print(in);
+        }
         while (true) {
+            hasMessage = false;
             inputCommand = askCommand();
-
-            switch (inputCommand) {
-                case "/create" -> {
-                    if (client.getIsInLobbyStatus()) {
-                        System.out.print(out + "You are already in a lobby\n");
-                    } else {
-                        String name = askName();
-                        String lobbyName = askLobbyName();
-                        System.out.print(out + "Insert number of players\n" + in);
-                        int numPlayers = askNumPlayers();
-                        CreateLobbyMessage clientMessageC = new CreateLobbyMessage();
-                        clientMessageC.setLobbyName(lobbyName);
-                        clientMessageC.setLobbyCreator(name);
-                        clientMessageC.setPlayerNumber(numPlayers);
-                        if (client instanceof RMIClient) {
-                            clientMessageC.setRmiClient((RMIClient) client);
+            synchronized (this) {
+                switch (inputCommand) {
+                    case "/create" -> {
+                        if (client.getIsInLobbyStatus()) {
+                            System.out.print(out + "You are already in a lobby\n");
+                        } else {
+                            String name = askName();
+                            String lobbyName = askLobbyName();
+                            System.out.print(out + "Insert number of players\n" + in);
+                            int numPlayers = askNumPlayers();
+                            CreateLobbyMessage clientMessage = new CreateLobbyMessage();
+                            clientMessage.setLobbyName(lobbyName);
+                            clientMessage.setLobbyCreator(name);
+                            clientMessage.setPlayerNumber(numPlayers);
+                            hasMessage = true;
+                            clientMessageOut = clientMessage;
                         }
-                        client.sendMsgToServer(clientMessageC);
                     }
-                }
-                case "/retrive" -> {
-                    RetrieveLobbiesMessage clientMessageR = new RetrieveLobbiesMessage();
-                    if (client instanceof RMIClient) {
-                        clientMessageR.setRmiClient((RMIClient) client);
+                    case "/retrieve" -> {
+                        RetrieveLobbiesMessage clientMessage = new RetrieveLobbiesMessage();
+                        hasMessage = true;
+                        clientMessageOut = clientMessage;
                     }
-                    client.sendMsgToServer(clientMessageR);
-                }
-                case "/join" -> {
-                    if (client.getIsInLobbyStatus()) {
-                        System.out.print(rst + err + "already in a lobby!\n");
-                    } else {
-                        String name = askName();
-                        String lobbyName = askLobbyName();
-                        JoinMessage clientMessageJ = new JoinMessage();
-                        clientMessageJ.setName(name);
-                        clientMessageJ.setLobbyName(lobbyName);
-                        if (client instanceof RMIClient) {
-                            clientMessageJ.setRmiClient((RMIClient) client);
+                    case "/join" -> {
+                        if (client.getIsInLobbyStatus()) {
+                            System.out.print(rst + err + "already in a lobby!\n");
+                        } else {
+                            String name = askName();
+                            String lobbyName = askLobbyName();
+                            JoinMessage clientMessage = new JoinMessage();
+                            clientMessage.setName(name);
+                            clientMessage.setLobbyName(lobbyName);
+                            hasMessage = true;
+                            clientMessageOut = clientMessage;
                         }
-                        client.sendMsgToServer(clientMessageJ);
                     }
-                }
-                case "/chat" -> {
-                    if (client.getIsInLobbyStatus()) {
-                        System.out.print(out + "You have entered the chat. Write a message\n" + in);
-                        String chatMessage = askChatMessage();
+                    case "/chat" -> {
+                        if (client.getIsInLobbyStatus()) {
+                            System.out.print(out + "You have entered the chat. Write a message\n" + in);
 
-                        ChatMessage clientMessageCh = new ChatMessage();
-                        clientMessageCh.setContent(chatMessage);
-                        if (client instanceof RMIClient) {
-                            clientMessageCh.setRmiClient((RMIClient) client);
+                            hasMessage = true;
+                            clientMessageOut = askChatMessage();
+
+                        } else {
+                            System.out.print(rst + err + "You have to be inside a lobby to use the chat\n" + in);
                         }
-                        client.sendMsgToServer(clientMessageCh);
+                    }
+                    case "/showchat" -> {
+                        if (client.getIsInLobbyStatus()) {
+                            displayChat();
+                        } else {
+                            System.out.print(rst + err + "You have to be inside a lobby to use the chat\n" + in);
+                        }
+                    }
+                    case "/move" -> {
+                        if (client.getIsInLobbyStatus()) {
+                            if (nickname.equals(curPlayer)) {
+                                List<Tile> tiles = new ArrayList<>();
+                                System.out.println(out + "Choose up to 3 tiles from the board to insert in your bookshelf");
+                                System.out.print(out + "For each tile use the format x,y (x is the horizontal axis, y is the vertical axis) then press enter\n");
+                                System.out.print(out + "To end the sequenze press enter twice\n" + in);
+                                getMoves(tiles);
+                                System.out.print(out + "Choose the column of the bookshelf where you want to place the tiles\n" + in);
+                                int column;
+                                boolean flag = false;
+                                while (!flag) {
+                                    try {
+                                        column = Integer.parseInt(scanner.nextLine());
+                                        if (column >= 0 && column < 5) {
+                                            flag = true;
+                                            MoveMessage clientMessage = new MoveMessage();
+                                            clientMessage.setTiles(tiles);
+                                            clientMessage.setColumn(column);
+                                            hasMessage = true;
 
-                    } else {
-                        System.out.print(rst + err + "You have to be inside a lobby to use the chat\n");
-                    }
-                }
-                case "/showchat" -> {
-                    if (client.getIsInLobbyStatus()) {
-                        displayChat();
-                    } else {
-                        System.out.print(rst + err + "You have to be inside a lobby to use the chat\n");
-                    }
-                }
-                case "/move" -> {
-                    if (client.getIsInLobbyStatus()) {
-                        if(nickname.equals(curPlayer)){
-                            List<Tile> tiles = new ArrayList<>();
-                            System.out.println(out + "Choose up to 3 tiles from the board to insert in your bookshelf");
-                            System.out.print(out + "For each tile use the format x,y (x is the horizontal axis, y is the vertical axis) then press enter\n");
-                            System.out.print(out + "To end the sequenze press enter twice\n" + in);
-                            getMoves(tiles);
-                            System.out.print(out + "Choose the column of the bookshelf where you want to place the tiles\n" + in);
-                            int column;
-                            boolean flag = false;
-                            while (!flag) {
-                                try {
-                                    column = Integer.parseInt(scanner.nextLine());
-                                    if (column >= 0 && column < 5) {
-                                        flag = true;
-                                        MoveMessage clientMessageM = new MoveMessage();
-                                        clientMessageM.setTiles(tiles);
-                                        clientMessageM.setColumn(column);
-                                        if (client instanceof RMIClient) {
-                                            clientMessageM.setRmiClient((RMIClient) client);
+                                            clientMessageOut = clientMessage;
+                                        } else {
+                                            System.out.print(rst + err + "Invalid Number, retry\n" + in);
                                         }
-                                        client.sendMsgToServer(clientMessageM);
-                                    } else {
+                                    } catch (NumberFormatException e) {
                                         System.out.print(rst + err + "Invalid Number, retry\n" + in);
                                     }
-                                } catch (NumberFormatException e) {
-                                    System.out.print(rst + err + "Invalid Number, retry\n" + in);
                                 }
+                            } else {
+                                System.out.print(rst + err + "You are not the current player\n" + in);
                             }
-                        } else{
-                            System.out.print(rst + err + "You are not the current player\n");
+                        } else {
+                            System.out.print(rst + err + "You have to be inside a game to make a move\n" + in);
                         }
-                    } else {
-                        System.out.print(rst + err + "You have to be inside a game to make a move\n");
                     }
-                }
-                case "/quit" -> {
-                    if (client.getIsInLobbyStatus()) {
-                        System.out.print(out + bold + "Are you sure? [y/N]\n" + in);
-                        String quit = scanner.nextLine();
-                        if (quit.equals("y") || quit.equals("Y")) {
-                            QuitMessage clientMessageQ = new QuitMessage();
-                            if (client instanceof RMIClient) {
-                                clientMessageQ.setRmiClient((RMIClient) client);
-                            }
-                            client.sendMsgToServer(clientMessageQ);
-                            if (client instanceof RMIClient) {
-                                client = new RMIClient("localhost", 1099, this);
-                            } else if (client instanceof SocketClient) {
-                                client = new SocketClient("localhost", 8088, this);
-                            }
-                            client.init();
-                            System.out.print(out + " ");
-                        }
+                    case "/quit" -> {
+                        if (client.getIsInLobbyStatus()) {
+                            System.out.print(out + bold + "Are you sure? [y/N]\n" + in);
+                            String quit = scanner.nextLine();
+                            if (quit.equals("y") || quit.equals("Y")) {
+                                QuitMessage clientMessage = new QuitMessage();
+                                clientMessageOut = clientMessage;
+                                hasMessage = true;
 
-                    } else {
-                        System.out.println(rst + err + "You have to be inside a lobby to use this feature");
+                                if (client instanceof RMIClient) {
+                                    client = new RMIClient("localhost", 1099, this);
+                                } else if (client instanceof SocketClient) {
+                                    client = new SocketClient("localhost", 8088, this);
+                                }
+                                client.init();
+                                System.out.print(in + " ");
+                            }
+
+                        } else {
+                            System.out.println(rst + err + "You have to be inside a lobby to use this feature" + in);
+                        }
+                    }
+                    case "/help" -> {
+                        printCommands();
+                        System.out.print(in);
+                    }
+                    case "/gamestate" -> {
+                        if (client.getIsInLobbyStatus()) {
+                            displayGameInfo();
+                        } else {
+                            System.out.print(rst + err + "You have to be inside a game to use this functionality\n" + in);
+                        }
                     }
                 }
-                case "/help" -> {
-                    printCommands();
-                    System.out.print(in);
+
+            }
+            if(hasMessage){
+                if (client instanceof RMIClient) {
+                    clientMessageOut.setRmiClient((RMIClient) client);
                 }
+                client.sendMsgToServer(clientMessageOut);
             }
-            try {
-                sleep(300);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            //if(isEndGame) endGame();
         }
 
     }
 /*
-    public void endGame() {
+    public synchronized void endGame() {
         if (!isEndGame) return;
         System.out.println(rst + "    " + yellow  + bold + "THE GAME IS ENDED!"+rst);
         try {
@@ -235,7 +236,7 @@ public class TextualUI implements ViewInterface {
         displayEndGame();
         while()
     }
-    public void displayEndGame(){
+    public synchronized void displayEndGame(){
         restoreWindow();
         List<String> leaderboard = new ArrayList<String>;
         System.out.println("\n\n\n" + yellow +
@@ -254,7 +255,7 @@ public class TextualUI implements ViewInterface {
                 "  \"\\\"\\\"\\|/\"/\"/\" \n" +
                 "    <*><*><*>");
     }*/
-    public void restoreWindow(){
+    public synchronized void restoreWindow(){
         System.out.println();
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -266,7 +267,7 @@ public class TextualUI implements ViewInterface {
                 "                             ██║ ╚═╝ ██║   ██║           ███████║██║  ██║███████╗███████╗██║     ██║███████╗\n"+
                 "                             ╚═╝     ╚═╝   ╚═╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚═╝╚══════╝\n");
     }
-    public void getMoves(List<Tile> tiles){
+    public synchronized void getMoves(List<Tile> tiles){
         for(int i=0; i < 3; i++){
             String coords = scanner.nextLine();
             if(coords.equals("")) i=3;
@@ -282,7 +283,7 @@ public class TextualUI implements ViewInterface {
             }
         }
     }
-    public void printCommands(){
+    public synchronized void printCommands(){
         System.out.print("\u001B[0m");
         System.out.println("\u001B[1mList of commands:\u001B[2m");
         System.out.println(yellow + "/create:\u001B[0m create a lobby");
@@ -291,16 +292,18 @@ public class TextualUI implements ViewInterface {
         System.out.println(yellow + "/chat:\u001B[0m write a message in the chat");
         System.out.println(yellow + "/showchat:\u001B[0m show the chat history");
         System.out.println(yellow + "/move:\u001B[0m make a move");
+        System.out.print(yellow + "/gamestate:\u001B[0m show the current game state\n");
         System.out.println(yellow + "/quit:\u001B[0m leave a lobby");
         System.out.print(yellow + "/help:\u001B[0m show this list of commands\n");
 
     }
-    public void updateView (GameInfo info) {
+    public synchronized void updateView (GameInfo info) {
         board = info.getNewBoard();
         if (info instanceof InitialGameInfo) {
             shelves = ((InitialGameInfo) info).getShelves();
             for(String player : info.getPlayers()){
                 commonGoals.put(player, new Integer[]{0, 0});
+                onlinePlayers.add(player);
             }
             personalGoal = ((InitialGameInfo) info).getPersonalGoals().get(nickname);
             commonGoal1 = ((InitialGameInfo) info).getCommonGoal1();
@@ -309,27 +312,43 @@ public class TextualUI implements ViewInterface {
             shelves.put(info.getCurrentPlayer(), info.getShelf());
             commonGoals.replace(info.getCurrentPlayer(), new Integer[]{info.getCommonGoal1Points(), info.getCommonGoal2Points()});
         }
+        if(onlinePlayers.size()!=info.getOnlinePlayers().size()){
+            for(String player : info.getOnlinePlayers()){
+                if(!onlinePlayers.contains(player)) onlinePlayers.add(player);
+            }
+        }
         curPlayer = info.getCurrentPlayer();
         personalPoints = info.getPersonalGoalPoints();
         isEndGame = info.isGameEnded();
     }
-    public void displayLobbies (List<String> lobbies) {
+    public synchronized void displayLobbies (List<String> lobbies) {
         System.out.println(rst + bold + out + "Available lobbies:" + rst);
         for (String lobby : lobbies) {
             System.out.println(rst + "   "+ out +lobby);
         }
     }
-    public void displayCreatedLobbyMsg (CreatedLobbyMessage msg) {
+    public synchronized void displayCreatedLobbyMsg (CreatedLobbyMessage msg) {
         System.out.println(out + "A lobby has been created");
         System.out.println("   Lobby name: " + bold + msg.getLobbyName() + unBold);
         System.out.print("   Lobby creator: " + bold + msg.getName() + unBold + "\n");
     }
-    public void displayChat () {
+    public synchronized void displayChat () {
+        String sender;
         for (ChatUpdateMessage message : messages) {
-            System.out.println(out + bold + message.getSender() + " at " + message.getTimestamp() + unBold + ": \n      " + message.getContent());
+            sender = message.getSender();
+            if(sender.equals(nickname)) sender = "You";
+            if(message.getType().equals("PrivateChatUpdateMessage")) {
+                System.out.println(out + bold + sender + " at " + message.getTimestamp() + unBold + " to "+
+                        ((PrivateChatUpdateMessage)message).getReceiver() + red + bold + " [private]" + rst + ": \n" +
+                        "      " + message.getContent() +rst);
+            }
+            else{
+                System.out.println(out + bold + sender + " at " + message.getTimestamp() + unBold + ": \n      " + message.getContent());
+            }
         }
+        System.out.print(in);
     }
-    public void displayGameInfo () {
+    public synchronized void displayGameInfo () {
         restoreWindow();
         String[] output = boardConstructor(board);
 
@@ -349,12 +368,12 @@ public class TextualUI implements ViewInterface {
         System.out.print(info);
         System.out.println(yellow + "current player is: " + red + bold + this.curPlayer + rst);
     }
-    public Tile getTiles (String coords) {
+    public synchronized Tile getTiles (String coords) {
         int x = Integer.parseInt(String.valueOf(coords.charAt(0)));
         int y = Integer.parseInt(String.valueOf(coords.charAt(2)));
         return new Tile(board[y][x], x, y);
     }
-    public String getTile (TilesType type) {
+    public synchronized String getTile (TilesType type) {
         String s = "";
         if(type==null) {
             s += (char) 27 + "[48;5;" + BROWN + "m     ";
@@ -397,7 +416,7 @@ public class TextualUI implements ViewInterface {
         }
         return command;
     }
-    public String askName() {
+    public synchronized String askName() {
         String name;
         String confirm;
         do{
@@ -409,12 +428,31 @@ public class TextualUI implements ViewInterface {
         nickname = name;
         return name;
     }
-    public String askChatMessage() {
-        String chatMessage;
+    public synchronized ChatMessage askChatMessage() {
+        String chatMessage, response = "Y";
+        ChatMessage message;
         chatMessage = scanner.nextLine();
-        return chatMessage;
+        if(onlinePlayers.size()>1){
+            System.out.print(out + "Is this a public synchronized message? [Y/n]\n" + in);
+            response  = scanner.nextLine();
+        }
+        if(response.equals("n") || response.equals("N")){
+            System.out.print(out + "Who is the receiver?\n" + in);
+            response = scanner.nextLine();
+            while(!onlinePlayers.contains(response)){
+                System.out.print(out + "The sender needs to be online and in this lobby\n" + in);
+                response = scanner.nextLine();
+            }
+            message = new PrivateChatMessage(response);
+            message.setContent(chatMessage);
+        }
+        else{
+            message = new ChatMessage();
+            message.setContent(chatMessage);
+        }
+        return message;
     }
-    public String askLobbyName() {
+    public synchronized String askLobbyName() {
         String name;
         String confirm;
         do{
@@ -425,17 +463,28 @@ public class TextualUI implements ViewInterface {
         } while(confirm.equals("n") || confirm.equals("N"));
         return name;
     }
-    public int askNumPlayers() {
+    public synchronized int askNumPlayers() {
         int numPlayers;
-
-        numPlayers = Integer.parseInt(scanner.nextLine());
-        while(numPlayers < 2 || numPlayers > 4){
-            System.out.print(rst + err + "Invalid player number. Player number needs to be between 2 and 4\n" + in);
+        boolean flag;
+        try{
             numPlayers = Integer.parseInt(scanner.nextLine());
+            flag = true;
+        } catch (NumberFormatException e){
+            flag = false;
+            numPlayers = 0;
+        }
+        while(!flag || (numPlayers < 2 || numPlayers > 4)){
+            System.out.print(rst + err + "Invalid player number. Player number needs to be between 2 and 4\n" + in);
+            try{
+                numPlayers = Integer.parseInt(scanner.nextLine());
+                flag = true;
+            }catch (NumberFormatException e){
+                flag = false;
+            }
         }
         return numPlayers;
     }
-    public String[] boardConstructor (TilesType[][] matrix) {
+    public synchronized String[] boardConstructor (TilesType[][] matrix) {
         String[] board = new String[20];
         board[0] = "\u001B[38;5;" + 246 +"m        0     1     2     3     4     5     6     7     8   ";
 
@@ -459,7 +508,7 @@ public class TextualUI implements ViewInterface {
         }
         return board;
     }
-    public String[] shelfConstructor(TilesType[][] matrix, String player, int goal1, int goal2) {
+    public synchronized String[] shelfConstructor(TilesType[][] matrix, String player, int goal1, int goal2) {
         String[] shelf = new String[18]; //length = 31 + space
         shelf[0] = rst;
         int l;
@@ -514,7 +563,7 @@ public class TextualUI implements ViewInterface {
         shelf[17] = rst + "         0     1     2     3     4   ";
         return shelf;
     }
-    public String[] concatStringArrays(String[] left, String[] right){
+    public synchronized String[] concatStringArrays(String[] left, String[] right){
         //refactor matrices to get perfects rectangles
         int maxh;
         maxh = left.length;
@@ -545,14 +594,14 @@ public class TextualUI implements ViewInterface {
         }
         return matrix;
     }
-    public String convertStringArray(String[] in){
+    public synchronized String convertStringArray(String[] in){
         String s = "";
         for (String value : in) {
             s += value + "\n";
         }
         return s;
     }
-    public String[] personalGoalConstructor(PersonalGoal personalGoal){
+    public synchronized String[] personalGoalConstructor(PersonalGoal personalGoal){
         String[] shelf = new String[17]; //length = 31 + 7 space
         TilesType[][] matrix = personalGoal.getMatrix();
         int length = 55;
@@ -597,11 +646,11 @@ public class TextualUI implements ViewInterface {
         //shelf[17] = rst + "common goals: 1 -> "+commonGoal1+"   2 -> "+commonGoal2;
         return shelf;
     }
-    public String[] commonGoalConstructor(String commmonGoal, int pos){
+    public synchronized String[] commonGoalConstructor(String commonGoal, int pos){
         String[] goal = new String[16];;
         int length = 55;
         int h;
-        switch (commmonGoal) {
+        switch (commonGoal) {
             case "ColumnsGoal (isRegular: true)" -> {
                 goal[0] = "";
                 for (int i = 0; i < length; i++) goal[0] += " ";
@@ -1068,105 +1117,131 @@ public class TextualUI implements ViewInterface {
     //the next methods are added to not create errors but will probably be deleted
 
     @Override
-    public void receiveCreatedLobbyMsg(CreatedLobbyMessage msg) {
+    public synchronized void receiveCreatedLobbyMsg(CreatedLobbyMessage msg) {
         restoreWindow();
         displayCreatedLobbyMsg(msg);
         System.out.print(in);
     }
 
     @Override
-    public void receiveJoinedMsg(JoinedMessage msg) {
+    public synchronized void receiveJoinedMsg(JoinedMessage msg) {
         restoreWindow();
         System.out.print(out + "You have joined " + msg.getLobbyName() + " as " + msg.getName() +"\n" +in);
     }
 
     @Override
-    public void receiveExistingLobbyMsg(ExistingLobbyMessage msg) {
+    public synchronized void receiveExistingLobbyMsg(ExistingLobbyMessage msg) {
         restoreWindow();
         System.out.print(err + "A lobby with the selected name already exists! \n You can join it with the command /join\n"+in);
     }
 
     @Override
-    public void receiveLobbyNotCreatedMsg(LobbyNotCreatedMessage msg) {
+    public synchronized void receiveLobbyNotCreatedMsg(LobbyNotCreatedMessage msg) {
         restoreWindow();
         System.out.print(err + "An error occoured, the lobby was not created\n" + in);
     }
 
     @Override
-    public void receiveNameTakenMsg(NameTakenMessage msg) {
+    public synchronized void receiveNameTakenMsg(NameTakenMessage msg) {
         restoreWindow();
         System.out.print(err + "The selected name is already taken by another player. You can retry to join with another one\n" + in);
     }
 
     @Override
-    public void receiveNotExistingLobbyMsg(NotExistingLobbyMessage msg) {
+    public synchronized void receiveNotExistingLobbyMsg(NotExistingLobbyMessage msg) {
         restoreWindow();
-        System.out.print(err + "No existing lobby matches the selected name! You can get the names of existing lobbies with the command /retrive\n" + in);
+        System.out.print(err + "No existing lobby matches the selected name! You can get the names of existing lobbies with the command /retrieve\n" + in);
     }
 
     @Override
-    public void receiveFullLobbyMsg(FullLobbyMessage msg) {
+    public synchronized void receiveFullLobbyMsg(FullLobbyMessage msg) {
         restoreWindow();
-        System.out.print(err + "The selected lobby is full. To see all available lobbies you can use /retrive\n" + in);
+        System.out.print(err + "The selected lobby is full. To see all available lobbies you can use /retrieve\n" + in);
     }
 
     @Override
-    public void receiveRetrievedLobbiesMsg(RetrievedLobbiesMessage msg) {
+    public synchronized void receiveRetrievedLobbiesMsg(RetrievedLobbiesMessage msg) {
         restoreWindow();
         displayLobbies(msg.getLobbies());
         System.out.print(in);
     }
 
     @Override
-    public void receiveChatUpdateMsg(ChatUpdateMessage msg) {
-        System.out.print(out + bold + msg.getSender() + " just write" + unBold + ":  " + msg.getContent() + "\n" + in);
+    public synchronized void receiveChatUpdateMsg(ChatUpdateMessage msg) {
+        if(msg.getSender().equals(nickname)) {
+            System.out.print(out + bold + "You just write" + unBold + ":  " + msg.getContent() + "\n" + in);
+        }
+        else {
+            System.out.print("\n" + out + bold + msg.getSender() + " just write" + unBold + ":  " + msg.getContent() + "\n" + in);
+        }
+        try{
+            sleep(600);
+        }catch (InterruptedException e){
+            throw new RuntimeException("interrupt during sleep!");
+        }
         messages.add(msg);
     }
 
-    @Override
-    public void receiveGameCreatedMsg(GameCreatedMessage msg) {
-        updateView(msg.getGameInfo());
-        displayGameInfo();
-        System.out.print(in);
+    public synchronized void receivePrivateChatUpdateMsg(PrivateChatUpdateMessage msg) {
+        if(msg.getReceiver().equals(nickname)){
+            System.out.print("\n" + out + bold + msg.getSender() + " just write" + unBold + ":  " + msg.getContent() + red + bold + " [private]\n" + in);
+            try{
+                sleep(600);
+            }catch (InterruptedException e){
+                throw new RuntimeException("interrupt during sleep!");
+            }
+            messages.add(msg);
+        }
+        if(msg.getSender().equals(nickname)) {
+            messages.add(msg);
+            System.out.print(out + "You have sent a private message to: " + bold + msg.getReceiver() + "\n" + in);
+        }
     }
 
     @Override
-    public void receiveGameUpdatedMsg(GameUpdatedMessage msg) {
+    public synchronized void receiveGameCreatedMsg(GameCreatedMessage msg) {
         updateView(msg.getGameInfo());
     }
 
     @Override
-    public void receiveUpdatedPlayerMsg(UpdatedPlayerMessage msg) {
+    public synchronized void receiveGameUpdatedMsg(GameUpdatedMessage msg) {
+        updateView(msg.getGameInfo());
+    }
+
+    @Override
+    public synchronized void receiveUpdatedPlayerMsg(UpdatedPlayerMessage msg) {
         curPlayer  = msg.getUpdatedPlayer();
         displayGameInfo();
         System.out.print(in);
     }
 
     @Override
-    public void receiveInvalidMoveMsg(InvalidMoveMessage msg) {
+    public synchronized void receiveInvalidMoveMsg(InvalidMoveMessage msg) {
         System.out.print(err + "The selected move is not legal! Retry with a different tiles sequence\n" + in);
     }
 
     @Override
-    public void receiveInsufficientPlayersMsg(InsufficientPlayersMessage msg) {
+    public synchronized void receiveInsufficientPlayersMsg(InsufficientPlayersMessage msg) {
         restoreWindow();
         System.out.print(err + "Not enough player to continue the game. If no one reconnects the game will end soon\n" + in);
     }
 
     @Override
-    public void receiveLobbyClosedMsg(LobbyClosedMessage msg) {
-        restoreWindow();
-        System.out.print(err + "The lobby has been closed because there where not enough player. You are going to return to the main menù");
-        try {
-            sleep(4000);
-        }catch (InterruptedException e){
-            throw new RuntimeException();
+    public synchronized void receiveLobbyClosedMsg(LobbyClosedMessage msg) {
+        QuitMessage clientMessage = new QuitMessage();
+        synchronized (this) {
+            restoreWindow();
+            System.out.print(err + "The lobby has been closed because there where not enough player. You are going to return to the main menù");
+            try {
+                sleep(4000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException();
+            }
+            if (client instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) client);
+            }
         }
-        QuitMessage clientMessageQ = new QuitMessage();
-        if (client instanceof RMIClient) {
-            clientMessageQ.setRmiClient((RMIClient) client);
-        }
-        client.sendMsgToServer(clientMessageQ);
+        client.sendMsgToServer(clientMessage);
         if (client instanceof RMIClient) {
             client = new RMIClient("localhost", 1099, this);
         } else if (client instanceof SocketClient) {
@@ -1179,17 +1254,17 @@ public class TextualUI implements ViewInterface {
     }
 
     @Override
-    public void receiveUserDisconnectedMsg(UserDisconnectedMessage msg) {
+    public synchronized void receiveUserDisconnectedMsg(UserDisconnectedMessage msg) {
         System.out.print(err + "Player " + msg.getUser() + "has been disconnected\n" + in);
     }
 
     @Override
-    public void receiveInvalidCommandMsg(InvalidCommandMessage msg) {
+    public synchronized void receiveInvalidCommandMsg(InvalidCommandMessage msg) {
         System.out.print(err + "Selected command does not exists! To get available commands you type /help\n" + in);
     }
 
     @Override
-    public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
-        System.out.print(err + "An unexpected connectivity error occured. You have been disconnected");
+    public synchronized void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
+        System.out.print(err + "An unexpected connectivity error occured. You have been disconnected\n" + in);
     }
 }
