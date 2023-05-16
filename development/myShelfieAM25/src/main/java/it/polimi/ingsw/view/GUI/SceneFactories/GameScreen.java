@@ -32,7 +32,14 @@ public class GameScreen extends SceneHandler implements SceneFactory{
         try {
             FXMLLoader loader = new FXMLLoader();
             r = FXMLLoader.load(res.toUri().toURL());
-            scene = new Scene(r);
+
+            Scale sc = new Scale();
+            double xscaling = screen.getWidth()/1920 ;
+            double yscaling = screen.getHeight()/1080 ;
+            sc.setX(xscaling);
+            sc.setY(yscaling);
+            //r.getTransforms().add(sc);
+            scene = new Scene(r, screen.getWidth(), screen.getHeight());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

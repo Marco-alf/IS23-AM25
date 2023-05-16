@@ -8,42 +8,38 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="605.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-      <AnchorPane prefHeight="400.0" prefWidth="605.0">
-         <children>
-              <BorderPane prefHeight="400.0" prefWidth="606.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                  <bottom>
-                      <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="Button" />
-                  </bottom>
-                  <left>
-                      <Button maxHeight="1.7976931348623157E308" maxWidth="-Infinity" mnemonicParsing="false" text="Button" />
-                  </left>
-                  <top>
-                      <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Button" BorderPane.alignment="CENTER" />
-                  </top>
-                  <right>
-                      <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Button" BorderPane.alignment="CENTER" />
-                  </right>
-                  <center>
-                      <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                          <children>
-                              <ImageView fitHeight="252.0" fitWidth="312.0" pickOnBounds="true" preserveRatio="true">
-                                  <image>
-                                      <Image url="@../17_MyShelfie_BGA/boards/livingroom.png" />
-                                  </image>
-                              </ImageView>
-                              <VBox prefHeight="349.0" prefWidth="251.0">
-                                  <children>
-                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                                  </children>
-                              </VBox>
-                          </children>
-                      </HBox>
-                  </center>
-              </BorderPane>
-         </children>
-      </AnchorPane>
+        <BorderPane prefHeight="1080.0" prefWidth="1920.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <bottom>
+                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="Button" />
+            </bottom>
+            <left>
+                <Button maxHeight="1.7976931348623157E308" maxWidth="-Infinity" mnemonicParsing="false" text="Button" />
+            </left>
+            <top>
+                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Button" BorderPane.alignment="CENTER" />
+            </top>
+            <right>
+                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Button" BorderPane.alignment="CENTER" />
+            </right>
+            <center>
+                <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <ImageView fitHeight="252.0" fitWidth="312.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../17_MyShelfie_BGA/boards/livingroom.png" />
+                            </image>
+                        </ImageView>
+                        <VBox prefHeight="349.0" prefWidth="251.0">
+                            <children>
+                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </center>
+        </BorderPane>
     </children>
 </AnchorPane>
