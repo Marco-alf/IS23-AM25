@@ -24,6 +24,8 @@ public interface ViewInterface {
 
     void receiveChatUpdateMsg (ChatUpdateMessage msg);
 
+    void receivePrivateChatUpdateMsg (PrivateChatUpdateMessage msg);
+
     void receiveGameCreatedMsg (GameCreatedMessage msg);
 
     void receiveGameUpdatedMsg (GameUpdatedMessage msg);

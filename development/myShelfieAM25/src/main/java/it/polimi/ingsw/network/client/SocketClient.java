@@ -134,6 +134,10 @@ public class SocketClient extends GenericClient{
                         assert msg instanceof ChatUpdateMessage;
                         view.receiveChatUpdateMsg((ChatUpdateMessage) msg);
                     }
+                    if (((ServerMessage) msg).getType().equals("PrivateChatUpdateMessage")) {
+                        assert msg instanceof PrivateChatUpdateMessage;
+                        view.receivePrivateChatUpdateMsg((PrivateChatUpdateMessage) msg);
+                    }
                     if (((ServerMessage) msg).getType().equals("GameCreatedMessage")) {
                         assert msg instanceof GameCreatedMessage;
                         view.receiveGameCreatedMsg((GameCreatedMessage) msg);

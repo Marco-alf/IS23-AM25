@@ -114,6 +114,10 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
                 assert msg instanceof ChatUpdateMessage;
                 view.receiveChatUpdateMsg((ChatUpdateMessage) msg);
             }
+            if (msg.getType().equals("PrivateChatUpdateMessage")) {
+                assert msg instanceof ChatUpdateMessage;
+                view.receivePrivateChatUpdateMsg((PrivateChatUpdateMessage) msg);
+            }
             if (msg.getType().equals("GameCreatedMessage")) {
                 assert msg instanceof GameCreatedMessage;
                 view.receiveGameCreatedMsg((GameCreatedMessage) msg);
