@@ -30,7 +30,7 @@ public class GraphicalUI extends Application implements SceneState{
         stage.setScene(scene);
         stage.setHeight(scene.getHeight());
         stage.setWidth(scene.getWidth());
-        //stage.setMaximized(true);
+        stage.setMaximized(true);
         //stage.setFullScreen(true);
         stage.show();
     }
