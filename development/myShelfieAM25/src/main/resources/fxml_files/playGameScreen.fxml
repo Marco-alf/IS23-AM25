@@ -1,40 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <BorderPane prefHeight="1080.0" prefWidth="1920.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <BorderPane prefHeight="1080.0" prefWidth="1920.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <bottom>
-                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="Button" />
+                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" text="Button" />
             </bottom>
             <left>
-                <Button maxHeight="1.7976931348623157E308" maxWidth="-Infinity" mnemonicParsing="false" text="Button" />
+                <Button maxHeight="1.7976931348623157E308" maxWidth="-Infinity" mnemonicParsing="false" prefWidth="55.0" text="Button" />
             </left>
             <top>
-                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Button" BorderPane.alignment="CENTER" />
+                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" text="Button" BorderPane.alignment="CENTER" />
             </top>
             <right>
-                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Button" BorderPane.alignment="CENTER" />
+                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="55.0" text="Button" BorderPane.alignment="CENTER" />
             </right>
             <center>
-                <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
                     <children>
-                        <ImageView fitHeight="252.0" fitWidth="312.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../17_MyShelfie_BGA/boards/livingroom.png" />
-                            </image>
-                        </ImageView>
-                        <VBox prefHeight="349.0" prefWidth="251.0">
+                  <VBox alignment="BOTTOM_CENTER" prefHeight="1030.0" prefWidth="300.0">
+                     <children>
+                        <TextArea prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                        <TextField>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin></TextField>
+                     </children>
+                  </VBox>
+                  <BorderPane prefHeight="0.0" prefWidth="0.0" HBox.hgrow="NEVER">
+                     <top>
+                        <GridPane alignment="CENTER" gridLinesVisible="true" hgap="4.0" style="-fx-background-image: url('17_MyShelfie_BGA/boards/livingroom_scaled.png');" vgap="4.0" BorderPane.alignment="CENTER">
+                          <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
+                            <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
+                            <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
+                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
+                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
+                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
+                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
+                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
+                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
+                          </rowConstraints>
+                           <children>
+                              <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                              <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                              <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                              <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+                              <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+                              <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+                              <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+                              <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                           </children>
+                           <padding>
+                              <Insets bottom="43.0" left="42.0" right="51.0" top="46.0" />
+                           </padding>
+                           <BorderPane.margin>
+                              <Insets />
+                           </BorderPane.margin>
+                        </GridPane>
+                     </top>
+                  </BorderPane>
+                        <VBox alignment="CENTER" prefHeight="1030.0" prefWidth="280.0">
                             <children>
-                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                                <ImageView fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../17_MyShelfie_BGA/common_goal_cards/1.jpg" />
+                           </image></ImageView>
+                                <ImageView fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../17_MyShelfie_BGA/common_goal_cards/2.jpg" />
+                           </image></ImageView>
                             </children>
                         </VBox>
                     </children>

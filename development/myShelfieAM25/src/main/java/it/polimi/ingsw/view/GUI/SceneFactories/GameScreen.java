@@ -39,7 +39,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
             sc.setX(xscaling);
             sc.setY(yscaling);
             //r.getTransforms().add(sc);
-            scene = new Scene(r, screen.getWidth(), screen.getHeight());
+            scene = new Scene(r, 1920, 1080);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

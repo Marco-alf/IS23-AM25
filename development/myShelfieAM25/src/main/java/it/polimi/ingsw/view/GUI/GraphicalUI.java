@@ -26,10 +26,12 @@ public class GraphicalUI extends Application implements SceneState{
         mainStage = stage;
         stage.setTitle("MyShelfie");
         factory = new GameScreen(this, screen);
-        stage.setScene(factory.getScene());
-        stage.setHeight(screen.getHeight());
-        stage.setWidth(screen.getWidth());
-        stage.setMaximized(true);
+        Scene scene = factory.getScene();
+        stage.setScene(scene);
+        stage.setHeight(scene.getHeight());
+        stage.setWidth(scene.getWidth());
+        //stage.setMaximized(true);
+        //stage.setFullScreen(true);
         stage.show();
     }
 
