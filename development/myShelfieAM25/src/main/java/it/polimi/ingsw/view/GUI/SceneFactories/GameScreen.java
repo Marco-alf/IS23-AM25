@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
+import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.view.GUI.SceneState;
+import it.polimi.ingsw.view.ViewInterface;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -19,9 +21,11 @@ import java.util.Objects;
 
 public class GameScreen extends SceneHandler implements SceneFactory{
 
+    GenericClient client;
     ImageView board;
-    public GameScreen(SceneState state, Rectangle2D screen) {
-        super(state, screen);
+    public GameScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client) {
+        super(state, screen, view);
+        this.client = client;
 
         board = new ImageView(new Image("17_MyShelfie_BGA/boards/livingroom.png"));
 
@@ -56,7 +60,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
     }
 
     private void quit(){
-        state.forceUpdate(new MenuScreen(state, screen));
+        state.forceUpdate(new MenuScreen(state, screen, view, client));
     }
 
     @Override

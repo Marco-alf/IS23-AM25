@@ -1,6 +1,9 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
+import it.polimi.ingsw.network.client.GenericClient;
+import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.view.GUI.SceneState;
+import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -9,15 +12,17 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.TilePane;
 
 public class PlayScreen extends SceneHandler implements SceneFactory{
-    public PlayScreen(SceneState state, Rectangle2D screen){
-        super(state, screen);
-        scene = new Scene(playButton(), screen.getWidth(), screen.getHeight());
 
+    GenericClient client;
+
+    public PlayScreen(SceneState state, Rectangle2D screen, ViewInterface view){
+        super(state, screen, view);
+        scene = new Scene(playButton(), screen.getWidth(), screen.getHeight());
     }
 
     @Override
     public SceneFactory next() {
-        return new MenuScreen(state, screen);
+        return new MenuScreen(state, screen, view, client);
     }
 
     private Parent playButton(){
@@ -40,6 +45,7 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
         });
         Button rmi = new Button("RMI");
         rmi.setOnAction(actionEvent -> {
+            client = new RMIClient("localhost", 1099, view);
             state.update();
         });
         r.getChildren().addAll(tcp, rmi);

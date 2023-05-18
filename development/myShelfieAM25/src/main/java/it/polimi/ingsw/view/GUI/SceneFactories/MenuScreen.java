@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
+import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.view.GUI.SceneState;
+import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -20,15 +22,18 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
 
     ArrayList<String> lobbies;
     String selected;
+    GenericClient client;
 
-    public MenuScreen(SceneState state, Rectangle2D screen){
-        super(state, screen);
+    public MenuScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client){
+        super(state, screen, view);
+        this.client = client;
+
         lobbies = refresh();
         scene = new Scene(mainMenu());
     }
     @Override
     public SceneFactory next() {
-        return new LobbyScreen(state, screen);
+        return new LobbyScreen(state, screen, view, client);
     }
 
     private Parent mainMenu(){
@@ -56,7 +61,7 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         });
         Button cancel = new Button("Cancel");
         cancel.setOnAction(actionEvent -> {
-            state.forceUpdate(new PlayScreen(state, screen));
+            state.forceUpdate(new PlayScreen(state, screen, view));
         });
 
         r.add(title, 0,0);
@@ -96,7 +101,7 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
 
         Button cancel = new Button("Cancel");
         cancel.setOnAction(actionEvent -> {
-            state.forceUpdate(new MenuScreen(state, screen));
+            state.forceUpdate(new MenuScreen(state, screen, view, client));
         });
         TilePane horizontal = new TilePane(Orientation.HORIZONTAL);
         horizontal.getChildren().addAll(submit, cancel);
@@ -134,7 +139,7 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
 
         Button cancel = new Button("Cancel");
         cancel.setOnAction(actionEvent -> {
-            state.forceUpdate(new MenuScreen(state, screen));
+            state.forceUpdate(new MenuScreen(state, screen, view, client));
         });
         TilePane horizontal = new TilePane(Orientation.HORIZONTAL);
         horizontal.setHgap(screen.getWidth()*0.005);

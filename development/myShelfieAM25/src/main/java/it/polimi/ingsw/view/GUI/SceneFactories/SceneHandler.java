@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
 import it.polimi.ingsw.view.GUI.SceneState;
+import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,9 +11,11 @@ public abstract class SceneHandler implements SceneFactory{
     Scene scene;
     Rectangle2D screen;
     SceneState state;
-    SceneHandler(SceneState state, Rectangle2D screen){
+    ViewInterface view;
+    SceneHandler(SceneState state, Rectangle2D screen, ViewInterface view){
         this.state = state;
         this.screen = screen;
+        this.view = view;
     }
 
     @Override

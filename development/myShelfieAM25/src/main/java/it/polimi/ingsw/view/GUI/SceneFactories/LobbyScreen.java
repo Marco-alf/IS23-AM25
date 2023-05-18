@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
+import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.view.GUI.SceneState;
+import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -14,9 +16,12 @@ import javafx.scene.text.Text;
 
 public class LobbyScreen extends SceneHandler implements SceneFactory{
 
-    LobbyScreen(SceneState state, Rectangle2D screen) {
-        super(state, screen);
+    GenericClient client;
+
+    LobbyScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client) {
+        super(state, screen, view);
         scene = new Scene(waitingScreen());
+        this.client = client;
     }
 
     private Parent waitingScreen(){
@@ -26,7 +31,7 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
 
         Button cancel = new Button("Go back to menu");
         cancel.setOnAction(actionEvent -> {
-            state.forceUpdate(new MenuScreen(state, screen));
+            state.forceUpdate(new MenuScreen(state, screen, view, client));
         });
 
         r.setAlignment(Pos.CENTER);
@@ -39,6 +44,6 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
 
     @Override
     public SceneFactory next() {
-        return new GameScreen(state, screen);
+        return new GameScreen(state, screen, view, client);
     }
 }
