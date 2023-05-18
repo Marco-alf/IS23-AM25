@@ -1,6 +1,9 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
 import it.polimi.ingsw.network.client.GenericClient;
+import it.polimi.ingsw.network.client.RMIClient;
+import it.polimi.ingsw.network.messages.clientMessages.JoinMessage;
+import it.polimi.ingsw.network.messages.clientMessages.RetrieveLobbiesMessage;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
@@ -16,19 +19,22 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-import java.util.ArrayList;
+
+import java.util.List;
 
 public class MenuScreen extends SceneHandler implements SceneFactory{
 
-    ArrayList<String> lobbies;
+    List<String> lobbies;
     String selected;
     GenericClient client;
+
+    ListView<String> lobbylist;
 
     public MenuScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client){
         super(state, screen, view);
         this.client = client;
 
-        lobbies = refresh();
+        refresh();
         scene = new Scene(mainMenu());
     }
     @Override
@@ -42,8 +48,8 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         Text title = new Text("MyShelfie Menu");
         title.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
 
-        ListView<String> lobbylist= new ListView<>();
-        lobbylist.getItems().addAll(lobbies);
+        lobbylist = new ListView<>();
+        lobbylist.getItems().setAll(lobbies);
 
         Button create = new Button("Create Game");
         create.setOnAction(actionEvent -> {
@@ -154,13 +160,18 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         return r;
     }
 
-    private ArrayList<String> refresh(){
-        ArrayList<String> lobbies = new ArrayList<>();
-        //asks server to send list of lobbies, now an example
-        lobbies.add("Lobby1!");
-        lobbies.add("Lobby2!");
-        return lobbies;
+    private void refresh(){
+        //asks server to send list of lobbies
+        RetrieveLobbiesMessage clientMessage = new RetrieveLobbiesMessage();
+        if (client instanceof RMIClient) {
+            clientMessage.setRmiClient((RMIClient) client);
+        }
+        client.sendMsgToServer(clientMessage);
+    }
 
+    public void receiveRefresh(List<String> lobbies){
+        this.lobbies = lobbies;
+        lobbylist.getItems().setAll(this.lobbies);
     }
 
     private void serverGameCreation(String nickname, String lobbyname, int size){
@@ -177,7 +188,17 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         if(nickname==null || lobbyname==null ){
             return;
         }
-        //code to ask the server with catch
+        JoinMessage clientMessage = new JoinMessage();
+        clientMessage.setName(nickname);
+        clientMessage.setLobbyName(lobbyname);
+
+        if (client instanceof RMIClient) {
+            clientMessage.setRmiClient((RMIClient) client);
+        }
+        client.sendMsgToServer(clientMessage);
+    }
+
+    public void joinedGame(){
         state.update();
     }
 

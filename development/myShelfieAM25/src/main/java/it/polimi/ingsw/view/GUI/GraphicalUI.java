@@ -2,16 +2,23 @@ package it.polimi.ingsw.view.GUI;
 
 import it.polimi.ingsw.network.messages.serverMessages.*;
 import it.polimi.ingsw.view.GUI.SceneFactories.GameScreen;
+import it.polimi.ingsw.view.GUI.SceneFactories.MenuScreen;
 import it.polimi.ingsw.view.GUI.SceneFactories.PlayScreen;
 import it.polimi.ingsw.view.GUI.SceneFactories.SceneFactory;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -21,20 +28,22 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     SceneFactory factory;
     Stage mainStage;
+    Rectangle2D screen;
 
     @Override
     public void start(Stage stage) throws IOException {
-        Rectangle2D screen = Screen.getPrimary().getBounds();
+        screen = Screen.getPrimary().getBounds();
         mainStage = stage;
-        stage.setTitle("MyShelfie");
+
+        mainStage.setTitle("MyShelfie");
         factory = new PlayScreen(this, screen, this);
         Scene scene = factory.getScene();
-        stage.setScene(scene);
-        stage.setHeight(scene.getHeight());
-        stage.setWidth(scene.getWidth());
-        stage.setMaximized(true);
+        mainStage.setScene(scene);
+        mainStage.setHeight(scene.getHeight());
+        mainStage.setWidth(scene.getWidth());
+        mainStage.setMaximized(true);
         //stage.setFullScreen(true);
-        stage.show();
+        mainStage.show();
     }
 
     public static void main(String[] args) {
@@ -62,7 +71,9 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveJoinedMsg(JoinedMessage msg) {
-
+        if(factory instanceof MenuScreen menu){
+            menu.joinedGame();
+        }
     }
 
     @Override
@@ -92,7 +103,9 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveRetrievedLobbiesMsg(RetrievedLobbiesMessage msg) {
-
+        if(factory instanceof MenuScreen menu){
+            menu.receiveRefresh(msg.getLobbies());
+        }
     }
 
     @Override
@@ -147,6 +160,13 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
-
+        mainStage.setTitle("ERRORE");
+        TilePane r = new TilePane();
+        r.setAlignment(Pos.CENTER);
+        Text t = new Text("ERRORE DI CONNESSIONE: SERVER IRRAGGIUNGIBILE");
+        t.setFont(Font.font("Arial", FontWeight.NORMAL, 40));
+        r.getChildren().add(t);
+        mainStage.setScene(new Scene(r));
+        mainStage.show();
     }
 }

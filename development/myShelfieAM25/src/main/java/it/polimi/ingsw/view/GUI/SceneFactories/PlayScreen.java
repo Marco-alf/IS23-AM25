@@ -22,7 +22,12 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
 
     @Override
     public SceneFactory next() {
-        return new MenuScreen(state, screen, view, client);
+        if (client != null){
+            return new MenuScreen(state, screen, view, client);
+            //System.exit(69);
+        }
+
+        return this;
     }
 
     private Parent playButton(){
@@ -41,13 +46,17 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
         TilePane r = new TilePane();
         Button tcp = new Button("TCP");
         tcp.setOnAction(actionEvent -> {
+            client = new RMIClient("localhost", 1099, view);
+            client.init();
             state.update();
         });
         Button rmi = new Button("RMI");
         rmi.setOnAction(actionEvent -> {
             client = new RMIClient("localhost", 1099, view);
+            client.init();
             state.update();
         });
+
         r.getChildren().addAll(tcp, rmi);
         r.setHgap(screen.getWidth()*0.005);
         r.setAlignment(Pos.CENTER);
