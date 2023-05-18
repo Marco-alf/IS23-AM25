@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exception.*;
+import it.polimi.ingsw.model.data.FinalGameInfo;
 import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.data.InitialGameInfo;
@@ -107,8 +108,12 @@ public class Lobby {
         try {
             if (game.getEndGame()) throw new GameEndedException();
             game.moveTiles(tiles, shelfColumn, player);
-            if (isLastTurn()) game.setGameEnded();
-            gameInfo = new GameInfo(game);
+            if (isLastTurn()) {
+                game.setGameEnded();
+                gameInfo = new FinalGameInfo(game);
+            } else {
+                gameInfo = new GameInfo(game);
+            }
             currentPlayer = nextPlayer();
             game.updateCurrentPlayer(currentPlayer.getName());
         } catch (NotInLineException | OutOfBoundException | NoFreeEdgeException | InvalidPlayerNameException | NullPointerException |

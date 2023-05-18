@@ -223,7 +223,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
 
                     UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
                     updatedPlayerMessage.setUpdatedPlayer(rmiClientsLobby.get(msg.getRmiClient()).getCurrentPlayer());
-                    sendMsgToClient(sender, updatedPlayerMessage);
+                    server.sendMsgToAll(updatedPlayerMessage, rmiClientsLobby.get(msg.getRmiClient()));
                 }
             } else if (msg.getType().equals("ChatMessage") && (rmiClientsStates.get(sender) == ClientState.IN_LOBBY || rmiClientsStates.get(sender) == ClientState.IN_GAME)) {
                 assert msg instanceof ChatMessage;
@@ -234,6 +234,17 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 serverMessage.setTimestamp(formattedTimestamp);
                 serverMessage.setContent(specificMessage.getContent());
                 serverMessage.setSender(rmiClientsName.get(specificMessage.getRmiClient()));
+                server.sendMsgToAll(serverMessage, rmiClientsLobby.get(specificMessage.getRmiClient()));
+            } else if (msg.getType().equals("PrivateChatMessage") && (rmiClientsStates.get(sender) == ClientState.IN_LOBBY || rmiClientsStates.get(sender) == ClientState.IN_GAME)) {
+                assert msg instanceof PrivateChatMessage;
+                PrivateChatMessage specificMessage = (PrivateChatMessage) msg;
+                PrivateChatUpdateMessage serverMessage = new PrivateChatUpdateMessage();
+                LocalDateTime timestamp = LocalDateTime.now();
+                String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+                serverMessage.setTimestamp(formattedTimestamp);
+                serverMessage.setContent(specificMessage.getContent());
+                serverMessage.setSender(rmiClientsName.get(specificMessage.getRmiClient()));
+                serverMessage.setReceiver(specificMessage.getReceiver());
                 server.sendMsgToAll(serverMessage, rmiClientsLobby.get(specificMessage.getRmiClient()));
             }else if (msg.getType().equals("QuitMessage") && (rmiClientsStates.get(sender) == ClientState.IN_LOBBY || rmiClientsStates.get(sender) == ClientState.IN_GAME)) {
                 manageDisconnection(msg.getRmiClient());

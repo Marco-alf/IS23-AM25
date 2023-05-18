@@ -29,7 +29,42 @@ public class Game
     private Player firstPlayer;
     private boolean lastRound = false;
     private boolean endGame = false;
-    
+
+    /**
+     * Constructor used for testing.
+     * @param players is list containing every player name (takes as guaranteed they are unique)
+     * @param isTest used to differentiate the constructor used only for tests, it has to be true to use the constructor
+     * @throws ShelfCreationException if the number of players is not correct
+     * @throws PlayersEmptyException if a player is null
+     * @throws NotTestException if this constructor is used but isTest is false
+     */
+    public Game(List<String> players, boolean isTest) throws ShelfCreationException, PlayersEmptyException, NotTestException {
+        if (isTest) {
+            String size = String.valueOf(players.size());
+            try {
+                this.board = new LivingRoom(size);
+            } catch (InvalidPlayerNumberException e) {
+                throw new ShelfCreationException();
+            }
+
+            if (players.contains(null)) {
+                throw new PlayersEmptyException();
+            }
+
+            PersonalGoal[] allgoals = PersonalGoal.values();
+            List<Player> allPlayers = new ArrayList<>();
+            for (int i = 0; i < players.size(); i++) {
+                Player player = new Player(players.get(i), board, allgoals[i]);
+                allPlayers.add(player);
+            }
+            this.players = allPlayers;
+
+            onlinePlayers = new ArrayList<>(this.players);
+            firstPlayer = onlinePlayers.get(0);
+            currentPlayer = firstPlayer;
+        }
+        else throw new NotTestException();
+    }
 
     /**
      * constructor of game
@@ -44,7 +79,7 @@ public class Game
         }
 
         /* checking consistency of passed strings, every string contained in list must be non-null and non-empty */
-        if( players.contains(null) || players.contains("")){
+        if( players.contains(null)){
             throw new PlayersEmptyException();
         }
 
@@ -52,9 +87,21 @@ public class Game
         * generating new instances of players through functional programming map function */
         final Random gen = new Random(System.currentTimeMillis());
         PersonalGoal [] allgoals = PersonalGoal.values();
-        this.players = players.stream()
-                .map( name -> new Player(name, board, allgoals[gen.nextInt(allgoals.length)]) )
-                .collect(Collectors.toList());
+
+        List<Player> playersList = new ArrayList<>();
+        List<Integer> used = new ArrayList<>();
+
+        for (String name : players) {
+            int randomIndex = gen.nextInt(allgoals.length);
+            while(used.contains(randomIndex)){
+                randomIndex = gen.nextInt(allgoals.length);
+            }
+            used.add(randomIndex);
+            PersonalGoal randomGoal = allgoals[randomIndex];
+            Player player = new Player(name, board, randomGoal);
+            playersList.add(player);
+        }
+        this.players = playersList;
 
         /* assumption : game starts with every player online and not disconnected */
         onlinePlayers = new ArrayList<>(this.players);
@@ -134,7 +181,7 @@ public class Game
     }
 
     public int getAdjPoints () {
-        return currentPlayer.calculateAdjPoints();
+        return currentPlayer.calculateAdjacencyPoints();
     }
     public int getPersonalPoints () {
         return currentPlayer.calculatePersonalPoints();
@@ -204,7 +251,7 @@ public class Game
      * private method used to retrieve the reference of a player from its name
      * @param name name of the player to return
      * @return Player object instance whose attribute Player.name is the same as parameter name*/
-    private Player searchPlayer(String name) throws InvalidPlayerNameException{
+    public Player searchPlayer(String name) throws InvalidPlayerNameException{
         for(Player p : players){
             if(p.getName().equals(name))
                 return p;

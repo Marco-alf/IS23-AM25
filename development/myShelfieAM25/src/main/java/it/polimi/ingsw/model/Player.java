@@ -83,9 +83,6 @@ public class Player {
     public TilesType[][] getShelf(){
         return shelf.getShelf();
     }
-    public int calculateAdjPoints () {
-        return shelf.calculatePoints();
-    }
 
     /**
      * moveTiles is the core method of player used to take a list of Tile from the living room and placing them into the shelf
