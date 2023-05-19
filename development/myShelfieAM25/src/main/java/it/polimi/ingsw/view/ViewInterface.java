@@ -30,6 +30,8 @@ public interface ViewInterface {
 
     void receiveGameUpdatedMsg (GameUpdatedMessage msg);
 
+    void receiveGameEndedMsg (GameEndedMessage msg);
+
     void receiveUpdatedPlayerMsg (UpdatedPlayerMessage msg);
 
     void receiveInvalidMoveMsg (InvalidMoveMessage msg);

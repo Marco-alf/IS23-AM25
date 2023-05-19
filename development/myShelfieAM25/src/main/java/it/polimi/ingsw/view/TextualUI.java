@@ -1,8 +1,10 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.model.PersonalGoal;
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
+import it.polimi.ingsw.model.data.FinalGameInfo;
 import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
@@ -43,7 +45,6 @@ public class TextualUI implements ViewInterface {
     private String nickname;
     private String curPlayer;
     private PersonalGoal personalGoal;
-    private boolean isEndGame = false;
     private final List<ChatUpdateMessage> messages = new ArrayList<>();
     private static final List<String> commands = List.of("/create", "/join", "/retrieve","/chat","/showchat", "/help", "/move", "/quit", "/gamestate");
     private static final String rst = "\u001B[0m";
@@ -60,7 +61,7 @@ public class TextualUI implements ViewInterface {
         boolean hasMessage;
         ClientMessage clientMessageOut = null;
         synchronized (this) {
-            System.out.println(out + "m Insert \u001B[1m/rmi\u001B[2m if you want to join server with rmi \u001B[1m/socket\u001B[2m if you want to access it with socket");
+            System.out.println(out + "Insert \u001B[1m/rmi\u001B[2m if you want to join server with rmi \u001B[1m/socket\u001B[2m if you want to access it with socket");
             System.out.print(in);
 
             String connType = scanner.nextLine();
@@ -148,7 +149,7 @@ public class TextualUI implements ViewInterface {
                                 List<Tile> tiles = new ArrayList<>();
                                 System.out.println(out + "Choose up to 3 tiles from the board to insert in your bookshelf");
                                 System.out.print(out + "For each tile use the format x,y (x is the horizontal axis, y is the vertical axis) then press enter\n");
-                                System.out.print(out + "To end the sequenze press enter twice\n" + in);
+                                System.out.print(out + "To end the sequence press enter twice\n" + in);
                                 getMoves(tiles);
                                 System.out.print(out + "Choose the column of the bookshelf where you want to place the tiles\n" + in);
                                 int column;
@@ -183,8 +184,7 @@ public class TextualUI implements ViewInterface {
                             System.out.print(out + bold + "Are you sure? [y/N]\n" + in);
                             String quit = scanner.nextLine();
                             if (quit.equals("y") || quit.equals("Y")) {
-                                QuitMessage clientMessage = new QuitMessage();
-                                clientMessageOut = clientMessage;
+                                clientMessageOut = new QuitMessage();;
                                 hasMessage = true;
 
                                 if (client instanceof RMIClient) {
@@ -223,38 +223,73 @@ public class TextualUI implements ViewInterface {
         }
 
     }
-/*
-    public synchronized void endGame() {
-        if (!isEndGame) return;
-        System.out.println(rst + "    " + yellow  + bold + "THE GAME IS ENDED!"+rst);
-        try {
-            sleep(3000);
-        }catch (InterruptedException e){
-            throw new RuntimeException();
-        }
 
-        displayEndGame();
-        while()
-    }
-    public synchronized void displayEndGame(){
+    public synchronized void displayLeaderBoard(List<String> leaderboard, List<Integer> points, Map<String, List<Integer>> detail){
         restoreWindow();
-        List<String> leaderboard = new ArrayList<String>;
         System.out.println("\n\n\n" + yellow +
                 "           ██      ███████  █████  ██████  ███████ ██████  ██████   ██████   █████  ██████  ██████      \n" +
                 "           ██      ██      ██   ██ ██   ██ ██      ██   ██ ██   ██ ██    ██ ██   ██ ██   ██ ██   ██    ██ \n" +
                 "           ██      █████   ███████ ██   ██ █████   ██████  ██████  ██    ██ ███████ ██████  ██   ██     \n" +
                 "           ██      ██      ██   ██ ██   ██ ██      ██   ██ ██   ██ ██    ██ ██   ██ ██   ██ ██   ██    ██\n" +
                 "           ███████ ███████ ██   ██ ██████  ███████ ██   ██ ██████   ██████  ██   ██ ██   ██ ██████   \n");
-        for(String player : shelves.keySet()){
+        System.out.print(rst + " Winner: \n");
+        int middle = 7;
+        if(leaderboard.get(0).length()/2 > middle){
+            int increment = leaderboard.get(0).length()/2 - middle;
+            for(int i = 0; i < increment; i++){
+                System.out.print(" ");
+            }
+            System.out.print(yellow + "        * \n");
 
+            for(int i = 0; i < increment; i++){
+                System.out.print(" ");
+            }
+            System.out.print(yellow + "   <*> <*> <*>\n");
+
+            for(int i = 0; i < increment; i++){
+                System.out.print(" ");
+            }
+            System.out.print(yellow + " <*><*><*><*><*>       \n");
+
+            System.out.println(rst + bold + leaderboard.get(0));
+
+            for(int i = 0; i < increment; i++){
+                System.out.print(" ");
+            }
+            System.out.print(yellow + "  \"\\\"\\\"\\|/\"/\"/\" \n");
+
+            for(int i = 0; i < increment; i++){
+                System.out.print(" ");
+            }
+            System.out.println(yellow + "    <*><*><*>");
         }
-        System.out.println("        * \n" +
-                "   <*> <*> <*>\n" +
-                " <*><*><*><*><*>       \n" +
-                "\"\\\"\\\"\\\"\\|/\"/\"/\"/\"\n" +
-                "  \"\\\"\\\"\\|/\"/\"/\" \n" +
-                "    <*><*><*>");
-    }*/
+        else{
+            int increment = middle - leaderboard.get(0).length()/2;
+            System.out.print(yellow + "        * \n");
+            System.out.print(yellow + "   <*> <*> <*>\n");
+            System.out.print(yellow + " <*><*><*><*><*>       \n");
+            for(int i = 0; i < increment; i++){
+                System.out.print(" ");
+            }
+            System.out.println(rst + bold + leaderboard.get(0));
+            System.out.print(yellow + "  \"\\\"\\\"\\|/\"/\"/\" \n");
+            System.out.println(yellow + "    <*><*><*>");
+        }
+        System.out.println(rst + bold + "Total points: " + yellow + points.get(0));
+        System.out.println(rst  + "Personal Goal points: " + bold + detail.get(leaderboard.get(0)).get(2));
+        int temp = detail.get(leaderboard.get(0)).get(0) + detail.get(leaderboard.get(0)).get(1);
+        System.out.println(rst + "Common Goal points: " + bold + temp);
+        System.out.println(rst + "Adjacency points: " + bold + detail.get(leaderboard.get(0)).get(3));
+
+        for(int i = 1; i < leaderboard.size(); i++){
+            int j = i+1;
+            System.out.println(yellow + bold +"\n"+ j + ". " + leaderboard.get(i) + ": ");
+            System.out.println(rst  + "Personal Goal points: " + bold + detail.get(leaderboard.get(i)).get(2));
+            temp = detail.get(leaderboard.get(i)).get(0) + detail.get(leaderboard.get(i)).get(1);
+            System.out.println(rst + "Common Goal points: " + bold + temp);
+            System.out.println(rst + "Adjacency points: " + bold + detail.get(leaderboard.get(i)).get(3) + "\n" + rst);
+        }
+    }
     public synchronized void restoreWindow(){
         System.out.println();
         System.out.print("\033[H\033[2J");
@@ -319,7 +354,6 @@ public class TextualUI implements ViewInterface {
         }
         curPlayer = info.getCurrentPlayer();
         personalPoints = info.getPersonalGoalPoints();
-        isEndGame = info.isGameEnded();
     }
     public synchronized void displayLobbies (List<String> lobbies) {
         System.out.println(rst + bold + out + "Available lobbies:" + rst);
@@ -433,7 +467,7 @@ public class TextualUI implements ViewInterface {
         ChatMessage message;
         chatMessage = scanner.nextLine();
         if(onlinePlayers.size()>1){
-            System.out.print(out + "Is this a public synchronized message? [Y/n]\n" + in);
+            System.out.print(out + "Is this a public message? [Y/n]\n" + in);
             response  = scanner.nextLine();
         }
         if(response.equals("n") || response.equals("N")){
@@ -515,11 +549,11 @@ public class TextualUI implements ViewInterface {
         int delta = 0;
         shelf[1] =rst + "    " + bold + player + ": " + unBold + rst;
         if(player.equals(nickname)){
-            shelf[1] += red + bold + "< you" + rst;
+            shelf[1] += red + bold + " < you" + rst;
             delta = 5;
         }
         if (player.equals(curPlayer)) {
-            shelf[1] += yellow + bold + "< cur" + rst;
+            shelf[1] += yellow + bold + " < cur" + rst;
             delta+=5;
         }
         l = player.length() + delta;
@@ -1138,7 +1172,7 @@ public class TextualUI implements ViewInterface {
     @Override
     public synchronized void receiveLobbyNotCreatedMsg(LobbyNotCreatedMessage msg) {
         restoreWindow();
-        System.out.print(err + "An error occoured, the lobby was not created\n" + in);
+        System.out.print(err + "An error occurred, the lobby was not created\n" + in);
     }
 
     @Override
@@ -1184,7 +1218,7 @@ public class TextualUI implements ViewInterface {
 
     public synchronized void receivePrivateChatUpdateMsg(PrivateChatUpdateMessage msg) {
         if(msg.getReceiver().equals(nickname)){
-            System.out.print("\n" + out + bold + msg.getSender() + " just write" + unBold + ":  " + msg.getContent() + red + bold + " [private]\n" + in);
+            System.out.print("\n" + out + bold + msg.getSender() + " just write" + ":  " + msg.getContent() + red + bold + " [private]\n" + in);
             try{
                 sleep(600);
             }catch (InterruptedException e){
@@ -1206,6 +1240,97 @@ public class TextualUI implements ViewInterface {
     @Override
     public synchronized void receiveGameUpdatedMsg(GameUpdatedMessage msg) {
         updateView(msg.getGameInfo());
+    }
+
+    public void receiveGameEndedMsg(GameEndedMessage msg){
+        FinalGameInfo info = msg.getGameInfo();
+        List<String> leaderboard = new ArrayList<>();
+        List<Integer> points = new ArrayList<>();
+        Map<String, List<Integer>> finalPoints = info.getFinalPoints();
+        String command;
+        List<String> availableCommands = List.of("/quit", "/gamestate", "/chat", "/showchat", "/leaderboard");
+        ClientMessage clientMessageOut = null;
+        boolean hasMessage;
+
+        updateView(msg.getGameInfo());
+
+        synchronized(this) {
+            for (int i = 0; i < info.getOnlinePlayers().size(); i++) {
+                String cur ="";
+                int curPoints = 0;
+                for (String player : info.getOnlinePlayers()) {
+                    Integer playerPoints = 0;
+                    for (Integer j : finalPoints.get(player)) {
+                        playerPoints += j;
+                    }
+                    if (playerPoints > curPoints && !leaderboard.contains(player)) {
+                        curPoints = playerPoints;
+                        cur = player;
+                    }
+                }
+                leaderboard.add(cur);
+                points.add(curPoints);
+            }
+            System.out.print("\n" + out + bold + "THE GAME IS ENDED!\n" + rst + "     press any key to continue\n" + in);
+            scanner.nextLine();
+            displayLeaderBoard(leaderboard, points, finalPoints);
+            System.out.print(out + "Here is a list of available commands:\n" +
+                    "/quit: to leave the lobby\n" +
+                    "/gamestate: to see the final state of the game\n" +
+                    "/chat: to use the chat\n" +
+                    "/showchat: to visualize the chat\n" +
+                    "/leaderboard: to show leaderboard");
+        }
+        while(true){
+            command = scanner.nextLine();
+            while (!availableCommands.contains(command)) {
+                System.out.println(rst + err + bold + "given command is not available");
+                command = scanner.nextLine();
+            }
+            synchronized (this) {
+                hasMessage = false;
+                switch (command) {
+                    case "/quit"-> {
+                        System.out.print(out + bold + "Are you sure? [Y/n]\n" + in);
+                        String quit = scanner.nextLine();
+                        if (!quit.equals("n") && !quit.equals("N")) {
+                            clientMessageOut = new QuitMessage();
+                            ;
+                            hasMessage = true;
+                            if (client instanceof RMIClient) {
+                                client = new RMIClient("localhost", 1099, this);
+                            } else if (client instanceof SocketClient) {
+                                client = new SocketClient("localhost", 8088, this);
+                            }
+                            client.init();
+                            System.out.print(in + " ");
+                        }
+                    }
+                    case "/gamestate"-> {
+                        displayGameInfo();
+                    }
+
+                    case "/chat" -> {
+                        System.out.print(out + "You have entered the chat. Write a message\n" + in);
+
+                        hasMessage = true;
+                        clientMessageOut = askChatMessage();
+                    }
+                    case "/showchat" -> {
+                        displayChat();
+                    }
+                    case "/leaderboard" -> {
+                        displayLeaderBoard(leaderboard, points, finalPoints);
+                    }
+                }
+                if(hasMessage){
+                    if (client instanceof RMIClient) {
+                        clientMessageOut.setRmiClient((RMIClient) client);
+                    }
+                    client.sendMsgToServer(clientMessageOut);
+                }
+            }
+        }
     }
 
     @Override
@@ -1265,6 +1390,6 @@ public class TextualUI implements ViewInterface {
 
     @Override
     public synchronized void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
-        System.out.print(err + "An unexpected connectivity error occured. You have been disconnected\n" + in);
+        System.out.print(err + "An unexpected connectivity error occurred. You have been disconnected\n" + in);
     }
 }

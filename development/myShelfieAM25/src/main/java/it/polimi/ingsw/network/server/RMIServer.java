@@ -2,6 +2,7 @@ package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.Lobby;
 import it.polimi.ingsw.exception.*;
+import it.polimi.ingsw.model.data.FinalGameInfo;
 import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.RMIServerInterface;
@@ -261,6 +262,12 @@ public class RMIServer implements Runnable, RMIServerInterface{
                     UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
                     updatedPlayerMessage.setUpdatedPlayer(rmiClientsLobby.get(msg.getRmiClient()).getCurrentPlayer());
                     server.sendMsgToAll(updatedPlayerMessage, rmiClientsLobby.get(msg.getRmiClient()));
+
+                    if(info.isGameEnded()){
+                        GameEndedMessage gameEndedMessage = new GameEndedMessage();
+                        gameEndedMessage.setGameInfo((FinalGameInfo) info);
+                        server.sendMsgToAll(gameEndedMessage, rmiClientsLobby.get(msg.getRmiClient()));
+                    }
                 } catch (IllegalMoveException e) {
                     sendMsgToClient(sender, new InvalidMoveMessage());
                 } catch (GameEndedException ignored) {
