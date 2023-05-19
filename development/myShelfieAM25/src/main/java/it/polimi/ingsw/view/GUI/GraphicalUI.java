@@ -7,6 +7,7 @@ import it.polimi.ingsw.view.GUI.SceneFactories.PlayScreen;
 import it.polimi.ingsw.view.GUI.SceneFactories.SceneFactory;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -66,14 +67,22 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveCreatedLobbyMsg(CreatedLobbyMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                update();
+            }
+        });
     }
 
     @Override
     public void receiveJoinedMsg(JoinedMessage msg) {
-        if(factory instanceof MenuScreen menu){
-            menu.joinedGame();
-        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                update();
+            }
+        });
     }
 
     @Override
@@ -120,7 +129,12 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveGameCreatedMsg(GameCreatedMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                update();
+            }
+        });
     }
 
     @Override

@@ -2,8 +2,10 @@ package it.polimi.ingsw.view.GUI.SceneFactories;
 
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
+import it.polimi.ingsw.network.messages.clientMessages.CreateLobbyMessage;
 import it.polimi.ingsw.network.messages.clientMessages.JoinMessage;
 import it.polimi.ingsw.network.messages.clientMessages.RetrieveLobbiesMessage;
+import it.polimi.ingsw.network.messages.serverMessages.CreatedLobbyMessage;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
@@ -20,6 +22,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MenuScreen extends SceneHandler implements SceneFactory{
@@ -30,11 +33,16 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
 
     ListView<String> lobbylist;
 
+    String nicknameBuffer;
+    String lobbynameBuffer;
+
+    Object lock = new Object();
+
     public MenuScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client){
         super(state, screen, view);
         this.client = client;
-
-        refresh();
+        lobbies = new ArrayList<>();
+        lobbylist = new ListView<>();
         scene = new Scene(mainMenu());
     }
     @Override
@@ -48,8 +56,9 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         Text title = new Text("MyShelfie Menu");
         title.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
 
-        lobbylist = new ListView<>();
-        lobbylist.getItems().setAll(lobbies);
+        if(!lobbies.isEmpty()) {
+            lobbylist.getItems().addAll(lobbies);
+        }
 
         Button create = new Button("Create Game");
         create.setOnAction(actionEvent -> {
@@ -89,6 +98,12 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
 
         adjustScaling(r);
         return r;
+    }
+
+    @Override
+    public Scene getScene() {
+        refresh();
+        return super.getScene();
     }
 
     private Parent joinGame(){
@@ -170,19 +185,35 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
     }
 
     public void receiveRefresh(List<String> lobbies){
+        if(lobbies == null){
+            System.exit(420);
+        }
         this.lobbies = lobbies;
-        lobbylist.getItems().setAll(this.lobbies);
+        lobbylist.getItems().clear();
+        if(!lobbies.isEmpty()) {
+            lobbylist.getItems().addAll(this.lobbies);
+        }
     }
 
-    private void serverGameCreation(String nickname, String lobbyname, int size){
+    private void serverGameCreation(String nickname, String lobbyname, int size) {
         if(nickname==null && lobbyname==null || size<2 || size>4){
             return;
         }
-        //code to ask the server with catch
+        CreateLobbyMessage clientMessage = new CreateLobbyMessage();
+        clientMessage.setLobbyName(lobbyname);
+        clientMessage.setLobbyCreator(nickname);
+        clientMessage.setPlayerNumber(size);
+
+        if (client instanceof RMIClient) {
+            clientMessage.setRmiClient((RMIClient) client);
+        }
+        client.sendMsgToServer(clientMessage);
+
+        nicknameBuffer = nickname;
+        lobbynameBuffer = lobbyname;
         //scene.setRoot(creategame()) se fallisce
-        serverJoinGame(nickname, lobbyname);
-        //se va a buon fine
     }
+
 
     private void serverJoinGame(String nickname, String lobbyname){
         if(nickname==null || lobbyname==null ){
@@ -198,8 +229,5 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         client.sendMsgToServer(clientMessage);
     }
 
-    public void joinedGame(){
-        state.update();
-    }
 
 }

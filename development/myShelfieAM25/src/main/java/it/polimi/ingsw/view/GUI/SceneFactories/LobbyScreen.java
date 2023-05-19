@@ -31,7 +31,8 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
 
         Button cancel = new Button("Go back to menu");
         cancel.setOnAction(actionEvent -> {
-            state.forceUpdate(new MenuScreen(state, screen, view, client));
+            client.disconnect(false);
+            state.forceUpdate(new PlayScreen(state, screen, view));
         });
 
         r.setAlignment(Pos.CENTER);

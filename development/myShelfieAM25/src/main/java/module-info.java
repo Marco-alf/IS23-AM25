@@ -11,4 +11,10 @@ module AM25 {
 
     opens it.polimi.ingsw.view.GUI.SceneFactories to javafx.fxml;
     exports it.polimi.ingsw.view.GUI.SceneFactories to javafx.fxml;
+
+    exports it.polimi.ingsw.network.client to java.rmi;
+    exports it.polimi.ingsw.network.server to java.rmi;
+
+    exports it.polimi.ingsw.network.messages.serverMessages;
+    exports it.polimi.ingsw.network.messages.clientMessages;
 }

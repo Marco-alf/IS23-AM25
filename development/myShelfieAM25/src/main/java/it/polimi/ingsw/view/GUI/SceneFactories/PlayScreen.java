@@ -46,15 +46,11 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
         TilePane r = new TilePane();
         Button tcp = new Button("TCP");
         tcp.setOnAction(actionEvent -> {
-            client = new RMIClient("localhost", 1099, view);
-            client.init();
-            state.update();
+            initiateTCP();
         });
         Button rmi = new Button("RMI");
         rmi.setOnAction(actionEvent -> {
-            client = new RMIClient("localhost", 1099, view);
-            client.init();
-            state.update();
+            initiateRMI();
         });
 
         r.getChildren().addAll(tcp, rmi);
@@ -63,6 +59,18 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
 
         adjustScaling(r);
         return r;
+    }
+
+    public void initiateTCP(){
+        client = new RMIClient("localhost", 1099, view);
+        client.init();
+        state.update();
+    }
+
+    public void initiateRMI(){
+        client = new RMIClient("localhost", 1099, view);
+        client.init();
+        state.update();
     }
 
 }
