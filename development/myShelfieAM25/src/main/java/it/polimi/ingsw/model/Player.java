@@ -105,7 +105,7 @@ public class Player {
                 curTop++;
             }
         }
-        if(curTop >= shelf.getyBound()) throw new FullColumnException();
+        if(curTop + tiles.size() >= shelf.getyBound()) throw new FullColumnException();
 
         List<TilesType> tileList = board.takeTiles(tiles);
         shelf.add(tileList, shelfColumn);

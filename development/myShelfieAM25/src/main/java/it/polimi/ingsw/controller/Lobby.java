@@ -105,6 +105,8 @@ public class Lobby {
      */
     public void moveTiles(List<Tile> tiles, int shelfColumn, String player) throws
             IllegalMoveException, GameEndedException {
+
+        if (tiles.size() == 0) throw new IllegalMoveException();
         try {
             if (game.getEndGame()) throw new GameEndedException();
             game.moveTiles(tiles, shelfColumn, player);
