@@ -88,12 +88,17 @@ public class TextualUI implements ViewInterface {
         }
         while (true) {
             hasMessage = false;
+            try {
+                sleep(300);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             inputCommand = askCommand();
             synchronized (this) {
                 switch (inputCommand) {
                     case "/create" -> {
                         if (client.getIsInLobbyStatus()) {
-                            System.out.print(out + "You are already in a lobby\n");
+                            System.out.print(out + "You are already in a lobby\n" + in);
                         } else {
                             String name = askName();
                             String lobbyName = askLobbyName();
@@ -405,6 +410,7 @@ public class TextualUI implements ViewInterface {
     public synchronized Tile getTiles (String coords) {
         int x = Integer.parseInt(String.valueOf(coords.charAt(0)));
         int y = Integer.parseInt(String.valueOf(coords.charAt(2)));
+        if(x < 0 || y < 0 || x > 8 || y > 8) return null;
         return new Tile(board[y][x], x, y);
     }
     public synchronized String getTile (TilesType type) {
