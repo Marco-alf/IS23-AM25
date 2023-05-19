@@ -80,6 +80,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     public void run() {
         try {
             System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
+            System.out.println("Per giocare connettersi a: " + InetAddress.getLocalHost().getHostAddress());
             RMIServerInterface stub = (RMIServerInterface) UnicastRemoteObject.exportObject(this, 0);
             LocateRegistry.createRegistry(port);
             LocateRegistry.getRegistry(port).bind(RMIServerInterface.NAME, stub);
@@ -160,6 +161,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     public void receiveMsgFromClient (Serializable arg) {
         ClientMessage msg = (ClientMessage) arg;
         RMIClientInterface sender = msg.getRmiClient();
+        System.out.println(msg.getType());
         try {
             if (msg.getType().equals("CreateLobbyMessage") && rmiClientsStates.get(sender) == ClientState.CONNECTED) {
                 CreateLobbyMessage specificMessage = (CreateLobbyMessage) msg;
