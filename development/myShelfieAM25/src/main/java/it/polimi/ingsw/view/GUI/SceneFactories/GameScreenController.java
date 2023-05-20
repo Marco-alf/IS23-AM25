@@ -1,11 +1,17 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
+import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameScreenController {
     @FXML
@@ -22,7 +28,17 @@ public class GameScreenController {
     @FXML
     GridPane player1shelf;
 
+    @FXML
+    Button player1Button, player2Button, player3Button, myshelf;
+
+    @FXML
+    BorderPane player1, player2, player3;
+
+    private final ImageView [][] shelf1 = new ImageView[5][6];
+
+
     private TilesType [][] livingroomBoard  = new TilesType[5][6];
+    private final List<Tile> selected = new ArrayList<>();
 
     private final Image cats = new Image("17_MyShelfie_BGA/item_tiles/Gatti1.1.png");
     private final Image trophies = new Image("17_MyShelfie_BGA/item_tiles/Trofei1.1.png");
@@ -34,6 +50,25 @@ public class GameScreenController {
     public void updateInitialGameInfo(InitialGameInfo info) {
         livingroomBoard = info.getNewBoard();
         refreshBoard();
+    }
+
+    public void initActions(){
+
+        for(int i=0;  i<5; i++){
+            for(int j=0;  j<6; j++){
+                shelf1[i][j] = new ImageView();
+                shelf1[i][j].setFitHeight(95);
+                shelf1[i][j].setFitWidth(95);
+                shelf1[i][j].setImage(cats);
+                player1shelf.add(shelf1[i][j], i, j);
+            }
+        }
+        player1Button.setOnAction(actionEvent -> toggleBoard(1));
+        player2Button.setOnAction(actionEvent -> toggleBoard(2));
+        player3Button.setOnAction(actionEvent -> toggleBoard(3));
+        myshelf.setOnAction(actionEvent -> toggleBoard(0));
+
+        board30.setOnMouseClicked(mouseEvent -> { select(3,0); } );
     }
 
     private void refreshBoard(){
@@ -82,6 +117,9 @@ public class GameScreenController {
         board48.setImage(getTexture(livingroomBoard[4][8])) ;
         board58.setImage(getTexture(livingroomBoard[5][8])) ;
     }
+    private void select(int i, int j){
+
+    }
 
     private Image getTexture(TilesType type){
         Image result;
@@ -99,4 +137,17 @@ public class GameScreenController {
         }
         return result;
     }
+
+    public void toggleBoard(int i){
+        player1.setVisible(false);
+        player2.setVisible(false);
+        player3.setVisible(false);
+        switch (i){
+            case 0 -> {}
+            case 1 -> player1.setVisible(true);
+            case 2 -> player2.setVisible(true);
+            case 3 -> player3.setVisible(true);
+        }
+    }
+
 }

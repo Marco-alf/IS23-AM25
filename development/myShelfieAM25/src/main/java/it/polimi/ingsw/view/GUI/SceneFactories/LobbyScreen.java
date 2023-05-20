@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
 import it.polimi.ingsw.network.client.GenericClient;
+import it.polimi.ingsw.network.client.RMIClient;
+import it.polimi.ingsw.network.messages.clientMessages.QuitMessage;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
@@ -31,6 +33,11 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
 
         Button cancel = new Button("Go back to menu");
         cancel.setOnAction(actionEvent -> {
+            QuitMessage clientMessage = new QuitMessage();
+            if (client instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) client);
+            }
+            client.sendMsgToServer(clientMessage);
             client.disconnect(false);
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
