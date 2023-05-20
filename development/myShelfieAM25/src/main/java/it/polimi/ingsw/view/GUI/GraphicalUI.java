@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.GUI;
 
+import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 import it.polimi.ingsw.view.GUI.SceneFactories.GameScreen;
 import it.polimi.ingsw.view.GUI.SceneFactories.MenuScreen;
@@ -133,6 +134,9 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
             @Override
             public void run() {
                 update();
+                if(factory instanceof GameScreen game){
+                    game.updateInitialGameInfo(msg.getGameInfo());
+                }
             }
         });
     }

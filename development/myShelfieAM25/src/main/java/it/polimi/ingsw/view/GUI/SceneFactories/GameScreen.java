@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
+import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
@@ -23,6 +24,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
 
     GenericClient client;
     ImageView board;
+    GameScreenController controller;
     public GameScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client) {
         super(state, screen, view);
         this.client = client;
@@ -34,8 +36,11 @@ public class GameScreen extends SceneHandler implements SceneFactory{
 
         Parent r = null;
         try {
-            FXMLLoader loader = new FXMLLoader();
-            r = FXMLLoader.load(res.toUri().toURL());
+            controller = new GameScreenController();
+            FXMLLoader loader = new FXMLLoader(res.toUri().toURL());
+            loader.setController(controller);
+
+            r = loader.load();
 
             Scale sc = new Scale();
             double xscaling = screen.getWidth()/1920 ;
@@ -52,6 +57,9 @@ public class GameScreen extends SceneHandler implements SceneFactory{
 
     }
 
+    public void updateInitialGameInfo(InitialGameInfo info){
+        controller.updateInitialGameInfo(info);
+    }
 
 
     @Override

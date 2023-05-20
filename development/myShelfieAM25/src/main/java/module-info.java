@@ -17,4 +17,5 @@ module AM25 {
 
     exports it.polimi.ingsw.network.messages.serverMessages;
     exports it.polimi.ingsw.network.messages.clientMessages;
+    exports it.polimi.ingsw.model.data;
 }
