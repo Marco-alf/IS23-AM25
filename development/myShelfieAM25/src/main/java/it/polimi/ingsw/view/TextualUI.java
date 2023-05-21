@@ -12,6 +12,10 @@ import it.polimi.ingsw.network.client.SocketClient;
 import it.polimi.ingsw.network.messages.clientMessages.*;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -21,6 +25,7 @@ import static java.lang.Thread.sleep;
 
 public class TextualUI implements ViewInterface {
     private final Scanner scanner = new Scanner(System.in);
+    private boolean online = true;
     private GenericClient client;
     private TilesType[][] board;
     private final List<String> onlinePlayers = new ArrayList<>();
@@ -33,7 +38,7 @@ public class TextualUI implements ViewInterface {
     private String curPlayer;
     private PersonalGoal personalGoal;
     private final List<ChatUpdateMessage> messages = new ArrayList<>();
-    private static final List<String> commands = List.of("/create", "/join", "/retrieve","/chat","/showchat", "/help", "/move", "/quit", "/gamestate");
+    private static final List<String> commands = List.of("/create", "/join", "/retrieve","/chat","/showchat", "/help", "/move", "/quit", "/gamestate","/egg");
     private static final String rst = "\u001B[0m";
     private static final String whiteBack = "\u001B[48;5;" + 15 + "m";
     private static final String red = "\u001B[38;5;" + 1 + "m";
@@ -84,15 +89,17 @@ public class TextualUI implements ViewInterface {
                     socketError = false;
                 }
             }
-            restoreWindow();
+            if(online) {
+                restoreWindow();
 
-            printCommands();
-            System.out.print(in);
+                printCommands();
+                System.out.print(in);
+            }
         }
         finally {
             lock.unlock();
         }
-        while (!hasEnded) {
+        while (!hasEnded && online) {
             hasMessage = false;
             try {
                 sleep(300);
@@ -205,7 +212,8 @@ public class TextualUI implements ViewInterface {
                                     client = new SocketClient(serverIP, 8088, this);
                                 }
                                 client.init();
-                                System.out.print(in + " ");
+                                restoreWindow();
+                                printCommands();
                             }
 
                         } else {
@@ -223,15 +231,20 @@ public class TextualUI implements ViewInterface {
                             System.out.print(rst + err + "You have to be inside a game to use this functionality\n" + in);
                         }
                     }
+                    case "/egg" ->{
+                        System.out.print(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
+                    }
                 }
             }
             finally {
                 lock.unlock();
             }
-            if(display) displayGameInfo();
-            if (!lastMessage.equals("_")) {
-                System.out.println(out + "You have unread " + bold + "messages" + rst + ". To see them you can use" + bold + " /retrieve" + rst + " command\n     > last message: " +
-                        lastMessage);
+            if(display) {
+                displayGameInfo();
+            }
+            if (!lastMessage.equals("_") && !inputCommand.equals("/move")) {
+                System.out.println("\n" + out + "You have unread " + bold + "messages" + rst + ". To see them you can use" + bold + " /retrieve" + rst + " command\n     > last message: " +
+                        lastMessage + "\n" + in);
                 lastMessage = "_";
             }
             display = false;
@@ -242,7 +255,7 @@ public class TextualUI implements ViewInterface {
                 client.sendMsgToServer(clientMessageOut);
             }
         }
-        manageEndGame();
+        if(online)manageEndGame();
     }
 
     public void displayLeaderBoard(){
@@ -270,12 +283,12 @@ public class TextualUI implements ViewInterface {
                     "           ██      ██      ██   ██ ██   ██ ██      ██   ██ ██   ██ ██    ██ ██   ██ ██   ██ ██   ██    ██ \n" +
                     "           ██      █████   ███████ ██   ██ █████   ██████  ██████  ██    ██ ███████ ██████  ██   ██     \n" +
                     "           ██      ██      ██   ██ ██   ██ ██      ██   ██ ██   ██ ██    ██ ██   ██ ██   ██ ██   ██    ██\n" +
-                    "           ███████ ███████ ██   ██ ██████  ███████ ██   ██ ██████   ██████  ██   ██ ██   ██ ██████   \n\n");
-            System.out.print(rst + yellow + bold +"1. \n");
+                    "           ███████ ███████ ██   ██ ██████  ███████ ██   ██ ██████   ██████  ██   ██ ██   ██ ██████   \n\n\n");
+
             int middle = 8;
             int increment;
             if (results.getLeaderboard().get(0).length() / 2 > middle - 1) {
-                increment = results.getLeaderboard().get(0).length() / 2 - middle;
+                increment = results.getLeaderboard().get(0).length() / 2 - middle -1;
                 for (int i = 0; i < increment; i++) {
                     System.out.print(" ");
                 }
@@ -293,11 +306,10 @@ public class TextualUI implements ViewInterface {
 
                 System.out.print(rst + "\u001B[38;5;18m" + "\u001B[48;5;252m" );
                 System.out.print(bold + results.getLeaderboard().get(0));
+                System.out.println(rst + bold);
                 for (int i = 0; i < increment; i++) {
                     System.out.print(" ");
                 }
-                System.out.println(rst + bold);
-
                 System.out.print(yellow + "  \"\\\"\\\"\\|/\"/\"/\" \n");
 
                 for (int i = 0; i < increment; i++) {
@@ -322,7 +334,8 @@ public class TextualUI implements ViewInterface {
                 System.out.print(yellow + bold + "  \"\\\"\\\"\\|/\"/\"/\" \n");
                 System.out.println(yellow + bold + "    <*><*><*>\n");
             }
-            System.out.println(rst + yellow + bold + "Total points: " + rst + bold + results.getTotals().get(0));
+            System.out.print(rst + yellow + bold +"1. "+results.getLeaderboard().get(0)+":\n");
+            System.out.println(rst + bold + "Total points: " + yellow + bold + results.getTotals().get(0));
             System.out.println(rst + "Personal Goal points: " + bold + results.getPersonalPoints().get(0));
             System.out.println(rst + "Common Goal points: " + bold + results.getCommonPoints().get(0));
             System.out.println(rst + "Adjacency points: " + bold + results.getAdjacencyPoints().get(0));
@@ -441,6 +454,7 @@ public class TextualUI implements ViewInterface {
             else if(nickname.equals(curPlayer)) personalPoints = info.getPersonalGoalPoints();
             curPlayer = info.getCurrentPlayer();
             hasEnded = info.isGameEnded();
+
         }
         finally {
             stateLock.unlock();
@@ -512,9 +526,14 @@ public class TextualUI implements ViewInterface {
 
             System.out.print(info);
             System.out.println(out + "current player is: " + red + bold + this.curPlayer + rst);
-            System.out.print(in);
             lock.unlock();
             chatLock.unlock();
+            if (!lastMessage.equals("_")) {
+                System.out.println(out + "You have unread " + bold + "messages" + rst + ". To see them you can use" + bold + " /retrieve" + rst + " command\n     > last message: " +
+                        lastMessage);
+                lastMessage = "_";
+            }
+            System.out.print(in);
         }
         else{
             display = true;
@@ -591,7 +610,16 @@ public class TextualUI implements ViewInterface {
         while(!commands.contains(command) && !hasEnded){
             System.out.print("\u001B[38;5;" + 1 + "m\u001B[1m ERROR: invalid command!  ");
             System.out.print("\u001B[0m To see available commands type \u001B[1m\"/help\".\u001B[0m\n" + in);
-            command = scanner.nextLine();
+
+            if(!hasEnded){
+                command = scanner.nextLine();
+            }
+            else {
+                return "/egg";
+            }
+        }
+        if(hasEnded) {
+            return "/egg";
         }
         return command;
     }
@@ -1478,16 +1506,16 @@ public class TextualUI implements ViewInterface {
                 } catch (InterruptedException e) {
                     throw new RuntimeException("interrupt during sleep!");
                 }
-                messages.add(msg);
             }
             if (msg.getSender().equals(nickname)) {
-                messages.add(msg);
                 System.out.print(out + "You have sent a private message to: " + bold + msg.getReceiver() + "\n" + in);
             }
             lock.unlock();
             chatLock.unlock();
         }
         else if(!msg.getSender().equals(nickname)) lastMessage = rst + bold + msg.getSender() +": " + rst + msg.getContent() + red + bold + " [private]" + rst;
+
+        if(msg.getReceiver().equals(nickname) || msg.getSender().equals(nickname)) messages.add(msg);
     }
 
     @Override
@@ -1517,66 +1545,63 @@ public class TextualUI implements ViewInterface {
         boolean hasMessage;
 
 
-        System.out.print("\n" + out + bold + "THE GAME IS ENDED!\n" + rst + "  press any key to continue...\n" + in);
+        System.out.print("\n" + out + bold + "THE GAME IS ENDED!\n" + rst + "  press enter to continue...\n" + in);
+        scanner.nextLine();
         displayLeaderBoard();
-        System.out.print(out + "\nHere is a list of available commands:\n" +
-                "/quit: to leave the lobby\n" +
-                "/gamestate: to see the final state of the game\n" +
-                "/chat: to use the chat\n" +
-                "/showchat: to visualize the chat\n" +
-                "/leaderboard: to show leaderboard\n" + in);
+        System.out.print("\n" + bold + "Here is a list of available commands:\n" +
+                yellow + bold + "/quit:" + rst +" to leave the lobby\n" +
+                yellow + bold + "/gamestate:" + rst +" to see the final state of the game\n" +
+                yellow + bold + "/chat:" + rst +" to use the chat\n" +
+                yellow + bold + "/showchat:"+ rst + " to visualize the chat\n" +
+                yellow + bold + "/leaderboard:" + rst + " to show leaderboard\n" + in);
 
         while(true) {
             command = scanner.nextLine();
             while (!availableCommands.contains(command)) {
-                System.out.println(rst + err + bold + "given command is not available\n" + in);
+                System.out.print(rst + err + bold + "given command is not available\n" + in);
                 command = scanner.nextLine();
             }
-            lock.lock();
-            try {
-                hasMessage = false;
-                switch (command) {
-                    case "/quit" -> {
-                        System.out.print(out + bold + "Are you sure? [Y/n]\n" + in);
-                        String quit = scanner.nextLine();
-                        if (!quit.equals("n") && !quit.equals("N")) {
-                            clientMessageOut = new QuitMessage();
-                            hasMessage = true;
-                            if (client instanceof RMIClient) {
-                                client = new RMIClient(serverIP, 1099, this);
-                            } else if (client instanceof SocketClient) {
-                                client = new SocketClient(serverIP, 8088, this);
-                            }
-                            client.init();
-                            System.out.print(in);
-                        }
-                    }
-                    case "/gamestate" -> displayGameInfo();
-
-                    case "/chat" -> {
-                        System.out.print(out + "You have entered the chat. Write a message\n" + in);
-
+            hasMessage = false;
+            switch (command) {
+                case "/quit" -> {
+                    System.out.print(out + bold + "Are you sure? [Y/n]\n" + in);
+                    String quit = scanner.nextLine();
+                    if (!quit.equals("n") && !quit.equals("N")) {
+                        clientMessageOut = new QuitMessage();
                         hasMessage = true;
-                        lock.unlock();
-                        clientMessageOut = askChatMessage();
-                        lock.lock();
+                        if (client instanceof RMIClient) {
+                            client = new RMIClient(serverIP, 1099, this);
+                        } else if (client instanceof SocketClient) {
+                            client = new SocketClient(serverIP, 8088, this);
+                        }
+                        client.init();
+                        restoreWindow();
+                        printCommands();
+                        System.out.print("in");
                     }
-                    case "/showchat" -> displayChat();
-                    case "/leaderboard" -> {
-                        displayLeaderBoard();
-                        System.out.print(in);
-                    }
-                }
-                if (hasMessage) {
-                    if (client instanceof RMIClient) {
-                        clientMessageOut.setRmiClient((RMIClient) client);
-                    }
-                    client.sendMsgToServer(clientMessageOut);
                     System.out.print(in);
                 }
-            } finally {
-                lock.unlock();
+                case "/gamestate" -> displayGameInfo();
+
+                case "/chat" -> {
+                    System.out.print(out + "You have entered the chat. Write a message\n" + in);
+
+                    hasMessage = true;
+                    clientMessageOut = askChatMessage();
+                }
+                case "/showchat" -> displayChat();
+                case "/leaderboard" -> {
+                    displayLeaderBoard();
+                    System.out.print(in);
+                }
             }
+            if (hasMessage) {
+                if (client instanceof RMIClient) {
+                    clientMessageOut.setRmiClient((RMIClient) client);
+                }
+                client.sendMsgToServer(clientMessageOut);
+            }
+
             try{
                 sleep(300);
             }catch (InterruptedException e){
@@ -1588,13 +1613,11 @@ public class TextualUI implements ViewInterface {
         FinalGameInfo info = msg.getGameInfo();
         Map<String, List<Integer>> finalPoints = info.getFinalPoints();
 
-        updateView(msg.getGameInfo());
-
-        lock.lock();
+        stateLock.lock();
         try{
             for (int i = 0; i < info.getOnlinePlayers().size(); i++) {
                 String cur = "";
-                int curPoints = 0;
+                int curPoints = -1;
                 for (String player : info.getOnlinePlayers()) {
                     Integer playerPoints = 0;
                     for (Integer j : finalPoints.get(player)) {
@@ -1614,8 +1637,20 @@ public class TextualUI implements ViewInterface {
                 results.addCommonPoints(finalPoints.get(player).get(0)+finalPoints.get(player).get(1));
             }
         }finally {
-            lock.unlock();
+            stateLock.unlock();
         }
+        String data = "/egg\n";
+        InputStream endInput = new ByteArrayInputStream( data.getBytes(StandardCharsets.UTF_8) );
+        InputStream old = System.in;
+        updateView(msg.getGameInfo());
+        /*
+        System.setIn(endInput);
+        try {
+            sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.setIn(old);*/
     }
 
     @Override
@@ -1698,7 +1733,7 @@ public class TextualUI implements ViewInterface {
     public void receiveInvalidCommandMsg(InvalidCommandMessage msg) {
         lock.lock();
         try {
-            System.out.print(err + "Selected command does not exists! To get available commands you type /help\n" + in);
+            System.out.print(err + "Selected command is not available! To get available commands you type /help\n" + in);
         }
         finally {
             lock.unlock();
@@ -1707,12 +1742,8 @@ public class TextualUI implements ViewInterface {
 
     @Override
     public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
-        lock.lock();
-        try {
-            System.out.print(err + "An unexpected connectivity error occurred. You have been disconnected\n" + in);
-        }
-        finally {
-            lock.unlock();
-        }
+
+        System.out.print(err + "An unexpected connectivity error occurred. You have been disconnected\n" + in);
+        online = false;
     }
 }
