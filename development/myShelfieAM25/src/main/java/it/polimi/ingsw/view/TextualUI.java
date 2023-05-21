@@ -204,8 +204,10 @@ public class TextualUI implements ViewInterface {
                             String quit = scanner.nextLine();
                             if (quit.equals("y") || quit.equals("Y")) {
                                 clientMessageOut = new QuitMessage();
-                                hasMessage = true;
-
+                                if (client instanceof RMIClient) {
+                                    clientMessageOut.setRmiClient((RMIClient) client);
+                                }
+                                client.sendMsgToServer(clientMessageOut);
                                 if (client instanceof RMIClient) {
                                     client = new RMIClient(serverIP, 1099, this);
                                 } else if (client instanceof SocketClient) {
@@ -214,6 +216,7 @@ public class TextualUI implements ViewInterface {
                                 client.init();
                                 restoreWindow();
                                 printCommands();
+                                System.out.print(in);
                             }
 
                         } else {
@@ -1568,7 +1571,10 @@ public class TextualUI implements ViewInterface {
                     String quit = scanner.nextLine();
                     if (!quit.equals("n") && !quit.equals("N")) {
                         clientMessageOut = new QuitMessage();
-                        hasMessage = true;
+                        if (client instanceof RMIClient) {
+                            clientMessageOut.setRmiClient((RMIClient) client);
+                        }
+                        client.sendMsgToServer(clientMessageOut);
                         if (client instanceof RMIClient) {
                             client = new RMIClient(serverIP, 1099, this);
                         } else if (client instanceof SocketClient) {
@@ -1743,7 +1749,11 @@ public class TextualUI implements ViewInterface {
     @Override
     public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
 
-        System.out.print(err + "An unexpected connectivity error occurred. You have been disconnected\n" + in);
-        online = false;
+        if(online){
+            System.out.print(err + "An unexpected connectivity error occurred. You have been disconnected\n" + in);
+            online = false;
+        }
+        else online = true;
+
     }
 }
