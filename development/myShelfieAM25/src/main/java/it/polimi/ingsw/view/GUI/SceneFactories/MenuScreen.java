@@ -196,7 +196,7 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
     }
 
     private void serverGameCreation(String nickname, String lobbyname, int size) {
-        if(nickname==null && lobbyname==null || size<2 || size>4){
+        if(nickname==null && lobbyname==null || size<2 || size>4 || nickname.isBlank()){
             return;
         }
         CreateLobbyMessage clientMessage = new CreateLobbyMessage();
@@ -216,7 +216,7 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
 
 
     private void serverJoinGame(String nickname, String lobbyname){
-        if(nickname==null || lobbyname==null ){
+        if(nickname==null || lobbyname==null || nickname.isBlank() ){
             return;
         }
         JoinMessage clientMessage = new JoinMessage();

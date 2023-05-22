@@ -44,11 +44,19 @@ public class GameScreen extends SceneHandler implements SceneFactory{
             controller.initActions();
 
             Scale sc = new Scale();
-            double xscaling = screen.getWidth()/1920 ;
-            double yscaling = screen.getHeight()/1080 ;
+            double xscaling = 1;
+            double yscaling = 1;
+            if(screen.getWidth()/screen.getHeight() < 16d/9) {
+                /* height is greater*/
+                xscaling = screen.getWidth() / 1920;
+                yscaling = xscaling;
+            } else{
+                yscaling = screen.getHeight() / 1080;
+                xscaling = yscaling;
+            }
             sc.setX(xscaling);
             sc.setY(yscaling);
-            //r.getTransforms().add(sc);
+            r.getTransforms().add(sc);
             scene = new Scene(r, 1920, 1080);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -19,85 +19,9 @@
 
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-      <AnchorPane layoutX="55.0" layoutY="50.0" visible="false">
-         <children>
-            <BorderPane fx:id="player2" layoutY="95.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-image: url('17_MyShelfie_BGA/boards/bookshelf_scaled.png');;">
-               <center>
-                  <GridPane fx:id="player2shelf" alignment="CENTER" gridLinesVisible="true" hgap="36.0" vgap="18.0" BorderPane.alignment="CENTER">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <BorderPane.margin>
-                        <Insets bottom="60.0" left="104.0" right="104.0" top="60.0" />
-                     </BorderPane.margin>
-                  </GridPane>
-               </center>
-            </BorderPane>
-            <BorderPane fx:id="player1" layoutX="488.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-image: url('17_MyShelfie_BGA/boards/bookshelf_scaled.png');;">
-               <center>
-                  <GridPane fx:id="player1shelf" alignment="CENTER" gridLinesVisible="true" hgap="36.0" vgap="18.0" BorderPane.alignment="CENTER">
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                     <BorderPane.margin>
-                        <Insets bottom="60.0" left="104.0" right="104.0" top="60.0" />
-                     </BorderPane.margin>
-                  </GridPane>
-               </center>
-            </BorderPane>
-            <BorderPane fx:id="player3" layoutX="983.0" layoutY="95.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-image: url('17_MyShelfie_BGA/boards/bookshelf_scaled.png');;">
-               <center>
-                  <GridPane fx:id="player3shelf" alignment="CENTER" gridLinesVisible="true" hgap="36.0" vgap="18.0" BorderPane.alignment="CENTER">
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                     <BorderPane.margin>
-                        <Insets bottom="60.0" left="104.0" right="104.0" top="60.0" />
-                     </BorderPane.margin>
-                  </GridPane>
-               </center>
-            </BorderPane>
-         </children>
-      </AnchorPane>
-        <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-image: url('17_MyShelfie_BGA/misc/sfondo_parquet.jpg');;">
+        <BorderPane fx:id="mainpanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-image: url('17_MyShelfie_BGA/misc/sfondo_parquet.jpg');;">
             <bottom>
-                <Button fx:id="myshelf" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" text="Button" />
+                <Button fx:id="myshelfButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" text="Button" />
             </bottom>
             <left>
                 <Button fx:id="player2Button" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" mnemonicParsing="false" prefWidth="55.0" text="Button" />
@@ -114,11 +38,14 @@
                   <VBox alignment="BOTTOM_CENTER" prefHeight="940.0" prefWidth="360.0" spacing="10.0">
                      <children>
                         <ListView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-                        <ButtonBar prefHeight="40.0" prefWidth="200.0">
+                        <ButtonBar buttonOrder="U+FBIX_NCYOA_R" nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
                           <buttons>
                             <Button maxWidth="20.0" minWidth="20.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="20.0" text="Lobby" />
                               <TextField alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="351.0" />
                           </buttons>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
                         </ButtonBar>
                      </children>
                      <HBox.margin>
@@ -226,5 +153,101 @@
                 </HBox>
             </center>
         </BorderPane>
+      <BorderPane fx:id="player2" layoutX="55.0" layoutY="150.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-image: url('17_MyShelfie_BGA/boards/bookshelf_scaled.png');;" visible="false" AnchorPane.leftAnchor="55.0">
+         <center>
+            <GridPane fx:id="player2shelf" alignment="CENTER" gridLinesVisible="true" hgap="36.0" vgap="18.0" BorderPane.alignment="CENTER">
+              <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <BorderPane.margin>
+                  <Insets bottom="60.0" left="104.0" right="104.0" top="60.0" />
+               </BorderPane.margin>
+            </GridPane>
+         </center>
+      </BorderPane>
+      <BorderPane fx:id="player1" layoutX="547.0" layoutY="55.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-image: url('17_MyShelfie_BGA/boards/bookshelf_scaled.png');;" visible="false" AnchorPane.topAnchor="55.0">
+         <center>
+            <GridPane fx:id="player1shelf" alignment="CENTER" gridLinesVisible="true" hgap="36.0" vgap="18.0" BorderPane.alignment="CENTER">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <BorderPane.margin>
+                  <Insets bottom="60.0" left="104.0" right="104.0" top="60.0" />
+               </BorderPane.margin>
+            </GridPane>
+         </center>
+      </BorderPane>
+      <BorderPane fx:id="player3" layoutX="1039.0" layoutY="150.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-image: url('17_MyShelfie_BGA/boards/bookshelf_scaled.png');;" visible="false" AnchorPane.rightAnchor="55.0">
+         <center>
+            <GridPane fx:id="player3shelf" alignment="CENTER" gridLinesVisible="true" hgap="36.0" vgap="18.0" BorderPane.alignment="CENTER">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <BorderPane.margin>
+                  <Insets bottom="60.0" left="104.0" right="104.0" top="60.0" />
+               </BorderPane.margin>
+            </GridPane>
+         </center>
+      </BorderPane>
+      <BorderPane fx:id="myshelf" layoutX="547.0" layoutY="245.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-image: url('17_MyShelfie_BGA/boards/bookshelf_scaled.png');;" visible="false">
+         <center>
+            <GridPane fx:id="player1shelf1" alignment="CENTER" gridLinesVisible="true" hgap="36.0" vgap="18.0" BorderPane.alignment="CENTER">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <BorderPane.margin>
+                  <Insets bottom="60.0" left="104.0" right="104.0" top="60.0" />
+               </BorderPane.margin>
+            </GridPane>
+         </center>
+      </BorderPane>
     </children>
 </AnchorPane>

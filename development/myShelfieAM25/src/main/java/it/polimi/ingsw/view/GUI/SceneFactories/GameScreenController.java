@@ -26,15 +26,27 @@ public class GameScreenController {
             board48, board58;
 
     @FXML
+    BorderPane mainpanel;
+    @FXML
     GridPane player1shelf;
 
     @FXML
-    Button player1Button, player2Button, player3Button, myshelf;
+    Button player1Button, player2Button, player3Button, myshelfButton;
 
     @FXML
-    BorderPane player1, player2, player3;
+    BorderPane player1, player2, player3, myshelf;
 
+    @FXML
+    ImageView goal1, goal2;
+
+    List<String> players = new ArrayList<>();
+    List<String> onlinePlayers = new ArrayList<>();
+
+
+    private final ImageView [][] shelf0 = new ImageView[5][6];
     private final ImageView [][] shelf1 = new ImageView[5][6];
+    private final ImageView [][] shelf2 = new ImageView[5][6];
+    private final ImageView [][] shelf3 = new ImageView[5][6];
 
 
     private TilesType [][] livingroomBoard  = new TilesType[5][6];
@@ -47,12 +59,31 @@ public class GameScreenController {
     private final Image books = new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png");
     private final Image plants = new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png");
 
+
+    private Button[] s_buttons = new Button[]{myshelfButton, player1Button, player2Button, player3Button };
+
     public void updateInitialGameInfo(InitialGameInfo info) {
         livingroomBoard = info.getNewBoard();
         refreshBoard();
+        players = new ArrayList<>(info.getPlayers());
+        onlinePlayers = new ArrayList<>(info.getOnlinePlayers());
+        int i=0;
+        for(; i<players.size(); i++){
+            s_buttons[i].setText(players.get(i));
+        }
+        for( ; i<4; i++){
+            s_buttons[i].setVisible(false);
+        }
+        goal1.setImage( new Image("17_MyShelfie_BGA/common_goal_cards/4.jpg"));
+        goal2.setImage( new Image("17_MyShelfie_BGA/common_goal_cards/3.jpg"));
     }
 
     public void initActions(){
+        mainpanel.setVisible(true);
+        myshelf.setVisible(false);
+        player1.setVisible(false);
+        player2.setVisible(false);
+        player3.setVisible(false);
 
         for(int i=0;  i<5; i++){
             for(int j=0;  j<6; j++){
@@ -66,9 +97,11 @@ public class GameScreenController {
         player1Button.setOnAction(actionEvent -> toggleBoard(1));
         player2Button.setOnAction(actionEvent -> toggleBoard(2));
         player3Button.setOnAction(actionEvent -> toggleBoard(3));
-        myshelf.setOnAction(actionEvent -> toggleBoard(0));
+        myshelfButton.setOnAction(actionEvent -> toggleBoard(0));
 
         board30.setOnMouseClicked(mouseEvent -> { select(3,0); } );
+
+        s_buttons = new  Button[]{myshelfButton, player1Button, player2Button, player3Button };
     }
 
     private void refreshBoard(){
@@ -139,15 +172,10 @@ public class GameScreenController {
     }
 
     public void toggleBoard(int i){
-        player1.setVisible(false);
-        player2.setVisible(false);
-        player3.setVisible(false);
-        switch (i){
-            case 0 -> {}
-            case 1 -> player1.setVisible(true);
-            case 2 -> player2.setVisible(true);
-            case 3 -> player3.setVisible(true);
-        }
+        myshelf.setVisible(i == 0 && !myshelf.isVisible());
+        player1.setVisible(i == 1 && !player1.isVisible());
+        player2.setVisible(i == 2 && !player2.isVisible());
+        player3.setVisible(i == 3 && !player3.isVisible());
     }
 
 }
