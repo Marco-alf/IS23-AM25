@@ -41,7 +41,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
             loader.setController(controller);
 
             r = loader.load();
-            controller.initActions();
+            controller.initActions(client);
 
             Scale sc = new Scale();
             double xscaling = 1;

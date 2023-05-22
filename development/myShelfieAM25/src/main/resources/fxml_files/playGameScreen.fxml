@@ -54,77 +54,29 @@
                   </VBox>
                   <BorderPane prefHeight="0.0" prefWidth="0.0" HBox.hgrow="NEVER">
                      <top>
-                        <GridPane alignment="CENTER" gridLinesVisible="true" hgap="4.0" style="-fx-background-image: url('17_MyShelfie_BGA/boards/livingroom_scaled.png');;" vgap="4.0" BorderPane.alignment="CENTER">
+                        <GridPane fx:id="viewBoard" alignment="CENTER" gridLinesVisible="true" hgap="4.0" style="-fx-background-image: url('17_MyShelfie_BGA/boards/livingroom_scaled.png');;" vgap="4.0" BorderPane.alignment="CENTER">
                           <columnConstraints>
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" minWidth="95.0" prefWidth="95.0" />
+                            <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" minWidth="95.0" prefWidth="95.0" />
+                            <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" minWidth="95.0" prefWidth="95.0" />
+                              <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" minWidth="95.0" prefWidth="95.0" />
                           </columnConstraints>
                           <rowConstraints>
-                            <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
-                            <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
-                            <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
-                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
-                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
-                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
-                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
-                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
-                              <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="NEVER" />
+                            <RowConstraints fillHeight="false" minHeight="95.0" prefHeight="95.0" valignment="CENTER" vgrow="NEVER" />
+                            <RowConstraints fillHeight="false" minHeight="95.0" prefHeight="95.0" valignment="CENTER" vgrow="NEVER" />
+                            <RowConstraints fillHeight="false" minHeight="95.0" prefHeight="95.0" valignment="CENTER" vgrow="NEVER" />
+                              <RowConstraints fillHeight="false" minHeight="95.0" prefHeight="95.0" valignment="CENTER" vgrow="NEVER" />
+                              <RowConstraints fillHeight="false" minHeight="95.0" prefHeight="95.0" valignment="CENTER" vgrow="NEVER" />
+                              <RowConstraints fillHeight="false" minHeight="95.0" prefHeight="95.0" valignment="CENTER" vgrow="NEVER" />
+                              <RowConstraints fillHeight="false" minHeight="95.0" prefHeight="95.0" valignment="CENTER" vgrow="NEVER" />
+                              <RowConstraints fillHeight="false" minHeight="95.0" prefHeight="95.0" valignment="CENTER" vgrow="NEVER" />
+                              <RowConstraints fillHeight="false" minHeight="95.0" prefHeight="95.0" valignment="CENTER" vgrow="NEVER" />
                           </rowConstraints>
-                           <children>
-                              <ImageView fx:id="board44" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="4" />
-                              <ImageView fx:id="board33" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                              <ImageView fx:id="board43" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-                              <ImageView fx:id="board34" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="4" />
-                              <ImageView fx:id="board54" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="4" />
-                              <ImageView fx:id="board45" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="5" />
-                              <ImageView fx:id="board53" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="3" />
-                              <ImageView fx:id="board55" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="5" />
-                              <ImageView fx:id="board35" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="5" />
-                              <ImageView fx:id="board32" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                              <ImageView fx:id="board42" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-                              <ImageView fx:id="board52" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="2" />
-                              <ImageView fx:id="board31" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                              <ImageView fx:id="board41" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                              <ImageView fx:id="board30" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" />
-                              <ImageView fx:id="board40" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" />
-                              <ImageView fx:id="board62" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.rowIndex="2" />
-                              <ImageView fx:id="board63" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.rowIndex="3" />
-                              <ImageView fx:id="board64" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.rowIndex="4" />
-                              <ImageView fx:id="board65" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.rowIndex="5" />
-                              <ImageView fx:id="board73" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="7" GridPane.rowIndex="3" />
-                              <ImageView fx:id="board74" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="7" GridPane.rowIndex="4" />
-                              <ImageView fx:id="board75" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="7" GridPane.rowIndex="5" />
-                              <ImageView fx:id="board83" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="8" GridPane.rowIndex="3" />
-                              <ImageView fx:id="board84" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="8" GridPane.rowIndex="4" />
-                              <ImageView fx:id="board66" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.rowIndex="6" />
-                              <ImageView fx:id="board36" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="6" />
-                              <ImageView fx:id="board56" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="6" />
-                              <ImageView fx:id="board46" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="6" />
-                              <ImageView fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" />
-                              <ImageView fx:id="board58" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="8" />
-                              <ImageView fx:id="board48" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="8" />
-                              <ImageView fx:id="board37" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="7" />
-                              <ImageView fx:id="board57" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="7" />
-                              <ImageView fx:id="board47" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="7" />
-                              <ImageView fx:id="board26" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                              <ImageView fx:id="board25" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                              <ImageView fx:id="board23" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                              <ImageView fx:id="board24" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                              <ImageView fx:id="board13" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <ImageView fx:id="board14" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                              <ImageView fx:id="board15" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                              <ImageView fx:id="board05" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="5" />
-                              <ImageView fx:id="board04" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="4" />
-                              <ImageView fx:id="board22" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              <ImageView fx:id="board51" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-                           </children>
                            <padding>
                               <Insets bottom="43.0" left="42.0" right="51.0" top="46.0" />
                            </padding>
@@ -136,6 +88,16 @@
                   </BorderPane>
                         <VBox alignment="CENTER" prefHeight="1030.0" prefWidth="280.0" spacing="20.0">
                             <children>
+                        <GridPane fx:id="selectedList" gridLinesVisible="true" hgap="10.0" prefHeight="285.0" prefWidth="132.0" vgap="10.0">
+                          <columnConstraints>
+                            <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="95.0" prefWidth="95.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                        </GridPane>
                                 <ImageView fx:id="goal1" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../17_MyShelfie_BGA/common_goal_cards/1.jpg" />
