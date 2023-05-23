@@ -15,6 +15,7 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
@@ -106,17 +107,38 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveNameTakenMsg(NameTakenMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText(msg.getType()+" name is already taken!");
+                a.showAndWait();
+            }
+        });
     }
 
     @Override
     public void receiveNotExistingLobbyMsg(NotExistingLobbyMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText(msg.getType()+" lobby does not exist!");
+                a.showAndWait();
+            }
+        });
     }
 
     @Override
     public void receiveFullLobbyMsg(FullLobbyMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText(msg.getType()+" lobby is full!");
+                a.showAndWait();
+            }
+        });
     }
 
     @Override

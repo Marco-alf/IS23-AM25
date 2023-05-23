@@ -31,8 +31,8 @@ public class GameScreen extends SceneHandler implements SceneFactory{
 
         board = new ImageView(new Image("17_MyShelfie_BGA/boards/livingroom.png"));
 
-        Path res = Path.of("development/myShelfieAM25/src/main/resources/fxml_files/playGameScreen.fxml");
-        //                      "C:\Users\marco\sweng\idontknowanymore\IS23-AM25\development\myShelfieAM25\src\main\resources\fxml_files\playGameScreen.fxml"
+        Path res = Path.of("src/main/resources/fxml_files/playGameScreen.fxml");
+        //                      "development/myShelfieAM25/src/main/resources/fxml_files/playGameScreen.fxml"
 
         Parent r = null;
         try {
