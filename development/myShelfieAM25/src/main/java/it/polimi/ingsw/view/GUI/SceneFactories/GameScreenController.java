@@ -5,10 +5,14 @@ import it.polimi.ingsw.model.TilesType;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
+import it.polimi.ingsw.network.messages.clientMessages.ChatMessage;
 import it.polimi.ingsw.network.messages.clientMessages.MoveMessage;
+import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -21,6 +25,7 @@ import java.util.Stack;
 
 public class GameScreenController {
     GenericClient client;
+    String selfName;
 
     @FXML
     GridPane viewBoard;
@@ -62,6 +67,12 @@ public class GameScreenController {
     @FXML
     GridPane arrows;
 
+    @FXML
+    ListView<String> chatList;
+    ArrayList<String> chat = new ArrayList<>();
+    @FXML
+    TextField chatField;
+
     private final Image cats = new Image("17_MyShelfie_BGA/item_tiles/Gatti1.1.png");
     private final Image trophies = new Image("17_MyShelfie_BGA/item_tiles/Trofei1.1.png");
     private final Image frames = new Image("17_MyShelfie_BGA/item_tiles/Cornici1.1.png");
@@ -77,14 +88,21 @@ public class GameScreenController {
         refreshBoard();
         players = new ArrayList<>(info.getPlayers());
         onlinePlayers = new ArrayList<>(info.getOnlinePlayers());
-        int i=0;
-        for(; i<players.size(); i++){
-            s_buttons[i].setText(players.get(i));
+
+
+        int i=1;
+        int k=0;
+        for(; i<players.size(); i++, k++){
+            if(players.get(k).equals(selfName)) {
+                k++;
+            }
+            s_buttons[i].setText(players.get(k));
         }
+        myshelfButton.setText(selfName);
+
         for( ; i<4; i++){
             s_buttons[i].setVisible(false);
         }
-        String jpgname = "";
 
         goal1.setImage( new Image("17_MyShelfie_BGA/common_goal_cards/"+commongoaltranslator(info.getCommonGoal1())+".jpg"));
         goal2.setImage( new Image("17_MyShelfie_BGA/common_goal_cards/"+commongoaltranslator(info.getCommonGoal2())+".jpg"));
@@ -109,8 +127,10 @@ public class GameScreenController {
         return result;
     }
 
-    public void initActions(GenericClient client){
+    public void initActions(GenericClient client, String selfName){
         this.client = client;
+        this.selfName = selfName;
+
         mainpanel.setVisible(true);
         myshelf.setVisible(false);
         player1.setVisible(false);
@@ -167,6 +187,7 @@ public class GameScreenController {
 
         s_buttons = new  Button[]{myshelfButton, player1Button, player2Button, player3Button };
 
+        chatField.setOnAction(actionEvent -> {sendChat();});
     }
 
     private void tryMove(int i) {
@@ -260,4 +281,25 @@ public class GameScreenController {
         player3.setVisible(i == 3 && !player3.isVisible());
     }
 
+    public synchronized void updateChat(ChatUpdateMessage msg) {
+        String s = " : ";
+        String message = msg.getTimestamp()+s+msg.getSender()+s+msg.getContent();
+        chatList.getItems().add(message);
+        chatList.scrollTo(chatList.getItems().size());
+    }
+    private synchronized void sendChat(){
+        String content = chatField.getText();
+        if(content == null || content.isBlank()){
+            return;
+        }
+
+        ChatMessage clientMessage = new ChatMessage();
+        clientMessage.setSender(selfName);
+        clientMessage.setContent(content);
+
+        if (client instanceof RMIClient) {
+            clientMessage.setRmiClient((RMIClient) client);
+        }
+        client.sendMsgToServer(clientMessage);
+    }
 }

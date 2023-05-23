@@ -19,11 +19,14 @@ import javafx.scene.text.Text;
 public class LobbyScreen extends SceneHandler implements SceneFactory{
 
     GenericClient client;
+    String selfName;
 
-    LobbyScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client) {
+    LobbyScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client, String selfName) {
         super(state, screen, view);
         scene = new Scene(waitingScreen());
         this.client = client;
+        this.selfName = selfName;
+
     }
 
     private Parent waitingScreen(){
@@ -52,6 +55,6 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
 
     @Override
     public SceneFactory next() {
-        return new GameScreen(state, screen, view, client);
+        return new GameScreen(state, screen, view, client, selfName);
     }
 }

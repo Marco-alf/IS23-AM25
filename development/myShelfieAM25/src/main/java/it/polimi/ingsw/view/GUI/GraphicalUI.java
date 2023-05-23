@@ -150,7 +150,14 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveChatUpdateMsg(ChatUpdateMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if(factory instanceof GameScreen game){
+                    game.updateChat(msg);
+                }
+            }
+        });
     }
 
     @Override

@@ -47,7 +47,7 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
     }
     @Override
     public SceneFactory next() {
-        return new LobbyScreen(state, screen, view, client);
+        return new LobbyScreen(state, screen, view, client, nicknameBuffer);
     }
 
     private Parent mainMenu(){
@@ -76,6 +76,7 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         });
         Button cancel = new Button("Cancel");
         cancel.setOnAction(actionEvent -> {
+            client.disconnect(false);
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
 
@@ -199,6 +200,10 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         if(nickname==null && lobbyname==null || size<2 || size>4 || nickname.isBlank()){
             return;
         }
+        nicknameBuffer = nickname;
+        lobbynameBuffer = lobbyname;
+
+
         CreateLobbyMessage clientMessage = new CreateLobbyMessage();
         clientMessage.setLobbyName(lobbyname);
         clientMessage.setLobbyCreator(nickname);
@@ -209,8 +214,6 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         }
         client.sendMsgToServer(clientMessage);
 
-        nicknameBuffer = nickname;
-        lobbynameBuffer = lobbyname;
         //scene.setRoot(creategame()) se fallisce
     }
 
@@ -219,6 +222,10 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         if(nickname==null || lobbyname==null || nickname.isBlank() ){
             return;
         }
+        nicknameBuffer = nickname;
+        lobbynameBuffer = lobbyname;
+
+
         JoinMessage clientMessage = new JoinMessage();
         clientMessage.setName(nickname);
         clientMessage.setLobbyName(lobbyname);

@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.GUI.SceneFactories;
 
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
+import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.fxml.FXMLLoader;
@@ -25,9 +26,12 @@ public class GameScreen extends SceneHandler implements SceneFactory{
     GenericClient client;
     ImageView board;
     GameScreenController controller;
-    public GameScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client) {
+
+    String selfName;
+    public GameScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client, String selfName) {
         super(state, screen, view);
         this.client = client;
+        this.selfName = selfName;
 
         board = new ImageView(new Image("17_MyShelfie_BGA/boards/livingroom.png"));
 
@@ -39,9 +43,10 @@ public class GameScreen extends SceneHandler implements SceneFactory{
             controller = new GameScreenController();
             FXMLLoader loader = new FXMLLoader(res.toUri().toURL());
             loader.setController(controller);
-
             r = loader.load();
-            controller.initActions(client);
+
+            System.out.println("game "+selfName);
+            controller.initActions(client, selfName);
 
             Scale sc = new Scale();
             double xscaling = 1;
@@ -90,5 +95,9 @@ public class GameScreen extends SceneHandler implements SceneFactory{
         scala.setX(xscaling);
         scala.setY(yscaling);
         p.getTransforms().add(scala);
+    }
+
+    public void updateChat(ChatUpdateMessage msg) {
+        controller.updateChat(msg);
     }
 }
