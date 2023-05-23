@@ -225,7 +225,6 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         nicknameBuffer = nickname;
         lobbynameBuffer = lobbyname;
 
-
         JoinMessage clientMessage = new JoinMessage();
         clientMessage.setName(nickname);
         clientMessage.setLobbyName(lobbyname);

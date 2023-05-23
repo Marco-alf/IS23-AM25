@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -38,9 +39,9 @@
                   <VBox alignment="BOTTOM_CENTER" prefHeight="940.0" prefWidth="360.0" spacing="10.0">
                      <children>
                         <ListView fx:id="chatList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-                        <ButtonBar buttonOrder="U+FBIX_NCYOA_R" nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
+                        <ButtonBar buttonMinWidth="40.0" buttonOrder="U+FBIX_NCYOA_R" nodeOrientation="LEFT_TO_RIGHT" VBox.vgrow="NEVER">
                           <buttons>
-                            <Button maxWidth="20.0" minWidth="20.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="20.0" text="Lobby" />
+                              <ComboBox fx:id="chatMode" maxWidth="200.0" prefHeight="25.0" prefWidth="60.0" promptText="Lobby" visibleRowCount="3" />
                               <TextField fx:id="chatField" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="351.0" />
                           </buttons>
                            <opaqueInsets>

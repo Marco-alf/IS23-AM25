@@ -3,6 +3,7 @@ package it.polimi.ingsw.view.GUI.SceneFactories;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
+import it.polimi.ingsw.network.messages.serverMessages.PrivateChatUpdateMessage;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.fxml.FXMLLoader;
@@ -98,6 +99,9 @@ public class GameScreen extends SceneHandler implements SceneFactory{
     }
 
     public void updateChat(ChatUpdateMessage msg) {
+        controller.updateChat(msg);
+    }
+    public void updateChat(PrivateChatUpdateMessage msg) {
         controller.updateChat(msg);
     }
 }

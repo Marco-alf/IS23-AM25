@@ -7,17 +7,19 @@ import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.messages.clientMessages.ChatMessage;
 import it.polimi.ingsw.network.messages.clientMessages.MoveMessage;
+import it.polimi.ingsw.network.messages.clientMessages.PrivateChatMessage;
 import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
+import it.polimi.ingsw.network.messages.serverMessages.PrivateChatUpdateMessage;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.util.Callback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,10 +70,12 @@ public class GameScreenController {
     GridPane arrows;
 
     @FXML
-    ListView<String> chatList;
+    ListView<String>  chatList;
     ArrayList<String> chat = new ArrayList<>();
     @FXML
     TextField chatField;
+    @FXML
+    ComboBox<String> chatMode;
 
     private final Image cats = new Image("17_MyShelfie_BGA/item_tiles/Gatti1.1.png");
     private final Image trophies = new Image("17_MyShelfie_BGA/item_tiles/Trofei1.1.png");
@@ -89,7 +93,7 @@ public class GameScreenController {
         players = new ArrayList<>(info.getPlayers());
         onlinePlayers = new ArrayList<>(info.getOnlinePlayers());
 
-
+        chatMode.getItems().add("Lobby");
         int i=1;
         int k=0;
         for(; i<players.size(); i++, k++){
@@ -97,7 +101,10 @@ public class GameScreenController {
                 k++;
             }
             s_buttons[i].setText(players.get(k));
+            int finalK = k;
+            chatMode.getItems().add(players.get(k));
         }
+        chatMode.setOnAction(actionEvent -> {});
         myshelfButton.setText(selfName);
 
         for( ; i<4; i++){
@@ -187,7 +194,31 @@ public class GameScreenController {
 
         s_buttons = new  Button[]{myshelfButton, player1Button, player2Button, player3Button };
 
-        chatField.setOnAction(actionEvent -> {sendChat();});
+        chatMode.setPromptText("Lobby");
+        chatMode.setValue("Lobby");
+        chatField.setOnAction(actionEvent -> {
+            sendChat();
+        });
+        chatList.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> list) {
+                final ListCell cell = new ListCell() {
+                    private Text text;
+
+                    @Override
+                    public void updateItem(Object item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!isEmpty()) {
+                            text = new Text(item.toString());
+                            text.setWrappingWidth(chatList.getWidth()-5);
+                            setGraphic(text);
+                        }
+                    }
+                };
+
+                return cell;
+            }
+        });
     }
 
     private void tryMove(int i) {
@@ -282,24 +313,44 @@ public class GameScreenController {
     }
 
     public synchronized void updateChat(ChatUpdateMessage msg) {
-        String s = " : ";
-        String message = msg.getTimestamp()+s+msg.getSender()+s+msg.getContent();
-        chatList.getItems().add(message);
-        chatList.scrollTo(chatList.getItems().size());
+        synchronized (chatList) {
+            String s = " ~ ";
+            String message = msg.getTimestamp() + s + msg.getSender() + s + msg.getContent();
+            chatList.getItems().add(message);
+            chatList.scrollTo(chatList.getItems().size());
+        }
+    }
+    public synchronized void updateChat(PrivateChatUpdateMessage msg) {
+        synchronized (chatList) {
+            String s = " ~ ";
+            String fromto = selfName.equals(msg.getReceiver()) ? "[from: "+msg.getSender() : "[to: "+msg.getReceiver();
+            String message = msg.getTimestamp() + s + fromto + "]" + s + msg.getContent();
+            chatList.getItems().add(message);
+            chatList.scrollTo(chatList.getItems().size());
+        }
     }
     private synchronized void sendChat(){
-        String content = chatField.getText();
-        if(content == null || content.isBlank()){
-            return;
-        }
+        synchronized (chatList) {
+            String content = chatField.getText();
+            if (content == null || content.isBlank()) {
+                return;
+            }
 
-        ChatMessage clientMessage = new ChatMessage();
-        clientMessage.setSender(selfName);
-        clientMessage.setContent(content);
+            ChatMessage clientMessage;
+            if (!chatMode.getValue().equals("Lobby")) {
+                clientMessage = new PrivateChatMessage(chatMode.getValue());
+            } else {
+                clientMessage = new ChatMessage();
+            }
+            clientMessage.setSender(selfName);
+            clientMessage.setContent(content);
 
-        if (client instanceof RMIClient) {
-            clientMessage.setRmiClient((RMIClient) client);
+            if (client instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) client);
+            }
+            client.sendMsgToServer(clientMessage);
+
+            chatField.clear();
         }
-        client.sendMsgToServer(clientMessage);
     }
 }

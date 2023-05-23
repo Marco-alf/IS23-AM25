@@ -4,6 +4,7 @@ import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -46,7 +47,8 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
         return r;
     }
     private Parent connectionPrompt(){
-        TilePane r = new TilePane();
+        TilePane r = new TilePane(Orientation.VERTICAL);
+        TilePane t = new TilePane();
         Text title = new Text("Choose connection mode:");
         title.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
         Button tcp = new Button("TCP");
@@ -58,7 +60,10 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
             initiateRMI();
         });
 
-        r.getChildren().addAll(title, tcp, rmi);
+        t.getChildren().addAll(tcp, rmi);
+        t.setHgap(screen.getWidth()*0.005);
+        t.setAlignment(Pos.CENTER);
+        r.getChildren().addAll(title, t);
         r.setHgap(screen.getWidth()*0.005);
         r.setAlignment(Pos.CENTER);
 
