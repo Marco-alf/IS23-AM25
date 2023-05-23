@@ -141,6 +141,27 @@ public class Lobby {
         isGameCreated = true;
     }
 
+    /**
+     * Method used to create a game, used only for tests
+     * @param isTest used to check if the method is call during a test
+     * @throws GameCreationException if the number of players is not sufficient
+     * @throws NotTestException if isTest is not true
+     */
+    public void createGame(boolean isTest) throws GameCreationException, NotTestException {
+        if (isTest){
+            if (onlinePlayers.size() < playerNumber) {
+                throw new GameCreationException();
+            }
+            List<String> players = new ArrayList<>();
+            for (VirtualPlayer onlinePlayer : onlinePlayers) {
+                players.add(onlinePlayer.getName());
+            }
+            game = new Game(players, true);
+            currentPlayer = onlinePlayers.get(0);
+            isGameCreated = true;
+        }
+    }
+
     public boolean checkNumberOfPlayers () {
         return (onlinePlayers.size() - disconnectedPlayers.size()) < 2;
     }
