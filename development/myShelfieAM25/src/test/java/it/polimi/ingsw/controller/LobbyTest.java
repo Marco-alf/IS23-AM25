@@ -41,7 +41,7 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "pippo";
@@ -50,20 +50,20 @@ class LobbyTest {
             fail();
         } catch (NameTakenException e) {
             assertTrue(true);
-        } catch (FullLobbyException e) {
+        } catch (FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player3 = "paperina";
         try {
             lobby.addPlayer(player3);
             fail();
-        } catch (NameTakenException e) {
+        } catch (NameTakenException | IllegalPlayerNameException e) {
             fail();
         } catch (FullLobbyException e) {
             assertTrue(true);
@@ -78,7 +78,7 @@ class LobbyTest {
         //assertEquals(1, lobby.getOnlinePlayers().size());
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         assertEquals(2, lobby.getPlayerNumber());
@@ -93,13 +93,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         assertEquals(player1, lobby.getOnlinePlayers().get(0));
@@ -115,13 +115,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         boolean isTest = true;
@@ -182,7 +182,7 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         try {
@@ -194,7 +194,7 @@ class LobbyTest {
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         try {
@@ -213,13 +213,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         assertFalse(lobby.checkNumberOfPlayers());
@@ -241,13 +241,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         assertTrue(lobby.waitForPlayers());
@@ -273,13 +273,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         try {
@@ -324,13 +324,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         try {
@@ -353,13 +353,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         try {
@@ -390,13 +390,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         try {
@@ -423,13 +423,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         assertFalse(lobby.isGameCreated());
@@ -450,19 +450,19 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player3 = "pluto";
         try {
             lobby.addPlayer(player3);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         try {
@@ -496,13 +496,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         try {
@@ -533,13 +533,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         try {
@@ -570,13 +570,13 @@ class LobbyTest {
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         String player2 = "paperino";
         try {
             lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException e) {
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
         try {

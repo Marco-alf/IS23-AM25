@@ -45,4 +45,8 @@ public interface ViewInterface {
     void receiveInvalidCommandMsg (InvalidCommandMessage msg);
 
     void receiveConnectionErrorMsg(ConnectionErrorMessage msg);
+
+    void receiveInvalidLobbyNameMsg(InvalidLobbyNameMessage msg);
+
+    void receiveIllegalPlayerNameMsg(IllegalPlayerNameMessage msg);
 }

@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 
 import java.util.ArrayList;
+import java.util.IllegalFormatWidthException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -74,7 +75,11 @@ public class Lobby {
      * @throws NameTakenException if there is another player in the lobby with the same name
      * @throws FullLobbyException if the lobby is full
      */
-    public void addPlayer(String name) throws NameTakenException, FullLobbyException {
+    public void addPlayer(String name) throws NameTakenException, FullLobbyException, IllegalPlayerNameException {
+        if (name == null || name.isBlank()) {
+            throw new IllegalPlayerNameException();
+        }
+
         if (disconnectedPlayers.contains(name)) {
             disconnectedPlayers.remove(name);
             return;

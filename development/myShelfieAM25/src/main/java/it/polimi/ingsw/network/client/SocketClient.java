@@ -170,6 +170,12 @@ public class SocketClient extends GenericClient{
                     if (((ServerMessage) msg).getType().equals("InvalidCommandMessage")) {
                         view.receiveInvalidCommandMsg((InvalidCommandMessage) msg);
                     }
+                    if (((ServerMessage) msg).getType().equals("InvalidLobbyNameMessage")) {
+                        view.receiveInvalidLobbyNameMsg((InvalidLobbyNameMessage) msg);
+                    }
+                    if (((ServerMessage) msg).getType().equals("IllegalPlayerNameMessage")) {
+                        view.receiveIllegalPlayerNameMsg((IllegalPlayerNameMessage) msg);
+                    }
                 }
 
             }

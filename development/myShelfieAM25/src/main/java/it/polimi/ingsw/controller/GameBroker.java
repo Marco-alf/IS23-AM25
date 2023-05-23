@@ -22,7 +22,9 @@ public class GameBroker {
         return lobbyList;
     }
 
-    public void createLobby(String creatorName, String lobbyName, int playerNumber) throws ExistingLobbyException {
+    public void createLobby(String creatorName, String lobbyName, int playerNumber) throws ExistingLobbyException, InvalidLobbyNameException, IllegalPlayerNameException {
+        if(lobbyName == null || lobbyName.isBlank()) throw new InvalidLobbyNameException();
+
         if(lobbies.get(lobbyName)!=null) throw new ExistingLobbyException();
 
         Lobby newLobby = new Lobby(creatorName, lobbyName, playerNumber);
@@ -40,7 +42,7 @@ public class GameBroker {
 
     }
 
-    public void addPlayer(String lobby, String player) throws NonExistingLobbyException, NameTakenException, FullLobbyException {
+    public void addPlayer(String lobby, String player) throws NonExistingLobbyException, NameTakenException, FullLobbyException, IllegalPlayerNameException {
         if(lobbies.get(lobby)==null) throw new NonExistingLobbyException();
         lobbies.get(lobby).addPlayer(player);
     }

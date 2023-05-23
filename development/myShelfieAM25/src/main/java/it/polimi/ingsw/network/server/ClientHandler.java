@@ -254,6 +254,10 @@ public class ClientHandler implements Runnable{
                     sendMsgToClient(new FullLobbyMessage());
                 } catch (NonExistingLobbyException e) {
                     sendMsgToClient(new NotExistingLobbyMessage());
+                } catch (InvalidLobbyNameException e) {
+                    sendMsgToClient(new InvalidLobbyNameMessage());
+                } catch (IllegalPlayerNameException e) {
+                    sendMsgToClient(new IllegalPlayerNameMessage());
                 }
 
             }

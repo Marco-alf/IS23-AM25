@@ -286,6 +286,10 @@ public class RMIServer implements Runnable, RMIServerInterface{
             sendMsgToClient(sender, new FullLobbyMessage());
         } catch (NonExistingLobbyException e) {
             sendMsgToClient(sender, new NotExistingLobbyMessage());
+        } catch (InvalidLobbyNameException e) {
+            sendMsgToClient(sender, new InvalidLobbyNameMessage());
+        } catch (IllegalPlayerNameException e) {
+            sendMsgToClient(sender, new IllegalPlayerNameMessage());
         }
     }
 
