@@ -214,6 +214,7 @@ public class TextualUI implements ViewInterface {
                                     client = new SocketClient(serverIP, 8088, this);
                                 }
                                 client.init();
+                                resetState();
                                 restoreWindow();
                                 printCommands();
                                 System.out.print(in);
@@ -261,6 +262,14 @@ public class TextualUI implements ViewInterface {
         if(online)manageEndGame();
     }
 
+    public void resetState(){
+        online = true;
+        hasEnded = false;
+        if(lock.tryLock())lock.unlock();
+        if(chatLock.tryLock()) chatLock.unlock();
+        if(stateLock.tryLock())stateLock.unlock();
+        display = false;
+    }
     public void displayLeaderBoard(){
         lock.lock();
         try {
