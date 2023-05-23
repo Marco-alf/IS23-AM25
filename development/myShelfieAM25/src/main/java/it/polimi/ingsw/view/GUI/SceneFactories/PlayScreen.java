@@ -10,6 +10,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.TilePane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 public class PlayScreen extends SceneHandler implements SceneFactory{
 
@@ -44,6 +47,8 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
     }
     private Parent connectionPrompt(){
         TilePane r = new TilePane();
+        Text title = new Text("Choose connection mode:");
+        title.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
         Button tcp = new Button("TCP");
         tcp.setOnAction(actionEvent -> {
             initiateTCP();
@@ -53,7 +58,7 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
             initiateRMI();
         });
 
-        r.getChildren().addAll(tcp, rmi);
+        r.getChildren().addAll(title, tcp, rmi);
         r.setHgap(screen.getWidth()*0.005);
         r.setAlignment(Pos.CENTER);
 
