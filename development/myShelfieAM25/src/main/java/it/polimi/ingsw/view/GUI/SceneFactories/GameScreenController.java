@@ -34,7 +34,9 @@ public class GameScreenController {
     Button player1Button, player2Button, player3Button, myshelfButton;
 
     @FXML
-    BorderPane player1, player2, player3, myshelf;
+    BorderPane player1, player2, player3;
+    @FXML
+    VBox myshelf;
 
     @FXML
     ImageView goal1, goal2;
@@ -85,7 +87,7 @@ public class GameScreenController {
         String jpgname = "";
 
         goal1.setImage( new Image("17_MyShelfie_BGA/common_goal_cards/"+commongoaltranslator(info.getCommonGoal1())+".jpg"));
-        goal2.setImage( new Image("17_MyShelfie_BGA/common_goal_cards/"+commongoaltranslator(info.getCommonGoal1())+".jpg"));
+        goal2.setImage( new Image("17_MyShelfie_BGA/common_goal_cards/"+commongoaltranslator(info.getCommonGoal2())+".jpg"));
     }
     private int commongoaltranslator(String goal){
         int result = 1;
@@ -133,7 +135,7 @@ public class GameScreenController {
                 int finalI = i;
                 int finalJ = j;
                 imageViewBoard[i][j].setOnMouseClicked(mouseEvent -> {
-                    select(finalI, finalJ);
+                    select(finalJ, finalI);
                 });
                 viewBoard.setAlignment(Pos.CENTER);
                 viewBoard.add(imageViewBoard[i][j], i, j);
@@ -155,7 +157,7 @@ public class GameScreenController {
         }
 
         for(int i=0; i<5; i++){
-            arrowsView[i] = new ImageView();
+            arrowsView[i] = new ImageView("17_MyShelfie_BGA/misc/arrow.jpg");
             arrowsView[i].setPreserveRatio(true);
             arrowsView[i].setFitHeight(95);
             int finalI = i;
@@ -184,7 +186,7 @@ public class GameScreenController {
         for(int i=0;  i<9; i++){
             for(int j=0;  j<9; j++){
                 if(livingroomBoard[i][j]!= null) {
-                    imageViewBoard[i][j].setImage(getTexture(livingroomBoard[i][j]));
+                    imageViewBoard[j][i].setImage(getTexture(livingroomBoard[i][j]));
                 }
             }
         }
@@ -196,9 +198,9 @@ public class GameScreenController {
                 return;
             }
             for (Tile tile : selected) {
-                if (tile.getPosY() == j && tile.getPosX() == i) {
+                if (tile.getPosY() == i && tile.getPosX() == j) {
                     selected.remove(tile);
-                    imageViewBoard[i][j].setFitHeight(95);
+                    imageViewBoard[j][i].setFitHeight(95);
                     updateSelectedViews();
                     return;
                 }
@@ -206,8 +208,8 @@ public class GameScreenController {
             if (selected.size() >= 3) {
                 return;
             }
-            Tile toadd = new Tile(t, i, j);
-            imageViewBoard[i][j].setFitHeight(105);
+            Tile toadd = new Tile(t, j, i);
+            imageViewBoard[j][i].setFitHeight(105);
             selected.add(toadd);
             updateSelectedViews();
         }
