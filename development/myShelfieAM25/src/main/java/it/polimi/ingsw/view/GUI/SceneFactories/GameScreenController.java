@@ -205,6 +205,7 @@ public class GameScreenController {
         armchair.setVisible(true);
 
         personalGoalView.setVisible(false);
+        viewBoard.setGridLinesVisible(false);
 
         for(int i=0;  i<5; i++){
             for(int j=0;  j<6; j++){
@@ -444,9 +445,9 @@ public class GameScreenController {
             myTurn.set(player.equals(selfName));
             changeChairPos();
         }
-        deselect(3);
         deselect(2);
         deselect(1);
+        deselect(0);
     }
 
     private void changeChairPos(){
