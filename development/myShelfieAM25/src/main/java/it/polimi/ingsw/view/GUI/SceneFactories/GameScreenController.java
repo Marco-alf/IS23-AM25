@@ -1,7 +1,9 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
+import it.polimi.ingsw.model.Shelf;
 import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
+import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
@@ -9,6 +11,7 @@ import it.polimi.ingsw.network.messages.clientMessages.ChatMessage;
 import it.polimi.ingsw.network.messages.clientMessages.MoveMessage;
 import it.polimi.ingsw.network.messages.clientMessages.PrivateChatMessage;
 import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
+import it.polimi.ingsw.network.messages.serverMessages.GameUpdatedMessage;
 import it.polimi.ingsw.network.messages.serverMessages.PrivateChatUpdateMessage;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -24,18 +27,24 @@ import javafx.util.Callback;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameScreenController {
+
+    private final AtomicBoolean myTurn = new AtomicBoolean(false);
+    private String currentPlayer;
+    @FXML
+    ImageView armchair;
+
     GenericClient client;
     String selfName;
 
     @FXML
     GridPane viewBoard;
-
     @FXML
     BorderPane mainpanel;
     @FXML
-    GridPane player1shelf;
+    GridPane realShelf, player1shelf, player2shelf, player3shelf;
 
     @FXML
     Button player1Button, player2Button, player3Button, myshelfButton;
@@ -49,6 +58,7 @@ public class GameScreenController {
     ImageView goal1, goal2;
 
     List<String> players = new ArrayList<>();
+    List<String> otherPlayers = new ArrayList<>();
     List<String> onlinePlayers = new ArrayList<>();
 
 
@@ -58,7 +68,7 @@ public class GameScreenController {
     private final ImageView [][] shelf3 = new ImageView[5][6];
 
     private final ImageView[][] imageViewBoard = new ImageView[9][9];
-    private TilesType [][] livingroomBoard  = new TilesType[5][6];
+    private TilesType [][] livingroomBoard  = new TilesType[9][9];
 
     private final List<Tile> selected = new ArrayList<>();
     private final ImageView[] viewSelected = new ImageView[3];
@@ -77,6 +87,9 @@ public class GameScreenController {
     @FXML
     ComboBox<String> chatMode;
 
+    @FXML
+    ImageView personalGoalView;
+
     private final Image cats = new Image("17_MyShelfie_BGA/item_tiles/Gatti1.1.png");
     private final Image trophies = new Image("17_MyShelfie_BGA/item_tiles/Trofei1.1.png");
     private final Image frames = new Image("17_MyShelfie_BGA/item_tiles/Cornici1.1.png");
@@ -88,32 +101,78 @@ public class GameScreenController {
     private Button[] s_buttons = new Button[]{myshelfButton, player1Button, player2Button, player3Button };
 
     public void updateInitialGameInfo(InitialGameInfo info) {
-        livingroomBoard = info.getNewBoard();
-        refreshBoard();
-        players = new ArrayList<>(info.getPlayers());
-        onlinePlayers = new ArrayList<>(info.getOnlinePlayers());
+        synchronized (myTurn) {
 
-        chatMode.getItems().add("Lobby");
-        int i=1;
-        int k=0;
-        for(; i<players.size(); i++, k++){
-            if(players.get(k).equals(selfName)) {
-                k++;
+            livingroomBoard = info.getNewBoard();
+            refreshBoard();
+            players = new ArrayList<>(info.getPlayers());
+            otherPlayers = new ArrayList<>(players);
+            otherPlayers.remove(selfName);
+            onlinePlayers = new ArrayList<>(info.getOnlinePlayers());
+
+            chatMode.getItems().add("Lobby");
+            int i = 1;
+            int k = 0;
+            for (; i < players.size(); i++, k++) {
+                if (players.get(k).equals(selfName)) {
+                    k++;
+                }
+                s_buttons[i].setText(players.get(k));
+                chatMode.getItems().add(players.get(k));
             }
-            s_buttons[i].setText(players.get(k));
-            int finalK = k;
-            chatMode.getItems().add(players.get(k));
-        }
-        chatMode.setOnAction(actionEvent -> {});
-        myshelfButton.setText(selfName);
+            myshelfButton.setText("(Me) " + selfName);
 
-        for( ; i<4; i++){
-            s_buttons[i].setVisible(false);
-        }
+            for (; i < 4; i++) {
+                s_buttons[i].setVisible(false);
+            }
 
-        goal1.setImage( new Image("17_MyShelfie_BGA/common_goal_cards/"+commongoaltranslator(info.getCommonGoal1())+".jpg"));
-        goal2.setImage( new Image("17_MyShelfie_BGA/common_goal_cards/"+commongoaltranslator(info.getCommonGoal2())+".jpg"));
+            for (i = 0; i < 5; i++) {
+                for (int j = 0; j < 6; j++) {
+                    shelf0[i][j].setImage(getTexture(info.getShelves().get(players.get(0))[j][i]));
+                    shelf1[i][j].setImage(getTexture(info.getShelves().get(players.get(1))[j][i]));
+                    if (players.size() > 2)
+                        shelf2[i][j].setImage(getTexture(info.getShelves().get(players.get(2))[j][i]));
+                    if (players.size() > 3)
+                        shelf3[i][j].setImage(getTexture(info.getShelves().get(players.get(3))[j][i]));
+                }
+            }
+
+
+            personalGoalView.setImage(new Image("17_MyShelfie_BGA/personal_goal_cards/Personal_Goals" + (info.getPersonalGoals().get(selfName).ordinal() + 1) + ".png"));
+            goal1.setImage(new Image("17_MyShelfie_BGA/common_goal_cards/" + commongoaltranslator(info.getCommonGoal1()) + ".jpg"));
+            goal2.setImage(new Image("17_MyShelfie_BGA/common_goal_cards/" + commongoaltranslator(info.getCommonGoal2()) + ".jpg"));
+
+        }
+        updateCurrentPlayer(info.getCurrentPlayer());
     }
+
+    public void updateGame(GameInfo info) {
+        synchronized (myTurn) {
+            String oldplayer = currentPlayer;
+            livingroomBoard = info.getNewBoard();
+            refreshBoard();
+
+            ImageView[][] old = new ImageView[5][6];
+
+            if(oldplayer.equals(selfName)){
+                old = shelf0;
+            } else {
+                switch (otherPlayers.indexOf(oldplayer)) {
+                    case 0 -> old = shelf1;
+                    case 1 -> old = shelf2;
+                    case 2 -> old = shelf3;
+                }
+            }
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 6; j++) {
+                    old[i][j].setImage(getTexture(info.getShelf()[j][i]));
+                }
+            }
+
+        }
+        updateCurrentPlayer(info.getCurrentPlayer());
+    }
+
     private int commongoaltranslator(String goal){
         int result = 1;
         switch (goal){
@@ -143,14 +202,31 @@ public class GameScreenController {
         player1.setVisible(false);
         player2.setVisible(false);
         player3.setVisible(false);
+        armchair.setVisible(true);
+
+        personalGoalView.setVisible(false);
 
         for(int i=0;  i<5; i++){
             for(int j=0;  j<6; j++){
+                shelf0[i][j] = new ImageView();
+                shelf0[i][j].setPreserveRatio(true);
+                shelf0[i][j].setFitWidth(95);
+                realShelf.add(shelf0[i][j], i, j);
+
                 shelf1[i][j] = new ImageView();
                 shelf1[i][j].setPreserveRatio(true);
                 shelf1[i][j].setFitWidth(95);
-                shelf1[i][j].setImage(cats);
                 player1shelf.add(shelf1[i][j], i, j);
+
+                shelf2[i][j] = new ImageView();
+                shelf2[i][j].setPreserveRatio(true);
+                shelf2[i][j].setFitWidth(95);
+                player2shelf.add(shelf2[i][j], i, j);
+
+                shelf3[i][j] = new ImageView();
+                shelf3[i][j].setPreserveRatio(true);
+                shelf3[i][j].setFitWidth(95);
+                player3shelf.add(shelf3[i][j], i, j);
             }
         }
 
@@ -172,7 +248,7 @@ public class GameScreenController {
         player1Button.setOnAction(actionEvent -> toggleBoard(1));
         player2Button.setOnAction(actionEvent -> toggleBoard(2));
         player3Button.setOnAction(actionEvent -> toggleBoard(3));
-        myshelfButton.setOnAction(actionEvent -> toggleBoard(0));
+        myshelfButton.setOnAction(actionEvent -> {toggleBoard(0);});
 
         for(int i=0; i<viewSelected.length; i++){
             viewSelected[i] = new ImageView();
@@ -199,6 +275,8 @@ public class GameScreenController {
         chatField.setOnAction(actionEvent -> {
             sendChat();
         });
+        armchair.setImage(new Image("17_MyShelfie_BGA/misc/firstplayertoken.png"));
+
         chatList.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
             public ListCell<String> call(ListView<String> list) {
@@ -210,7 +288,7 @@ public class GameScreenController {
                         super.updateItem(item, empty);
                         if (!isEmpty()) {
                             text = new Text(item.toString());
-                            text.setWrappingWidth(chatList.getWidth()-5);
+                            text.setWrappingWidth(chatList.getWidth()-10);
                             setGraphic(text);
                         }
                     }
@@ -223,23 +301,28 @@ public class GameScreenController {
 
     private void tryMove(int i) {
         synchronized (selected){
-            MoveMessage clientMessage = new MoveMessage();
-            clientMessage.setTiles(selected);
-            clientMessage.setColumn(i);
+            synchronized (myTurn) {
+                if(!myTurn.get()){
+                    return;
+                }
+                MoveMessage clientMessage = new MoveMessage();
+                clientMessage.setTiles(selected);
+                clientMessage.setColumn(i);
 
-            if (client instanceof RMIClient) {
-                clientMessage.setRmiClient((RMIClient) client);
+                if (client instanceof RMIClient) {
+                    clientMessage.setRmiClient((RMIClient) client);
+                }
+                client.sendMsgToServer(clientMessage);
             }
-            client.sendMsgToServer(clientMessage);
         }
     }
 
     private void refreshBoard(){
         for(int i=0;  i<9; i++){
             for(int j=0;  j<9; j++){
-                if(livingroomBoard[i][j]!= null) {
+                //if(livingroomBoard[i][j]!= null) {
                     imageViewBoard[j][i].setImage(getTexture(livingroomBoard[i][j]));
-                }
+                //}
             }
         }
     }
@@ -268,7 +351,7 @@ public class GameScreenController {
     }
     private void deselect(int i){
         synchronized (selected) {
-            if (selected.size() < 1 || i < 0 || i > 3) {
+            if (selected.size() <= i || i < 0 || i > 3) {
                 return;
             }
             Tile t = selected.remove(i);
@@ -306,6 +389,7 @@ public class GameScreenController {
     }
 
     public void toggleBoard(int i){
+        personalGoalView.setVisible(i==0 && !personalGoalView.isVisible());
         myshelf.setVisible(i == 0 && !myshelf.isVisible());
         player1.setVisible(i == 1 && !player1.isVisible());
         player2.setVisible(i == 2 && !player2.isVisible());
@@ -353,4 +437,56 @@ public class GameScreenController {
             chatField.clear();
         }
     }
+
+    public void updateCurrentPlayer(String player){
+        synchronized (myTurn) {
+            currentPlayer = player;
+            myTurn.set(player.equals(selfName));
+            changeChairPos();
+        }
+        deselect(3);
+        deselect(2);
+        deselect(1);
+    }
+
+    private void changeChairPos(){
+        double x = 0;
+        double y = 0;
+        if(currentPlayer.equals(selfName)){
+            x=491;
+            y=850;
+        } else {
+            for(int i=0; i<otherPlayers.size(); i++){
+                switch(i+1){
+                    case 1 -> {x=491; y=35;}
+                    case 2 -> {x=50; y=160;}
+                    case 3 -> {x=1724; y=160;}
+                }
+            }
+        }
+        armchair.setLayoutX(x);
+        armchair.setLayoutY(y);
+
+        /*
+        for(; i<players.size(); i++, k++){
+            if(players.get(k).equals(selfName)) {
+                k++;
+            }
+            if(currentPlayer.equals(players.get(k))){
+
+                switch(i){
+                    case 1 -> {x=575; y=55;}
+                    case 2 -> {x=50; y=160;}
+                    case 3 -> {x=1724; y=160;}
+                }
+                armchair.setX(x);
+                armchair.setY(y);
+                return;
+            }
+        }
+        armchair.setX(1244);
+        armchair.setY(852);*/
+    }
+
+
 }

@@ -97,12 +97,19 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveExistingLobbyMsg(ExistingLobbyMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText(msg.getType()+" a lobby with the same name already exists!");
+                a.showAndWait();
+            }
+        });
     }
 
     @Override
     public void receiveLobbyNotCreatedMsg(LobbyNotCreatedMessage msg) {
-
+        //?????
     }
 
     @Override
@@ -187,22 +194,52 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveGameUpdatedMsg(GameUpdatedMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if(factory instanceof GameScreen game){
+                    game.updateGame(msg);
+                }
+            }
+        });
     }
 
     @Override
     public void receiveUpdatedPlayerMsg(UpdatedPlayerMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if(factory instanceof GameScreen game){
+                    game.updateCurrentPlayer(msg);
+                }
+            }
+        });
     }
 
     @Override
     public void receiveInvalidMoveMsg(InvalidMoveMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText(msg.getType()+" illegal move!" +
+                        " formare una riga verticale oppure orizzontale con le tessere che possiedono un lato non " +
+                        "condiviso con altre tessere");
+                a.showAndWait();
+            }
+        });
     }
 
     @Override
     public void receiveInsufficientPlayersMsg(InsufficientPlayersMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText(msg.getType()+" insufficient players for the lobby");
+                a.showAndWait();
+            }
+        });
     }
 
     @Override
@@ -217,7 +254,14 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveInvalidCommandMsg(InvalidCommandMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText(msg.getType()+" invalid command!");
+                a.showAndWait();
+            }
+        });
     }
 
     @Override
