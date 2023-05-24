@@ -34,6 +34,11 @@ public class Player {
     private final PersonalGoal personalGoal;
 
     /**
+     * finalPoint is the point given to the first player who fills all the spaces of their bookshelf
+     */
+    private int finalPoint = 0;
+
+    /**
      * The constructor of Player requires all his attributes to be passed as parameters except for the shelf that is initialized
      * outside the contructor
      * @param name is the unique nickname of the player in the game
@@ -122,5 +127,20 @@ public class Player {
      */
     public int calculateAdjacencyPoints(){
         return shelf.calculatePoints();
+    }
+
+    /**
+     * setter for finalPoint
+     */
+    public void setFinalPoint() {
+        finalPoint = 1;
+    }
+
+    /**
+     * getter for finalPoint
+     * @return the value of finalPoint
+     */
+    public int getFinalPoint() {
+        return finalPoint;
     }
 }

@@ -1082,4 +1082,251 @@ class GameTest {
         }
         assertTrue(game.isLastRound());
     }
+
+    @Test
+    void finalPointTest(){
+        String name1 = "pippo";
+        String name2 = "pluto";
+        String name3 = "paperino";
+        List<String> players = new ArrayList<>();
+        players.add(name1);
+        players.add(name2);
+        players.add(name3);
+        Game game = null;
+        try {
+            game = new Game(players, true);
+        } catch (ShelfCreationException | PlayersEmptyException | NotTestException e) {
+            fail();
+        }
+        try {
+            game.updateCurrentPlayer(name3);
+        } catch (InvalidPlayerNameException e) {
+            fail();
+        }
+        //#1
+        Tile tile1 = new Tile(TilesType.FRAMES, 1, 4);
+        Tile tile2 = new Tile(TilesType.FRAMES, 1, 5);
+        List<Tile> tiles = new ArrayList<>();
+        tiles.add(tile1);
+        tiles.add(tile2);
+        try {
+            game.moveTiles(tiles, 0, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#2
+        tile1 = new Tile(TilesType.TROPHIES, 3, 1);
+        tile2 = new Tile(TilesType.FRAMES, 4, 1);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        tiles.add(tile2);
+        try {
+            game.moveTiles(tiles, 1, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#3
+        tile1 = new Tile(TilesType.FRAMES, 4, 2);
+        tile2 = new Tile(TilesType.CATS, 3, 2);
+        Tile tile3 = new Tile(TilesType.PLANTS, 5, 2);
+        tiles = new ArrayList<>();
+        tiles.add(tile3);
+        tiles.add(tile2);
+        tiles.add(tile1);
+        try {
+            game.moveTiles(tiles, 2, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#4
+        tile1 = new Tile(TilesType.GAMES, 2, 3);
+        tile2 = new Tile(TilesType.TROPHIES, 3, 3);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        tiles.add(tile2);
+        try {
+            game.moveTiles(tiles, 3, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#5
+        tile1 = new Tile(TilesType.GAMES, 4, 3);
+        tile2 = new Tile(TilesType.FRAMES, 5, 3);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        tiles.add(tile2);
+        try {
+            game.moveTiles(tiles, 3, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#6
+        tile1 = new Tile(TilesType.TROPHIES, 2, 4);
+        tile2 = new Tile(TilesType.BOOKS, 3, 4);
+        tile3 = new Tile(TilesType.PLANTS, 4, 4);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        tiles.add(tile2);
+        tiles.add(tile3);
+        try {
+            game.moveTiles(tiles, 4, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#7
+        tile1 = new Tile(TilesType.FRAMES, 4, 7);
+        tile2 = new Tile(TilesType.FRAMES, 5, 7);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        tiles.add(tile2);
+        try {
+            game.moveTiles(tiles, 4, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#8
+        tile1 = new Tile(TilesType.CATS, 6, 3);
+        tile2 = new Tile(TilesType.TROPHIES, 7, 3);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        tiles.add(tile2);
+        try {
+            game.moveTiles(tiles, 3, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#9
+        tile1 = new Tile(TilesType.CATS, 5, 4);
+        tile2 = new Tile(TilesType.BOOKS, 6, 4);
+        tile3 = new Tile(TilesType.PLANTS, 7, 4);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        tiles.add(tile2);
+        tiles.add(tile3);
+        try {
+            game.moveTiles(tiles, 2, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#10
+        tile1 = new Tile(TilesType.FRAMES, 2, 5);
+        tile2 = new Tile(TilesType.BOOKS, 3, 5);
+        tile3 = new Tile(TilesType.FRAMES, 4, 5);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        tiles.add(tile2);
+        tiles.add(tile3);
+        try {
+            game.moveTiles(tiles, 0, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#11
+        tile1 = new Tile(TilesType.BOOKS, 3, 6);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        try {
+            game.moveTiles(tiles, 0, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#12
+        tile1 = new Tile(TilesType.FRAMES, 4, 6);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        try {
+            game.moveTiles(tiles, 4, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#13
+        tile1 = new Tile(TilesType.GAMES, 5, 6);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        try {
+            game.moveTiles(tiles, 1, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#14
+        tile1 = new Tile(TilesType.FRAMES, 5, 5);
+        tile2 = new Tile(TilesType.PLANTS, 6, 5);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        tiles.add(tile2);
+        try {
+            game.moveTiles(tiles, 1, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertFalse(game.isAssignedFinalPoint());
+        //#15
+        tile1 = new Tile(TilesType.PLANTS, 2, 6);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        try {
+            game.moveTiles(tiles, 1, name3);
+        } catch (InvalidPlayerNameException | NotInLineException | NoFreeEdgeException | OutOfBoundException |
+                 FullColumnException | NullTilesException | PlayerNotOnlineException | InvalidTileException |
+                 PlayerNotCurrentException e) {
+            fail();
+        }
+        assertTrue(game.isAssignedFinalPoint());
+        try {
+            assertEquals(1, game.searchPlayer(game.getCurrentPlayer()).getFinalPoint());
+        } catch (InvalidPlayerNameException e) {
+            fail();
+        }
+        try {
+            assertEquals(0, game.searchPlayer(name2).getFinalPoint());
+        } catch (InvalidPlayerNameException e) {
+            fail();
+        }
+        try {
+            assertEquals(0, game.searchPlayer(name1).getFinalPoint());
+        } catch (InvalidPlayerNameException e) {
+            fail();
+        }
+    }
 }

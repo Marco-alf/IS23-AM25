@@ -31,6 +31,11 @@ public class Game
     private boolean endGame = false;
 
     /**
+     * assignedFinalPoint saves if the final point is already been given to the first player who fills their bookshelf
+     */
+    private boolean assignedFinalPoint = false;
+
+    /**
      * Constructor used for testing.
      * @param players is list containing every player name (takes as guaranteed they are unique)
      * @param isTest used to differentiate the constructor used only for tests, it has to be true to use the constructor
@@ -154,6 +159,7 @@ public class Game
         }
         p.moveTiles(tiles, shelfColumn);
         setLastRound();
+        giveFullShelfPoint();
     }
 
     /**
@@ -259,6 +265,17 @@ public class Game
         throw new InvalidPlayerNameException();
     }
 
+    /**
+     * checks if currentPlayer is first player who fills all the spaces of their bookshelf and gives him a point
+     */
+    public void giveFullShelfPoint() {
+        if (currentPlayer.isBookshelfFull() && !isAssignedFinalPoint()) {
+            currentPlayer.setFinalPoint();
+            setAssignedFinalPoint();
+        }
+
+    }
+
     public boolean isLastRound() {
         return lastRound;
     }
@@ -269,5 +286,20 @@ public class Game
 
     public void setGameEnded () {
         endGame = true;
+    }
+
+    /**
+     * getter for assignedFinalPoint
+     * @return the value of assignedFinalPoint
+     */
+    public boolean isAssignedFinalPoint() {
+        return assignedFinalPoint;
+    }
+
+    /**
+     * setter for assignedFinalPoint
+     */
+    public void setAssignedFinalPoint() {
+        assignedFinalPoint = true;
     }
 }

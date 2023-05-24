@@ -17,6 +17,7 @@ public class FinalGameInfo extends GameInfo{
             points.add(game.searchPlayer(player).calculateCommonPoints()[1]);
             points.add(game.searchPlayer(player).calculatePersonalPoints());
             points.add(game.searchPlayer(player).calculateAdjacencyPoints());
+            points.add(game.searchPlayer(player).getFinalPoint());
             finalPoints.put(player, points);
         }
     }
