@@ -30,6 +30,8 @@ public interface ViewInterface {
 
     void receiveGameUpdatedMsg (GameUpdatedMessage msg);
 
+    void receiveGameEndedMsg (GameEndedMessage msg);
+
     void receiveUpdatedPlayerMsg (UpdatedPlayerMessage msg);
 
     void receiveInvalidMoveMsg (InvalidMoveMessage msg);
@@ -43,4 +45,8 @@ public interface ViewInterface {
     void receiveInvalidCommandMsg (InvalidCommandMessage msg);
 
     void receiveConnectionErrorMsg(ConnectionErrorMessage msg);
+
+    void receiveInvalidLobbyNameMsg(InvalidLobbyNameMessage msg);
+
+    void receiveIllegalPlayerNameMsg(IllegalPlayerNameMessage msg);
 }

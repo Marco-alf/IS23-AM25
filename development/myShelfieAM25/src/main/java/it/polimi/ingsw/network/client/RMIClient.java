@@ -126,6 +126,10 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
                 assert msg instanceof GameUpdatedMessage;
                 view.receiveGameUpdatedMsg((GameUpdatedMessage) msg);
             }
+            if (msg.getType().equals("GameEndedMessage")) {
+                assert msg instanceof GameEndedMessage;
+                view.receiveGameEndedMsg((GameEndedMessage) msg);
+            }
             if (msg.getType().equals("UpdatedPlayerMessage")) {
                 assert msg instanceof UpdatedPlayerMessage;
                 view.receiveUpdatedPlayerMsg((UpdatedPlayerMessage) msg);
@@ -145,6 +149,12 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
             }
             if (msg.getType().equals("InvalidCommandMessage")) {
                 view.receiveInvalidCommandMsg((InvalidCommandMessage) msg);
+            }
+            if (msg.getType().equals("InvalidLobbyNameMessage")) {
+                view.receiveInvalidLobbyNameMsg((InvalidLobbyNameMessage) msg);
+            }
+            if (msg.getType().equals("IllegalPlayerNameMessage")) {
+                view.receiveIllegalPlayerNameMsg((IllegalPlayerNameMessage) msg);
             }
         }
 

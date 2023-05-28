@@ -2,6 +2,7 @@ package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.Lobby;
 import it.polimi.ingsw.exception.*;
+import it.polimi.ingsw.model.data.FinalGameInfo;
 import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.RMIServerInterface;
@@ -36,7 +37,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     /**
      * PING_TIME is the period of the checking for disconnected player
      */
-    private final int PING_TIME = 2000;
+    private final int PING_TIME = 200;
     /**
      * rmiClients is the list of clients served by the RMIServer
      */
@@ -79,6 +80,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     public void run() {
         try {
             System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
+            System.out.println("Per giocare connettersi a: " + InetAddress.getLocalHost().getHostAddress());
             RMIServerInterface stub = (RMIServerInterface) UnicastRemoteObject.exportObject(this, 0);
             LocateRegistry.createRegistry(port);
             LocateRegistry.getRegistry(port).bind(RMIServerInterface.NAME, stub);
@@ -159,6 +161,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     public void receiveMsgFromClient (Serializable arg) {
         ClientMessage msg = (ClientMessage) arg;
         RMIClientInterface sender = msg.getRmiClient();
+        System.out.println(msg.getType());
         try {
             if (msg.getType().equals("CreateLobbyMessage") && rmiClientsStates.get(sender) == ClientState.CONNECTED) {
                 CreateLobbyMessage specificMessage = (CreateLobbyMessage) msg;
@@ -261,6 +264,12 @@ public class RMIServer implements Runnable, RMIServerInterface{
                     UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
                     updatedPlayerMessage.setUpdatedPlayer(rmiClientsLobby.get(msg.getRmiClient()).getCurrentPlayer());
                     server.sendMsgToAll(updatedPlayerMessage, rmiClientsLobby.get(msg.getRmiClient()));
+
+                    if(info.isGameEnded()){
+                        GameEndedMessage gameEndedMessage = new GameEndedMessage();
+                        gameEndedMessage.setGameInfo((FinalGameInfo) info);
+                        server.sendMsgToAll(gameEndedMessage, rmiClientsLobby.get(msg.getRmiClient()));
+                    }
                 } catch (IllegalMoveException e) {
                     sendMsgToClient(sender, new InvalidMoveMessage());
                 } catch (GameEndedException ignored) {
@@ -277,6 +286,10 @@ public class RMIServer implements Runnable, RMIServerInterface{
             sendMsgToClient(sender, new FullLobbyMessage());
         } catch (NonExistingLobbyException e) {
             sendMsgToClient(sender, new NotExistingLobbyMessage());
+        } catch (InvalidLobbyNameException e) {
+            sendMsgToClient(sender, new InvalidLobbyNameMessage());
+        } catch (IllegalPlayerNameException e) {
+            sendMsgToClient(sender, new IllegalPlayerNameMessage());
         }
     }
 
@@ -304,6 +317,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     public void manageDisconnection(RMIClientInterface rmiClient) {
         Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: RMI client has disconnected");
         Lobby lobby = rmiClientsLobby.get(rmiClient);
+        String curPlayer = lobby.getCurrentPlayer();
         String name = rmiClientsName.get(rmiClient);
         rmiClients.remove(rmiClient);
         rmiClientsStates.remove(rmiClient);
@@ -331,6 +345,10 @@ public class RMIServer implements Runnable, RMIServerInterface{
                                 server.gameBroker.closeLobby(lobby);
 
                             }
+                        } else if (name.equals(curPlayer)) {
+                            UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();
+                            updateMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
+                            server.sendMsgToAll(updateMessage, lobby);
                         }
                     }
                 });

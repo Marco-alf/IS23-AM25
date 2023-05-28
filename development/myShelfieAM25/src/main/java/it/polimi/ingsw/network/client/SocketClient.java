@@ -146,6 +146,10 @@ public class SocketClient extends GenericClient{
                         assert msg instanceof GameUpdatedMessage;
                         view.receiveGameUpdatedMsg((GameUpdatedMessage) msg);
                     }
+                    if (((ServerMessage) msg).getType().equals("GameEndedMessage")) {
+                        assert msg instanceof GameEndedMessage;
+                        view.receiveGameEndedMsg((GameEndedMessage) msg);
+                    }
                     if (((ServerMessage) msg).getType().equals("UpdatedPlayerMessage")) {
                         assert msg instanceof UpdatedPlayerMessage;
                         view.receiveUpdatedPlayerMsg((UpdatedPlayerMessage) msg);
@@ -165,6 +169,12 @@ public class SocketClient extends GenericClient{
                     }
                     if (((ServerMessage) msg).getType().equals("InvalidCommandMessage")) {
                         view.receiveInvalidCommandMsg((InvalidCommandMessage) msg);
+                    }
+                    if (((ServerMessage) msg).getType().equals("InvalidLobbyNameMessage")) {
+                        view.receiveInvalidLobbyNameMsg((InvalidLobbyNameMessage) msg);
+                    }
+                    if (((ServerMessage) msg).getType().equals("IllegalPlayerNameMessage")) {
+                        view.receiveIllegalPlayerNameMsg((IllegalPlayerNameMessage) msg);
                     }
                 }
 

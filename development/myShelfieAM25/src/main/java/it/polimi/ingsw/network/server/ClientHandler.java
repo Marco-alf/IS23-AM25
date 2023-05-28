@@ -3,6 +3,7 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.controller.Lobby;
 import it.polimi.ingsw.exception.*;
 import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.data.FinalGameInfo;
 import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.messages.clientMessages.*;
@@ -221,14 +222,20 @@ public class ClientHandler implements Runnable{
                             assert msg instanceof MoveMessage;
                             try {
                                 lobby.moveTiles(((MoveMessage) msg).getTiles(), ((MoveMessage) msg).getColumn(), clientNickname);
-                                GameUpdatedMessage updatedMessage = new GameUpdatedMessage();
                                 GameInfo info = lobby.getGameInfo();
+                                GameUpdatedMessage updatedMessage = new GameUpdatedMessage();
+
                                 updatedMessage.setGameInfo(info);
                                 genericServer.sendMsgToAll(updatedMessage, lobby);
 
                                 UpdatedPlayerMessage updatedPlayerMessage = new UpdatedPlayerMessage();
                                 updatedPlayerMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
                                 genericServer.sendMsgToAll(updatedPlayerMessage, lobby);
+                                if(info.isGameEnded()){
+                                    GameEndedMessage gameEndedMessage = new GameEndedMessage();
+                                    gameEndedMessage.setGameInfo((FinalGameInfo) info);
+                                    genericServer.sendMsgToAll(gameEndedMessage, lobby);
+                                }
                             } catch (IllegalMoveException e) {
                                 sendMsgToClient(new InvalidMoveMessage());
                             } catch (GameEndedException ignored) {
@@ -247,6 +254,10 @@ public class ClientHandler implements Runnable{
                     sendMsgToClient(new FullLobbyMessage());
                 } catch (NonExistingLobbyException e) {
                     sendMsgToClient(new NotExistingLobbyMessage());
+                } catch (InvalidLobbyNameException e) {
+                    sendMsgToClient(new InvalidLobbyNameMessage());
+                } catch (IllegalPlayerNameException e) {
+                    sendMsgToClient(new IllegalPlayerNameMessage());
                 }
 
             }
@@ -280,6 +291,7 @@ public class ClientHandler implements Runnable{
             Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: client " + socket.getInetAddress().getHostAddress() + " has disconnected");
             disconnect();
             server.removeClient(this);
+            String curPlayer = lobby.getCurrentPlayer();
 
             try {
                 if (lobby != null) {
@@ -301,6 +313,10 @@ public class ClientHandler implements Runnable{
                                     server.gameBroker.closeLobby(lobby);
 
                                 }
+                            } else if (clientNickname.equals(curPlayer)) {
+                                UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();
+                                updateMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
+                                genericServer.sendMsgToAll(updateMessage, lobby);
                             }
                         }
                     });

@@ -6,7 +6,8 @@ import it.polimi.ingsw.model.Game;
 import java.util.*;
 
 public class FinalGameInfo extends GameInfo{
-    Map<String, List<Integer>> finalPoints = new HashMap<>();
+
+    private final Map<String, List<Integer>> finalPoints = new HashMap<>();
     public FinalGameInfo(Game game) throws InvalidPlayerNameException {
         super(game);
         for (int i = 0; i < game.getOnlinePlayers().size(); i++) {
@@ -16,7 +17,11 @@ public class FinalGameInfo extends GameInfo{
             points.add(game.searchPlayer(player).calculateCommonPoints()[1]);
             points.add(game.searchPlayer(player).calculatePersonalPoints());
             points.add(game.searchPlayer(player).calculateAdjacencyPoints());
+            points.add(game.searchPlayer(player).getFinalPoint());
             finalPoints.put(player, points);
         }
+    }
+    public Map<String, List<Integer>> getFinalPoints() {
+        return new HashMap<>(finalPoints);
     }
 }

@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 
 import java.util.ArrayList;
+import java.util.IllegalFormatWidthException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -73,10 +74,22 @@ public class Lobby {
      * @param name is the name of the player that want to join the lobby
      * @throws NameTakenException if there is another player in the lobby with the same name
      * @throws FullLobbyException if the lobby is full
+     * @throws IllegalPlayerNameException if the name is not valid or null
      */
-    public void addPlayer(String name) throws NameTakenException, FullLobbyException {
+    public void addPlayer(String name) throws NameTakenException, FullLobbyException, IllegalPlayerNameException {
+        if (name == null || name.isBlank()) {
+            throw new IllegalPlayerNameException();
+        }
+
         if (disconnectedPlayers.contains(name)) {
             disconnectedPlayers.remove(name);
+            if(isGameCreated){
+                try{
+                    game.reconnect(name);
+                }catch (InvalidPlayerNameException e){
+                    throw new IllegalPlayerNameException();
+                }
+            }
             return;
         }
         if (onlinePlayers.stream().map(VirtualPlayer::getName).toList().contains(name)) {
@@ -105,6 +118,8 @@ public class Lobby {
      */
     public void moveTiles(List<Tile> tiles, int shelfColumn, String player) throws
             IllegalMoveException, GameEndedException {
+
+        if (tiles.size() == 0) throw new IllegalMoveException();
         try {
             if (game.getEndGame()) throw new GameEndedException();
             game.moveTiles(tiles, shelfColumn, player);
@@ -139,12 +154,33 @@ public class Lobby {
         isGameCreated = true;
     }
 
+    /**
+     * Method used to create a game, used only for tests
+     * @param isTest used to check if the method is call during a test
+     * @throws GameCreationException if the number of players is not sufficient
+     * @throws NotTestException if isTest is not true
+     */
+    public void createGame(boolean isTest) throws GameCreationException, NotTestException {
+        if (isTest){
+            if (onlinePlayers.size() < playerNumber) {
+                throw new GameCreationException();
+            }
+            List<String> players = new ArrayList<>();
+            for (VirtualPlayer onlinePlayer : onlinePlayers) {
+                players.add(onlinePlayer.getName());
+            }
+            game = new Game(players, true);
+            currentPlayer = onlinePlayers.get(0);
+            isGameCreated = true;
+        }
+    }
+
     public boolean checkNumberOfPlayers () {
         return (onlinePlayers.size() - disconnectedPlayers.size()) < 2;
     }
 
     public boolean waitForPlayers () {
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 20; i++) {
             try  {
                 TimeUnit.MILLISECONDS.sleep(100);
                 if (onlinePlayers.size() - disconnectedPlayers.size() > 1) return true;
@@ -205,7 +241,7 @@ public class Lobby {
         for (int i = 0; i < onlinePlayers.size(); i++) {
             if (!disconnectedPlayers.contains(onlinePlayers.get(i).getName())) roundPlayers.add(onlinePlayers.get(i).getName());
         }
-        return currentPlayer.getName() == roundPlayers.get(roundPlayers.size() - 1);
+        return currentPlayer.getName().equals(roundPlayers.get(roundPlayers.size() - 1));
     }
 
 
@@ -222,12 +258,19 @@ public class Lobby {
      */
     public void disconnectPlayer(VirtualPlayer player) {
         disconnectedPlayers.add(player.getName());
-        if (isGameCreated && currentPlayer.getName().equals(player.getName())) {
-            try {
-                currentPlayer = nextPlayer();
-                game.updateCurrentPlayer(currentPlayer.getName());
-            } catch (InvalidPlayerNameException e) {
+        if (isGameCreated) {
+            try{
+                game.disconnectPlayer(player.getName());
+            } catch (InvalidPlayerNameException e){
                 throw new RuntimeException(e);
+            }
+            if (currentPlayer.getName().equals(player.getName())) {
+                try {
+                    currentPlayer = nextPlayer();
+                    game.updateCurrentPlayer(currentPlayer.getName());
+                } catch (InvalidPlayerNameException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
