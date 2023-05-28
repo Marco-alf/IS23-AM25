@@ -193,22 +193,17 @@ public class GameScreenController {
                 case 3 -> toMod = player3Button;
                 default -> toMod = null;
             }
-            System.out.println(i+1);
             if(toMod!= null) {
                 if (old.contains(p) &&!online.contains(p)) {
                     toMod.setBackground(disconnButtonback);
-                    System.out.println("disconnesso");
+                    toMod.setOpacity(0.2);
                 } else if(!old.contains(p) && online.contains(p)) {
                     toMod.setBackground(buttonback);
-                    System.out.println("riconnesso");
+                    toMod.setOpacity(1);
                 }
-            } else {
-                System.out.println("nullPo*****Exception");
             }
         }
-        System.out.println(old);
-        System.out.println(online);
-        System.out.println("-----");
+
     }
 
     private int commongoaltranslator(String goal){
@@ -523,5 +518,9 @@ public class GameScreenController {
         armchair.setLayoutY(y);
     }
 
-
+    public void deactivate(String user) {
+        List<String> onlineNow = new ArrayList<>(onlinePlayers);
+        onlineNow.remove(user);
+        recolorPlayers(onlinePlayers, onlineNow, otherPlayers);
+    }
 }

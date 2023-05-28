@@ -77,13 +77,13 @@ public class GameScreen extends SceneHandler implements SceneFactory{
         controller.updateInitialGameInfo(info);
     }
 
-    public void updateCurrentPlayer(UpdatedPlayerMessage msg){
-        controller.updateCurrentPlayer(msg.getUpdatedPlayer());
+    public void updateCurrentPlayer(String player){
+        controller.updateCurrentPlayer(player);
     }
 
     @Override
     public SceneFactory next() {
-        return null;
+        return new FinalScreen(state, screen, view, client);
     }
 
     private void quit(){
@@ -111,5 +111,9 @@ public class GameScreen extends SceneHandler implements SceneFactory{
 
     public void updateGame(GameUpdatedMessage msg) {
         controller.updateGame(msg.getGameInfo());
+    }
+
+    public void deactivate(String user) {
+        controller.deactivate(user);
     }
 }

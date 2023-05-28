@@ -2,10 +2,7 @@ package it.polimi.ingsw.view.GUI;
 
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.messages.serverMessages.*;
-import it.polimi.ingsw.view.GUI.SceneFactories.GameScreen;
-import it.polimi.ingsw.view.GUI.SceneFactories.MenuScreen;
-import it.polimi.ingsw.view.GUI.SceneFactories.PlayScreen;
-import it.polimi.ingsw.view.GUI.SceneFactories.SceneFactory;
+import it.polimi.ingsw.view.GUI.SceneFactories.*;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -205,12 +202,27 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
     }
 
     @Override
+    public void receiveGameEndedMsg(GameEndedMessage msg) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if(factory instanceof GameScreen game){
+                    update();
+                    if(factory instanceof FinalScreen fin){
+                        fin.setInfo(msg.getGameInfo());
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
     public void receiveUpdatedPlayerMsg(UpdatedPlayerMessage msg) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 if(factory instanceof GameScreen game){
-                    game.updateCurrentPlayer(msg);
+                    game.updateCurrentPlayer(msg.getUpdatedPlayer());
                 }
             }
         });
@@ -249,7 +261,15 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveUserDisconnectedMsg(UserDisconnectedMessage msg) {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if(factory instanceof GameScreen game){
+                    game.deactivate(msg.getUser());
+                    game.updateCurrentPlayer(msg.getCurrentPlayer());
+                }
+            }
+        });
     }
 
     @Override
@@ -274,5 +294,29 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
         r.getChildren().add(t);
         mainStage.setScene(new Scene(r));
         mainStage.show();
+    }
+
+    @Override
+    public void receiveInvalidLobbyNameMsg(InvalidLobbyNameMessage msg) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText(msg.getType()+" invalid lobby name!");
+                a.showAndWait();
+            }
+        });
+    }
+
+    @Override
+    public void receiveIllegalPlayerNameMsg(IllegalPlayerNameMessage msg) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText(msg.getType()+" name chosen is not permitted! must be non-blank");
+                a.showAndWait();
+            }
+        });
     }
 }
