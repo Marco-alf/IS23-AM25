@@ -172,7 +172,7 @@ public class Lobby {
     }
 
     public boolean waitForPlayers () {
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 20; i++) {
             try  {
                 TimeUnit.MILLISECONDS.sleep(100);
                 if (onlinePlayers.size() - disconnectedPlayers.size() > 1) return true;

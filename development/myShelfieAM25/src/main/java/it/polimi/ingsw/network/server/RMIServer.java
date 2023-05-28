@@ -37,7 +37,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     /**
      * PING_TIME is the period of the checking for disconnected player
      */
-    private final int PING_TIME = 2000;
+    private final int PING_TIME = 200;
     /**
      * rmiClients is the list of clients served by the RMIServer
      */
