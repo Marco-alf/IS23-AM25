@@ -14,20 +14,22 @@ import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
 import it.polimi.ingsw.network.messages.serverMessages.GameUpdatedMessage;
 import it.polimi.ingsw.network.messages.serverMessages.PrivateChatUpdateMessage;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static javafx.scene.paint.Color.BURLYWOOD;
 
 public class GameScreenController {
 
@@ -99,6 +101,9 @@ public class GameScreenController {
 
 
     private Button[] s_buttons = new Button[]{myshelfButton, player1Button, player2Button, player3Button };
+    Background buttonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
+    Background disconnButtonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
+
 
     public void updateInitialGameInfo(InitialGameInfo info) {
         synchronized (myTurn) {
@@ -108,6 +113,8 @@ public class GameScreenController {
             players = new ArrayList<>(info.getPlayers());
             otherPlayers = new ArrayList<>(players);
             otherPlayers.remove(selfName);
+
+            recolorPlayers(onlinePlayers, info.getOnlinePlayers(), otherPlayers);
             onlinePlayers = new ArrayList<>(info.getOnlinePlayers());
 
             chatMode.getItems().add("Lobby");
@@ -152,6 +159,9 @@ public class GameScreenController {
             livingroomBoard = info.getNewBoard();
             refreshBoard();
 
+            recolorPlayers(onlinePlayers, info.getOnlinePlayers(), otherPlayers);
+            onlinePlayers = new ArrayList<>(info.getOnlinePlayers());
+
             ImageView[][] old = new ImageView[5][6];
 
             if(oldplayer.equals(selfName)){
@@ -171,6 +181,34 @@ public class GameScreenController {
 
         }
         updateCurrentPlayer(info.getCurrentPlayer());
+    }
+
+    private void recolorPlayers(List<String> old, List<String> online, List<String> all) {
+        for(String p: all){
+            int i = all.indexOf(p);
+            Button toMod;
+            switch (i+1){
+                case 1 -> toMod = player1Button;
+                case 2 -> toMod = player2Button;
+                case 3 -> toMod = player3Button;
+                default -> toMod = null;
+            }
+            System.out.println(i+1);
+            if(toMod!= null) {
+                if (old.contains(p) &&!online.contains(p)) {
+                    toMod.setBackground(disconnButtonback);
+                    System.out.println("disconnesso");
+                } else if(!old.contains(p) && online.contains(p)) {
+                    toMod.setBackground(buttonback);
+                    System.out.println("riconnesso");
+                }
+            } else {
+                System.out.println("nullPo*****Exception");
+            }
+        }
+        System.out.println(old);
+        System.out.println(online);
+        System.out.println("-----");
     }
 
     private int commongoaltranslator(String goal){
@@ -251,6 +289,18 @@ public class GameScreenController {
         player3Button.setOnAction(actionEvent -> toggleBoard(3));
         myshelfButton.setOnAction(actionEvent -> {toggleBoard(0);});
 
+        /*player1Button.setStyle("-fx-background-color: BURLYWOOD");
+        player2Button.setStyle("-fx-background-color: BURLYWOOD");
+        player3Button.setStyle("-fx-background-color: BURLYWOOD");
+        myshelfButton.setStyle("-fx-background-color: BURLYWOOD");
+
+        Background buttonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
+        player1Button.setBackground(buttonback);
+        player2Button.setBackground(buttonback);
+        player3Button.setBackground(buttonback);
+        myshelfButton.setBackground(buttonback);*/
+
+
         for(int i=0; i<viewSelected.length; i++){
             viewSelected[i] = new ImageView();
             viewSelected[i].setPreserveRatio(true);
@@ -270,6 +320,9 @@ public class GameScreenController {
         }
 
         s_buttons = new  Button[]{myshelfButton, player1Button, player2Button, player3Button };
+        for (Button s_button : s_buttons) {
+            s_button.setBackground(buttonback);
+        }
 
         chatMode.setPromptText("Lobby");
         chatMode.setValue("Lobby");
@@ -458,35 +511,16 @@ public class GameScreenController {
             y=850;
         } else {
             for(int i=0; i<otherPlayers.size(); i++){
-                switch(i+1){
-                    case 1 -> {x=491; y=35;}
-                    case 2 -> {x=50; y=160;}
-                    case 3 -> {x=1724; y=160;}
-                }
+                if(currentPlayer.equals(otherPlayers.get(i)))
+                    switch(i+1){
+                        case 1 -> {x=491; y=35;}
+                        case 2 -> {x=50; y=160;}
+                        case 3 -> {x=1724; y=160;}
+                    }
             }
         }
         armchair.setLayoutX(x);
         armchair.setLayoutY(y);
-
-        /*
-        for(; i<players.size(); i++, k++){
-            if(players.get(k).equals(selfName)) {
-                k++;
-            }
-            if(currentPlayer.equals(players.get(k))){
-
-                switch(i){
-                    case 1 -> {x=575; y=55;}
-                    case 2 -> {x=50; y=160;}
-                    case 3 -> {x=1724; y=160;}
-                }
-                armchair.setX(x);
-                armchair.setY(y);
-                return;
-            }
-        }
-        armchair.setX(1244);
-        armchair.setY(852);*/
     }
 
 
