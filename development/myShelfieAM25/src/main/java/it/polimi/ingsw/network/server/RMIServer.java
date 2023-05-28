@@ -317,6 +317,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     public void manageDisconnection(RMIClientInterface rmiClient) {
         Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: RMI client has disconnected");
         Lobby lobby = rmiClientsLobby.get(rmiClient);
+        String curPlayer = lobby.getCurrentPlayer();
         String name = rmiClientsName.get(rmiClient);
         rmiClients.remove(rmiClient);
         rmiClientsStates.remove(rmiClient);
@@ -344,6 +345,10 @@ public class RMIServer implements Runnable, RMIServerInterface{
                                 server.gameBroker.closeLobby(lobby);
 
                             }
+                        } else if (name.equals(curPlayer)) {
+                            UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();
+                            updateMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
+                            server.sendMsgToAll(updateMessage, lobby);
                         }
                     }
                 });

@@ -291,6 +291,7 @@ public class ClientHandler implements Runnable{
             Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: client " + socket.getInetAddress().getHostAddress() + " has disconnected");
             disconnect();
             server.removeClient(this);
+            String curPlayer = lobby.getCurrentPlayer();
 
             try {
                 if (lobby != null) {
@@ -312,6 +313,10 @@ public class ClientHandler implements Runnable{
                                     server.gameBroker.closeLobby(lobby);
 
                                 }
+                            } else if (clientNickname.equals(curPlayer)) {
+                                UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();
+                                updateMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
+                                genericServer.sendMsgToAll(updateMessage, lobby);
                             }
                         }
                     });

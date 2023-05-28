@@ -58,11 +58,11 @@ public class TextualUI implements ViewInterface {
     private final GameResults results = new GameResults();
     public void start() {
         String inputCommand;
-
+        restoreWindow();
         System.out.println(out + "Insert the \u001B[1mserver IP address"+rst+".");
         System.out.print(in);
         serverIP = scanner.nextLine();
-        while(!isValidInet4Address(serverIP)){
+        while(!isValidIP(serverIP)){
             System.out.print(rst + err + "This ip is wrongly formatted\n" + in);
             serverIP = scanner.nextLine();
         }
@@ -120,10 +120,9 @@ public class TextualUI implements ViewInterface {
                         System.out.print(rst + err + "You have to be inside a game to use this functionality\n" + in);
                     }
                 }
-                case "/egg" -> System.out.print(rst + "\n" + in);//(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
+                case "/egg" -> System.out.print(rst + yellow + "0\n" + in);//(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
                 case "/exit" -> online = false;
             }
-
 
             if(missingGameUpdate) {
                 displayGameInfo();
@@ -305,7 +304,7 @@ public class TextualUI implements ViewInterface {
         System.out.print(yellow + "/help:\u001B[0m show this list of commands\n");
         System.out.print(in);
     }
-    public void updateView (GameInfo info) {
+    public synchronized void updateView (GameInfo info) {
         board = info.getNewBoard();
         if (info instanceof InitialGameInfo) {
             shelves = ((InitialGameInfo) info).getShelves();
@@ -551,6 +550,10 @@ public class TextualUI implements ViewInterface {
         int l;
         int delta = 0;
         shelf[1] = rst + "    " + bold + player + ": " + unBold + rst;
+        if (!onlinePlayers.contains(player)){
+            shelf[1] += "\u001B[38;5;25m [offline]"+rst;
+            delta+=10;
+        }
         if (player.equals(nickname)) {
             shelf[1] += red + bold + " < you" + rst;
             delta = 6;
@@ -1312,7 +1315,6 @@ public class TextualUI implements ViewInterface {
                     String quit = scanner.nextLine();
                     if (!quit.equals("n") && !quit.equals("N")) {
                         clientMessageOut = new QuitMessage();
-
                         if (client instanceof RMIClient) {
                             clientMessageOut.setRmiClient((RMIClient) client);
                             client.sendMsgToServer(clientMessageOut);
@@ -1346,6 +1348,7 @@ public class TextualUI implements ViewInterface {
                     if (client instanceof RMIClient) {
                         clientMessageOut.setRmiClient((RMIClient) client);
                     }
+                    isDisplaying = false;
                     client.sendMsgToServer(clientMessageOut);
                 }
                 case "/showchat" -> displayChat();
@@ -1441,6 +1444,9 @@ public class TextualUI implements ViewInterface {
     @Override
     public void receiveUserDisconnectedMsg(UserDisconnectedMessage msg) {
         System.out.print(err + "Player " + msg.getUser() + " has been disconnected\n" + in);
+        if(onlinePlayers.contains(msg.getUser())) {
+            onlinePlayers.remove(msg.getUser());
+        }
     }
 
     @Override
@@ -1450,13 +1456,8 @@ public class TextualUI implements ViewInterface {
 
     @Override
     public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
-        System.out.print("\n" + rst + red + bold + "You have been disconnected\n");
-        try{
-            sleep(1000);
-        }catch (InterruptedException e){
-            e.printStackTrace();
-        }
         restoreWindow();
+        System.out.print("\n" + rst + red + bold + "You have been disconnected\n");
         printCommands();
     }
 
@@ -1467,14 +1468,13 @@ public class TextualUI implements ViewInterface {
         System.out.print(err + "This nickname is not valid. Empty and null string are not allowed\n" + in);
     }
 
-    private boolean isValidInet4Address(String ip)
+    private boolean isValidIP(String ip)
     {
+        if(ip.equals("localhost")) return true;
         String[] groups = ip.split("\\.");
-
         if (groups.length != 4) {
             return false;
         }
-
         try {
             return Arrays.stream(groups)
                     .filter(s -> s.length() >= 1)
@@ -1487,7 +1487,7 @@ public class TextualUI implements ViewInterface {
     }
     private void createLobby(){
         if (client.getIsInLobbyStatus()) {
-            System.out.print(out + "You are already in a lobby\n" + in);
+            System.out.print(rst + err + "You are already in a lobby\n" + in);
         } else {
             String name = askName();
             String lobbyName = askLobbyName();
@@ -1512,7 +1512,7 @@ public class TextualUI implements ViewInterface {
     }
     private void joinLobby(){
         if (client.getIsInLobbyStatus()) {
-            System.out.print(rst + err + "already in a lobby!\n");
+            System.out.print(rst + err + "You are already in a lobby\n" + in);
         } else {
             String name = askName();
             String lobbyName = askLobbyName();
@@ -1532,6 +1532,7 @@ public class TextualUI implements ViewInterface {
             if (client instanceof RMIClient) {
                 clientMessage.setRmiClient((RMIClient) client);
             }
+            isDisplaying = false;
             client.sendMsgToServer(clientMessage);
         } else {
             System.out.print(rst + err + "You have to be inside a lobby to use the chat\n" + in);
