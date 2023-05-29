@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.GUI.SceneFactories;
 
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
+import it.polimi.ingsw.network.client.SocketClient;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
@@ -72,7 +73,7 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
     }
 
     public void initiateTCP(){
-        client = new RMIClient("localhost", 1099, view);
+        client = new SocketClient("localhost", 1099, view);
         client.init();
         state.update();
     }
