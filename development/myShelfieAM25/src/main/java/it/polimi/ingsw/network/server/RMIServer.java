@@ -152,6 +152,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
         } catch (RemoteException e) {
             manageDisconnection(rmiClient);
         }
+        System.out.println("Sent " + msg.getType() + " to RMI client");
     }
 
     /**
@@ -163,7 +164,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     public synchronized void receiveMsgFromClient (Serializable arg) {
         ClientMessage msg = (ClientMessage) arg;
         RMIClientInterface sender = msg.getRmiClient();
-        System.out.println(msg.getType());
+        //System.out.println(msg.getType());
         try {
             if (msg.getType().equals("CreateLobbyMessage") && rmiClientsStates.get(sender) == ClientState.CONNECTED) {
                 CreateLobbyMessage specificMessage = (CreateLobbyMessage) msg;
@@ -293,6 +294,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
         } catch (IllegalPlayerNameException e) {
             sendMsgToClient(sender, new IllegalPlayerNameMessage());
         }
+        System.out.println("Received " + msg.getType() + " from RMI client");
     }
 
     /**

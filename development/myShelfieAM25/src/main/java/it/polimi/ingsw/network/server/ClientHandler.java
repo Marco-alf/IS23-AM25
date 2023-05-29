@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.data.FinalGameInfo;
 import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.data.InitialGameInfo;
+import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.clientMessages.*;
 import it.polimi.ingsw.network.messages.connectionMessages.Ping;
 import it.polimi.ingsw.network.messages.serverMessages.*;
@@ -241,8 +242,8 @@ public class ClientHandler implements Runnable{
                             } catch (GameEndedException ignored) {
 
                             }
-
                         }
+                        System.out.println("Received " + msg.getType() + " from Socket client");
                     }
                 } catch (ClassNotFoundException e) {
                     manageDisconnection();
@@ -259,7 +260,6 @@ public class ClientHandler implements Runnable{
                 } catch (IllegalPlayerNameException e) {
                     sendMsgToClient(new IllegalPlayerNameMessage());
                 }
-
             }
 
         } catch (IOException e) {
@@ -280,6 +280,7 @@ public class ClientHandler implements Runnable{
         } catch (IOException e) {
             manageDisconnection();
         }
+        System.out.println("Sent " + ((Message) msg).getType() + " to Socket client");
     }
 
     /**
