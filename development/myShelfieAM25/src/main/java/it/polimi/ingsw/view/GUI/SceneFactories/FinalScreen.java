@@ -78,6 +78,7 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
                 clientMessage.setRmiClient((RMIClient) client);
             }
             client.sendMsgToServer(clientMessage);
+            
             client.disconnect(false);
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
