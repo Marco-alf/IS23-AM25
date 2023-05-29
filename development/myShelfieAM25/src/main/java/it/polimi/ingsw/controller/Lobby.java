@@ -180,7 +180,7 @@ public class Lobby {
     }
 
     public boolean waitForPlayers () {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 200; i++) {
             try  {
                 TimeUnit.MILLISECONDS.sleep(100);
                 if (onlinePlayers.size() - disconnectedPlayers.size() > 1) return true;
@@ -205,13 +205,17 @@ public class Lobby {
      */
     public void writeMessage(String message, String player) {}
     public GameInfo getGameInfo () {
+        if(!isGameCreated) return null;
         return gameInfo;
     }
     public InitialGameInfo getInitialGameInfo () {
+        if(!isGameCreated) return null;
         return new InitialGameInfo(game);
     }
 
     public String getCurrentPlayer() {
+        if(!isGameCreated) return null;
+        if(currentPlayer == null) return null;
         return currentPlayer.getName();
     }
 

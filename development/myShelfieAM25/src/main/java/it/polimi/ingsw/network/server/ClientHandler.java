@@ -92,7 +92,7 @@ public class ClientHandler implements Runnable{
      * getter for the lobby that the player has joined
      * @return the lobby joined by the player
      */
-    public Lobby getLobby() {
+    public synchronized Lobby getLobby() {
         return lobby;
     }
 
@@ -104,7 +104,7 @@ public class ClientHandler implements Runnable{
         return clientNickname;
     }
 
-    public void setStatus (ClientState state) {
+    public synchronized void setStatus (ClientState state) {
         this.state = state;
     }
 
@@ -124,7 +124,7 @@ public class ClientHandler implements Runnable{
             while(activeClient){
                 try{
                     Object object = inputStream.readObject();
-                    //if(!(object instanceof Ping)) {
+                    synchronized (this){
                         ClientMessage msg = (ClientMessage) object;
                         if (msg.getType().equals("CreateLobbyMessage") && state == ClientState.CONNECTED) {
                             CreateLobbyMessage specificMessage = (CreateLobbyMessage) msg;
@@ -180,7 +180,7 @@ public class ClientHandler implements Runnable{
                                     throw new RuntimeException(e);
                                 }
                             }
-                            if (isRejoining) {
+                            if (isRejoining && lobby.isGameCreated()) {
                                 state = ClientState.IN_GAME;
                                 GameCreatedMessage createdMessage = new GameCreatedMessage();
                                 InitialGameInfo info = lobby.getInitialGameInfo();
@@ -243,7 +243,7 @@ public class ClientHandler implements Runnable{
                             }
 
                         }
-                    //}
+                    }
                 } catch (ClassNotFoundException e) {
                     manageDisconnection();
                 } catch (ExistingLobbyException e) {
@@ -271,7 +271,7 @@ public class ClientHandler implements Runnable{
      * method used to send a message to the client associated with the clientHandler
      * @param msg is the message that is sent
      */
-    public void sendMsgToClient(Serializable msg){
+    public synchronized void sendMsgToClient(Serializable msg){
         assert (msg instanceof ServerMessage) || (msg instanceof Ping);
         try {
             outputStream.writeObject(msg);
@@ -285,16 +285,16 @@ public class ClientHandler implements Runnable{
     /**
      * method used to manage a regular disconnection of a player.
      */
-    public void manageDisconnection() {
+    public synchronized void manageDisconnection() {
         if (activeClient){
             activeClient = false;
             Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: client " + socket.getInetAddress().getHostAddress() + " has disconnected");
             disconnect();
             server.removeClient(this);
-            String curPlayer = lobby.getCurrentPlayer();
 
             try {
                 if (lobby != null) {
+                    String curPlayer = lobby.getCurrentPlayer();
                     lobby.disconnectPlayer(lobby.getPlayer(clientNickname));
 
                     UserDisconnectedMessage serverMessage = new UserDisconnectedMessage();
@@ -304,13 +304,13 @@ public class ClientHandler implements Runnable{
                     Thread t = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            if (lobby.checkNumberOfPlayers()) {
+                            if (lobby.checkNumberOfPlayers() && curPlayer!=null) {
                                 InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
                                 genericServer.sendMsgToAll(insufficientPlayersMessage, lobby);
                                 if (!lobby.waitForPlayers()) {
+                                    server.gameBroker.closeLobby(lobby);
                                     LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
                                     genericServer.sendMsgToAll(lobbyClosedMessage, lobby);
-                                    server.gameBroker.closeLobby(lobby);
 
                                 }
                             } else if (clientNickname.equals(curPlayer)) {
@@ -336,7 +336,7 @@ public class ClientHandler implements Runnable{
     /**
      * method used to close all the communication stream and the socket itself
      */
-    public void disconnect() {
+    public synchronized void disconnect() {
         activeClient = false;
         try {
             inputStream.close();

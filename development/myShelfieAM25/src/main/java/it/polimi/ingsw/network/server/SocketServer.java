@@ -88,7 +88,7 @@ public class SocketServer implements Runnable{
      * @param arg is the forwarded message, it needs to be serializable
      * @param lobby is the target Lobby
      */
-    public void sendMsgToAllSocket (Serializable arg, Lobby lobby) {
+    public synchronized void sendMsgToAllSocket (Serializable arg, Lobby lobby) {
         for (ClientHandler clientHandler : clientHandlers) {
             if (clientHandler.getLobby() == lobby) {
                 clientHandler.sendMsgToClient(arg);
@@ -96,7 +96,7 @@ public class SocketServer implements Runnable{
         }
     }
 
-    public void setInGameStatus (String lobby) {
+    public synchronized void setInGameStatus (String lobby) {
         for (ClientHandler clientHandler : clientHandlers) {
             if (clientHandler.getLobby().getLobbyName().equals(lobby)) {
                 clientHandler.setStatus(ClientState.IN_GAME);
@@ -108,7 +108,7 @@ public class SocketServer implements Runnable{
      * removeClient remove the connection with a client that uses the TCP Socket
      * @param clientHandler is the handler of the connections that are using the socket
      */
-    public void removeClient (ClientHandler clientHandler) {
+    public synchronized void removeClient (ClientHandler clientHandler) {
         clientHandlers.remove(clientHandler);
     }
 }

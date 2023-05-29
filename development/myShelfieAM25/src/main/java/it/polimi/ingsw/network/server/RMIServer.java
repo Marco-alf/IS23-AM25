@@ -96,7 +96,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * @param msg is the forwarded message, it needs to be serializable
      * @param lobby is the target Lobby
      */
-    public void sendMsgToAllRMI (Serializable msg, Lobby lobby) {
+    public synchronized void sendMsgToAllRMI (Serializable msg, Lobby lobby) {
         for (RMIClientInterface rmiClient : rmiClients) {
             try {
                 if (rmiClientsLobby.get(rmiClient) == lobby) {
@@ -108,7 +108,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
         }
     }
 
-    public void setInGameStatus (String lobby) {
+    public synchronized void setInGameStatus (String lobby) {
         for (RMIClientInterface rmiClient : rmiClients) {
             if (rmiClientsLobby.get(rmiClient).getLobbyName().equals(lobby)) {
                 rmiClientsStates.put(rmiClient, ClientState.IN_GAME);
@@ -123,7 +123,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 try {
                     rmiClient.checkAliveness();
                 } catch (RemoteException e) {
-                    rmiClientsToRemove.add(rmiClient);
+                    synchronized (this) {
+                        rmiClientsToRemove.add(rmiClient);
+                    }
                 }
             }
             for (RMIClientInterface rmiClientInterface : rmiClientsToRemove) {
@@ -144,7 +146,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * @param rmiClient is the destinatari of the message
      * @param msg is the serializable message
      */
-    public void sendMsgToClient (RMIClientInterface rmiClient, ServerMessage msg) {
+    public synchronized void sendMsgToClient (RMIClientInterface rmiClient, ServerMessage msg) {
         try {
             rmiClient.receiveMsgFromServer(msg);
         } catch (RemoteException e) {
@@ -158,7 +160,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * @param arg is the serializable message received from the client
      */
     @Override
-    public void receiveMsgFromClient (Serializable arg) {
+    public synchronized void receiveMsgFromClient (Serializable arg) {
         ClientMessage msg = (ClientMessage) arg;
         RMIClientInterface sender = msg.getRmiClient();
         System.out.println(msg.getType());
@@ -216,7 +218,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                         throw new RuntimeException(e);
                     }
                 }
-                if (isRejoining) {
+                if (isRejoining && rmiClientsLobby.get(msg.getRmiClient()).isGameCreated()) {
                     rmiClientsStates.put(sender, ClientState.IN_GAME);
 
                     GameCreatedMessage createdMessage = new GameCreatedMessage();
@@ -299,7 +301,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * @throws RemoteException whenever an error regarding the player connection happened
      */
     @Override
-    public void register(RMIClientInterface rmiClient) throws RemoteException {
+    public synchronized void register(RMIClientInterface rmiClient) throws RemoteException {
         rmiClients.add(rmiClient);
         rmiClientsStates.put(rmiClient, ClientState.CONNECTED);
         SERVER_LOGGER.log(Level.INFO, "New RMI client connected");
@@ -314,15 +316,15 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * manageDisconnection handles the disconnections of rmi clients
      * @param rmiClient is the interface of the client that is disconnected
      */
-    public void manageDisconnection(RMIClientInterface rmiClient) {
+    public synchronized void manageDisconnection(RMIClientInterface rmiClient) {
         Server.SERVER_LOGGER.log(Level.INFO, "DISCONNECTION: RMI client has disconnected");
         Lobby lobby = rmiClientsLobby.get(rmiClient);
-        String curPlayer = lobby.getCurrentPlayer();
         String name = rmiClientsName.get(rmiClient);
         rmiClients.remove(rmiClient);
         rmiClientsStates.remove(rmiClient);
         try {
             if (lobby != null) {
+                String curPlayer = lobby.getCurrentPlayer();
                 lobby.disconnectPlayer(lobby.getPlayer(name));
 
                 rmiClientsLobby.remove(rmiClient);
@@ -336,14 +338,13 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 Thread t = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if (lobby.checkNumberOfPlayers()) {
+                        if (lobby.checkNumberOfPlayers() && curPlayer!=null) {
                             InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
                             server.sendMsgToAll(insufficientPlayersMessage, lobby);
                             if (!lobby.waitForPlayers()) {
+                                server.gameBroker.closeLobby(lobby);
                                 LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
                                 server.sendMsgToAll(lobbyClosedMessage, lobby);
-                                server.gameBroker.closeLobby(lobby);
-
                             }
                         } else if (name.equals(curPlayer)) {
                             UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();

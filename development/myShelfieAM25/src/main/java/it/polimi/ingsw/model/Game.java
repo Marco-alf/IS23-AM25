@@ -237,7 +237,14 @@ public class Game
      * @throws InvalidPlayerNameException thrown if the name specified is not associated with any player of the game
      */
     public void reconnect(String name) throws InvalidPlayerNameException {
-        onlinePlayers.add(searchPlayer(name));
+        List<Player> temp = new ArrayList<>();
+        for(Player p : players){
+            if(onlinePlayers.contains(p) || p.equals(searchPlayer(name))){
+                temp.add(p);
+            }
+        }
+        onlinePlayers.clear();
+        onlinePlayers.addAll(temp);
     }
 
     /**
