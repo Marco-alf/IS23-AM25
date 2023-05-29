@@ -110,8 +110,10 @@ public class RMIServer implements Runnable, RMIServerInterface{
 
     public synchronized void setInGameStatus (String lobby) {
         for (RMIClientInterface rmiClient : rmiClients) {
-            if (rmiClientsLobby.get(rmiClient).getLobbyName().equals(lobby)) {
-                rmiClientsStates.put(rmiClient, ClientState.IN_GAME);
+            if(rmiClient != null ) {
+                if (rmiClientsLobby.get(rmiClient) != null && rmiClientsLobby.get(rmiClient).getLobbyName().equals(lobby)){
+                    rmiClientsStates.put(rmiClient, ClientState.IN_GAME);
+                }
             }
         }
     }

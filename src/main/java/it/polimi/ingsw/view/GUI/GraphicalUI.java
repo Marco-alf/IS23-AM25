@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.GUI;
 
 import it.polimi.ingsw.model.data.InitialGameInfo;
+import it.polimi.ingsw.network.client.GenericClient;
+import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 import it.polimi.ingsw.view.GUI.SceneFactories.*;
 import it.polimi.ingsw.view.ViewInterface;
@@ -274,7 +276,18 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveLobbyClosedMsg(LobbyClosedMessage msg) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if(factory instanceof GameScreen game){
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setContentText(msg.getType()+" lobby was closed.");
+                    a.showAndWait();
+                    game.disconnect();
 
+                }
+            }
+        });
     }
 
     @Override

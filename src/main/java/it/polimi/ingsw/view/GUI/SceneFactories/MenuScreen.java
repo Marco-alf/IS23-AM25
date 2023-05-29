@@ -83,6 +83,7 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
             }
             client.sendMsgToServer(clientMessage);
             client.disconnect(false);
+            client = null;
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
 

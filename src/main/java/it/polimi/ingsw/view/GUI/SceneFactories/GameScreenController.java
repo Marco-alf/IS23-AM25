@@ -10,6 +10,7 @@ import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.messages.clientMessages.ChatMessage;
 import it.polimi.ingsw.network.messages.clientMessages.MoveMessage;
 import it.polimi.ingsw.network.messages.clientMessages.PrivateChatMessage;
+import it.polimi.ingsw.network.messages.clientMessages.QuitMessage;
 import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
 import it.polimi.ingsw.network.messages.serverMessages.GameUpdatedMessage;
 import it.polimi.ingsw.network.messages.serverMessages.PrivateChatUpdateMessage;
@@ -33,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static javafx.scene.paint.Color.BURLYWOOD;
 
 public class GameScreenController {
+    GameScreen gameScreen;
 
     private final AtomicBoolean myTurn = new AtomicBoolean(false);
     private String currentPlayer;
@@ -227,7 +229,8 @@ public class GameScreenController {
         return result;
     }
 
-    public void initActions(GenericClient client, String selfName){
+    public void initActions(GenericClient client, String selfName, GameScreen gameScreen){
+        this.gameScreen = gameScreen;
         this.client = client;
         this.selfName = selfName;
 
@@ -291,6 +294,7 @@ public class GameScreenController {
                 case W -> toggleBoard(1);
                 case A -> {if(s_buttons[2].isVisible())toggleBoard(2);}
                 case D -> {if(s_buttons[3].isVisible())toggleBoard(3);}
+                case P -> gameScreen.disconnect();
             }
         });
 
@@ -533,5 +537,16 @@ public class GameScreenController {
         List<String> onlineNow = new ArrayList<>(onlinePlayers);
         onlineNow.remove(user);
         recolorPlayers(onlinePlayers, onlineNow, otherPlayers);
+    }
+
+    public void disconnect() {
+        QuitMessage clientMessage = new QuitMessage();
+        if (client instanceof RMIClient) {
+            clientMessage.setRmiClient((RMIClient) client);
+        }
+        client.sendMsgToServer(clientMessage);
+
+        client.disconnect(false);
+        client = null;
     }
 }

@@ -64,9 +64,10 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
                 case 1 -> s+= "1st ";
                 case 2 -> s+= "2nd ";
                 case 3 -> s+= "3rd ";
-                default -> s+= "####";
+                case 4 -> s+= "4th ";
+                default -> s+= "####  ";
             };
-            results[i] = new Text(s + names.get(i) + " with "+ pointsMap.get(names.get(i)) + "points");
+            results[i] = new Text(s + names.get(i) + " with "+ pointsMap.get(names.get(i)) + " points");
             results[i].setFont(Font.font("Arial", FontWeight.NORMAL, 20));
             r.getChildren().add(results[i]);
         }

@@ -2,6 +2,8 @@ package it.polimi.ingsw.view.GUI.SceneFactories;
 
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
+import it.polimi.ingsw.network.client.RMIClient;
+import it.polimi.ingsw.network.messages.clientMessages.QuitMessage;
 import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
 import it.polimi.ingsw.network.messages.serverMessages.GameUpdatedMessage;
 import it.polimi.ingsw.network.messages.serverMessages.PrivateChatUpdateMessage;
@@ -45,7 +47,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
             loader.setController(controller);
             r = loader.load();
 
-            controller.initActions(client, selfName);
+            controller.initActions(client, selfName, this);
 
             Scale sc = new Scale();
             double xscaling = 1;
@@ -112,5 +114,10 @@ public class GameScreen extends SceneHandler implements SceneFactory{
 
     public void deactivate(String user) {
         controller.deactivate(user);
+    }
+
+    public void disconnect() {
+        controller.disconnect();
+        state.forceUpdate(new PlayScreen(state, screen, view));
     }
 }

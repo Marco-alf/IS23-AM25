@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 public class PlayScreen extends SceneHandler implements SceneFactory{
 
     GenericClient client;
+    static int porta = 1099;
 
     public PlayScreen(SceneState state, Rectangle2D screen, ViewInterface view){
         super(state, screen, view);
@@ -79,7 +80,7 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
     }
 
     public void initiateRMI(){
-        client = new RMIClient("localhost", 1099, view);
+        client = new RMIClient("localhost", porta , view);
         client.init();
         state.update();
     }
