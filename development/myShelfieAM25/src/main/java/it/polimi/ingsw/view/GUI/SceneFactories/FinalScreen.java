@@ -49,7 +49,7 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
         int [] place = new int[]{1,1,1,1};
         for (int i = 0; i < names.size(); i++) {
             for (String name : names) {
-                if(pointsMap.get(names.get(i)) > pointsMap.get(name) ){
+                if(pointsMap.get(names.get(i)) < pointsMap.get(name) ){
                     place[i]++;
                 }
             }
@@ -58,7 +58,7 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
         TilePane r = new TilePane(Orientation.VERTICAL);
 
         Text[] results = new Text[4];
-        for (int i = 0; i < results.length; i++) {
+        for (int i = 0; i < names.size(); i++) {
             String s = "";
             switch (place[i]){
                 case 1 -> s+= "1st ";
@@ -66,12 +66,13 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
                 case 3 -> s+= "3rd ";
                 default -> s+= "####";
             };
-            results[i] = new Text(s + names.get(i) + " with "+ pointsMap + "points");
+            results[i] = new Text(s + names.get(i) + " with "+ pointsMap.get(names.get(i)) + "points");
             results[i].setFont(Font.font("Arial", FontWeight.NORMAL, 20));
             r.getChildren().add(results[i]);
         }
+
         Button back = new Button("back to play screen");
-        back.setOnAction(actionEvent -> {
+        back.setOnMouseReleased(actionEvent -> {
             QuitMessage clientMessage = new QuitMessage();
             if (client instanceof RMIClient) {
                 clientMessage.setRmiClient((RMIClient) client);
@@ -84,7 +85,7 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
         r.setAlignment(Pos.CENTER);
         adjustScaling(r);
 
-        scene = new Scene(r);
+        scene.setRoot(r);
     }
 
     @Override

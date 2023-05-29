@@ -286,14 +286,20 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
-        mainStage.setTitle("ERRORE");
-        TilePane r = new TilePane();
-        r.setAlignment(Pos.CENTER);
-        Text t = new Text("ERRORE DI CONNESSIONE: SERVER IRRAGGIUNGIBILE");
-        t.setFont(Font.font("Arial", FontWeight.NORMAL, 40));
-        r.getChildren().add(t);
-        mainStage.setScene(new Scene(r));
-        mainStage.show();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mainStage.setTitle("ERRORE");
+                TilePane r = new TilePane();
+                r.setAlignment(Pos.CENTER);
+                Text t = new Text("ERRORE DI CONNESSIONE: SERVER IRRAGGIUNGIBILE");
+                t.setFont(Font.font("Arial", FontWeight.NORMAL, 40));
+                r.getChildren().add(t);
+                mainStage.setScene(new Scene(r));
+                mainStage.show();
+            }
+        });
+
     }
 
     @Override
