@@ -351,9 +351,9 @@ public class GameScreenController {
     private void tryMove(int i) {
         synchronized (selected){
             synchronized (myTurn) {
-                if(!myTurn.get()){
-                    return;
-                }
+//                if(!myTurn.get()){
+//                    return;
+//                }
                 MoveMessage clientMessage = new MoveMessage();
                 clientMessage.setTiles(selected);
                 clientMessage.setColumn(i);
