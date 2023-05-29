@@ -24,38 +24,136 @@ import static java.lang.Thread.sleep;
 
 
 public class TextualUI implements ViewInterface {
+    /**
+     * scanner is the Scanner object used for reading from System.in input stream
+     */
     private final Scanner scanner = new Scanner(System.in);
+    /**
+     * boolean flag that indicates if the corresponding client is online or not
+     */
     private boolean online = true;
+    /**
+     * reference to the client interface with the network
+     */
     private GenericClient client;
+    /**
+     * board represent the current state of the game board
+     */
     private TilesType[][] board;
+    /**
+     * onlinePlayers is the list of the players that are currently connected to the lobby
+     */
     private final List<String> onlinePlayers = new ArrayList<>();
+    /**
+     * shelves is a hashmap that links each player to his shelf
+     */
     private Map<String, TilesType[][]> shelves = new HashMap<>();
+    /**
+     * commonGoals is a hashmap that links each player to its common goal points
+     */
     private final Map<String, Integer[]> commonGoals = new HashMap<>();
+    /**
+     * commonGoal1 is a string that uniquely identify the current first common goal
+     */
     private String commonGoal1;
+    /**
+     * commonGoal2 is a string that uniquely identify the current second common goal
+     */
     private String commonGoal2;
+    /**
+     * personalPoints is an integer that represents the points that the client have gained through his personal goal
+     */
     private Integer personalPoints;
-    private String nickname;
-    private String curPlayer;
+    /**
+     * personalGoal is the PersonalGoal of the player linked to this TUI
+     */
     private PersonalGoal personalGoal;
+    /**
+     * nickname is the name of the client linked to this TUI
+     */
+    private String nickname;
+    /**
+     * curPlayer is the nickname of the player that is currently allowed to make a move
+     */
+    private String curPlayer;
+    /**
+     * messages is the list of all the messages shared though the chat
+     */
     private final List<ChatUpdateMessage> messages = new ArrayList<>();
+    /**
+     * commands is a list of all the commands that are available in the lobby
+     */
     private static final List<String> commands = List.of("/create", "/join", "/retrieve","/chat","/showchat", "/help", "/move", "/quit", "/gamestate","/egg","/exit");
+    /**
+     * rst is an ANSI sequence that reset all the ANSI codes
+     */
     private static final String rst = "\u001B[0m";
+    /**
+     * whiteBack is an Ansi sequence that makes white the background of the following characters
+     */
     private static final String whiteBack = "\u001B[48;5;" + 15 + "m";
+    /**
+     * red is an Ansi sequence that makes red the next characters
+     */
     private static final String red = "\u001B[38;5;" + 1 + "m";
+    /**
+     * yellow is an Ansi sequence that makes yellow the next characters
+     */
     private final static String yellow = "\u001B[38;5;" + 11 + "m";
+    /**
+     * bold is an Ansi sequence that makes bold the next characters
+     */
     private static final String bold = "\u001B[1m";
+    /**
+     * out is an Ansi sequence that prints a prompt that symbolizes the beginning of an output message
+     */
     private static final String out = rst + yellow + bold + " > " + rst;
+    /**
+     * in is an Ansi sequence that prints a prompt that symbolizes the TUI waiting for an input
+     */
     private static final String in = rst + bold + "\u001B[38;5;" + 6 + "m >>> ";
-    private static final String unBold = "\u001B[2m";
+    /**
+     * err is an Ansi sequence that prints a prompt that symbolizes the beginning of an error message
+     */
     private static final String err = "\u001B[1m\u001B[38;5;" + 1 + "m ERROR: ";
+    /**
+     * String that represents the IP of the server (IPv4)
+     */
     private static String serverIP;
+    /**
+     * String that represents the last message received by the chat
+     */
     private static String lastMessage = "";
+    /**
+     * flag used to indicate if a game is ended or not
+     */
     private boolean hasEnded = false;
+    /**
+     * flag used to indicate that a function is printing on System.out.
+     * Is useful to avoid concurrent output that may result in graphical glitches
+     */
     private boolean isDisplaying = false;
+    /**
+     * flag that indicates that while executing another operation at least on new message has been received
+     */
     private boolean missingChatUpdate = false;
+    /**
+     * flag that indicates that while executing another operation the game state has been updated
+     */
     private boolean missingGameUpdate = false;
-
+    /**
+     * flag that indicates if the TUI has received the information needed to display the game state
+     */
+    private boolean hasInfo = false;
+    /**
+     * a GameResults object that contains all the information about how the current game has ended
+     */
     private final GameResults results = new GameResults();
+
+    /**
+     * That's the main function of the TUI that it's responsible for handling all the activities of a client that is using
+     * TUI to play the game
+     */
     public void start() {
         String inputCommand;
         restoreWindow();
@@ -120,8 +218,12 @@ public class TextualUI implements ViewInterface {
                         System.out.print(rst + err + "You have to be inside a game to use this functionality\n" + in);
                     }
                 }
-                case "/egg" -> System.out.print(rst + yellow + "0\n" + in);//(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
-                case "/exit" -> online = false;
+                case "/egg" -> System.out.print(rst + yellow + "    0\n" + in);//(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
+                case "/exit" -> {
+                    if(client.getIsInLobbyStatus())quitLobby();
+                    System.exit(0);
+                    online = false;
+                }
             }
 
             if(missingGameUpdate) {
@@ -140,11 +242,16 @@ public class TextualUI implements ViewInterface {
             }
         }
     }
+
+    /**
+     * function used to reset the state of the TUI. Is useful to initialize the TUI after the player quits from a lobby
+     */
     public void resetState(){
         hasEnded = false;
         isDisplaying = false;
         missingChatUpdate = false;
         missingGameUpdate = false;
+        hasInfo = false;
 
         board = null;
         onlinePlayers.clear();
@@ -159,7 +266,12 @@ public class TextualUI implements ViewInterface {
         messages.clear();
         lastMessage = "";
     }
+
+    /**
+     * method used to visualize the leaderboard. If the game has not ended yet the method returns immediately
+     */
     private void displayLeaderBoard(){
+        if(!hasEnded) return;
         String os = System.getProperty("os.name").toLowerCase();
         boolean isWindows = os.contains("win");
 
@@ -248,6 +360,10 @@ public class TextualUI implements ViewInterface {
             System.out.println(rst + "Adjacency points: " + bold + results.getAdjacencyPoints().get(i));
         }
     }
+
+    /**
+     * method used to clean the screen and prompt the My Shelfie ascii art
+     */
     private void restoreWindow(){
         String os = System.getProperty("os.name").toLowerCase();
         boolean isWindows = os.contains("win");
@@ -273,6 +389,12 @@ public class TextualUI implements ViewInterface {
                 "                             ██║ ╚═╝ ██║   ██║           ███████║██║  ██║███████╗███████╗██║     ██║███████╗\n" +
                 "                             ╚═╝     ╚═╝   ╚═╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚═╝╚══════╝\n");
     }
+
+    /**
+     * method that let the user select the list of tiles that he intend to move. It also let the player decide in which
+     * column place them.
+     * @param tiles is a list where the selected tiles are placed
+     */
     private void getMoves(List<Tile> tiles){
         for (int i = 0; i < 3; i++) {
             String coords = scanner.nextLine();
@@ -289,6 +411,10 @@ public class TextualUI implements ViewInterface {
             }
         }
     }
+
+    /**
+     * method used to display a list of the commands available to the player
+     */
     private void printCommands(){
         System.out.print("\u001B[0m");
         System.out.println("\u001B[1mList of commands:" + rst);
@@ -304,14 +430,19 @@ public class TextualUI implements ViewInterface {
         System.out.print(yellow + "/help:\u001B[0m show this list of commands\n");
         System.out.print(in);
     }
+
+    /**
+     * updateView is the method that allows the update of the TUI state.
+     * @param info represents the information that the are needed for the update
+     */
     public synchronized void updateView (GameInfo info) {
         board = info.getNewBoard();
         if (info instanceof InitialGameInfo) {
             shelves = ((InitialGameInfo) info).getShelves();
-            for (String player : info.getPlayers()) {
+            for (String player : shelves.keySet()) {
                 commonGoals.put(player, new Integer[]{0, 0});
-                onlinePlayers.add(player);
             }
+            onlinePlayers.addAll(info.getPlayers());
             personalGoal = ((InitialGameInfo) info).getPersonalGoals().get(nickname);
             commonGoal1 = ((InitialGameInfo) info).getCommonGoal1();
             commonGoal2 = ((InitialGameInfo) info).getCommonGoal2();
@@ -320,17 +451,19 @@ public class TextualUI implements ViewInterface {
             commonGoals.replace(info.getCurrentPlayer(), new Integer[]{info.getCommonGoal1Points(), info.getCommonGoal2Points()});
         }
         if (onlinePlayers.size() != info.getOnlinePlayers().size()) {
-            for (String player : info.getOnlinePlayers()) {
-                if (!onlinePlayers.contains(player)) onlinePlayers.add(player);
-            }
-            for (String player : onlinePlayers){
-                if(!info.getOnlinePlayers().contains(player)) onlinePlayers.remove(player);
-            }
+            onlinePlayers.clear();
+            onlinePlayers.addAll(info.getOnlinePlayers());
         }
         if (curPlayer == null) personalPoints = 0;
         else if(nickname.equals(curPlayer)) personalPoints = info.getPersonalGoalPoints();
         curPlayer = info.getCurrentPlayer();
+        hasInfo = true;
     }
+
+    /**
+     * method used to display a list of all the available lobbies
+     * @param lobbies is the list of the name of the available lobbies
+     */
     private void displayLobbies (List<String> lobbies) {
             System.out.println(rst + bold + out + "Available lobbies:" + rst);
             if(lobbies.size() == 0){
@@ -340,19 +473,29 @@ public class TextualUI implements ViewInterface {
                 System.out.println(rst + "   " + out + lobby);
             }
     }
+
+    /**
+     * message used to inform a player that a lobby has been successfully created
+     * @param msg is the message from the server containing all the needed information about the lobby
+     */
     private void displayCreatedLobbyMsg (CreatedLobbyMessage msg) {
             System.out.println(out + "A lobby has been created");
-            System.out.println(rst + "   Lobby name: " + bold + msg.getLobbyName() + unBold);
-            System.out.print(rst + "   Lobby creator: " + bold + msg.getName() + unBold + "\n");
+            System.out.println(rst + "   Lobby name: " + bold + msg.getLobbyName() + rst);
+            System.out.print(rst + "   Lobby creator: " + bold + msg.getName() + rst + "\n");
 
     }
+
+    /**
+     * method used to display all the message that have been sent to this client in the chat. The chat is linked to a
+     * single lobby, this implies that quitting or changing lobby causes the lost of the chat
+     */
     private void displayChat () {
         String sender;
         for (ChatUpdateMessage message : messages) {
             sender = message.getSender();
             if (sender.equals(nickname)) sender = "You";
             if (message.getType().equals("PrivateChatUpdateMessage")) {
-                System.out.println(out + bold + sender + " at " + message.getTimestamp() + unBold + " to " +
+                System.out.println(out + bold + sender + " at " + message.getTimestamp() + rst + " to " +
                         ((PrivateChatUpdateMessage) message).getReceiver() + red + bold + " [private]" + rst + ": \n" +
                         "      " + message.getContent() + rst);
             } else {
@@ -361,7 +504,13 @@ public class TextualUI implements ViewInterface {
         }
         System.out.print(in);
     }
+
+    /**
+     * method used to display the current game state. If the required information are not received yet the method ends without
+     * displaying anything.
+     */
     private void displayGameInfo () {
+        if(!hasInfo) return;
         isDisplaying = true;
         restoreWindow();
         String[] output = boardConstructor(board);
@@ -384,6 +533,12 @@ public class TextualUI implements ViewInterface {
         System.out.print(in);
         isDisplaying = false;
     }
+
+    /**
+     * method used to create a link between a position in the board selected by the player and the tile in that position.
+     * @param coords is the position in cartesian coordinates of the tile selected by the player
+     * @return the Tile in the selected position
+     */
     private Tile getTiles (String coords) {
         int x;
         int y;
@@ -392,6 +547,13 @@ public class TextualUI implements ViewInterface {
         if (x < 0 || y < 0 || x > 8 || y > 8) return null;
         return new Tile(board[y][x], x, y);
     }
+
+    /**
+     * method that given a type of tile return the correspondent string that allows to visualize graphically the tile through
+     * ANSI codes.
+     * @param type is the type of tile that we want to print
+     * @return the string used to graphically represent the requested type of tile
+     */
     private String getTile (TilesType type) {
         String s = "";
         int BROWN = 59;
@@ -437,6 +599,11 @@ public class TextualUI implements ViewInterface {
         s += "\u001B[0m";
         return s;
     }
+
+    /**
+     * method used to ask player for the next command to execute
+     * @return the string corresponding to the command
+     */
     private String askCommand() {
         String command;
         command = scanner.nextLine();
@@ -450,18 +617,28 @@ public class TextualUI implements ViewInterface {
         if(hasEnded) return "/egg";
         return command;
     }
+
+    /**
+     * method used to ask player their nickname
+     * @return a string representing the player nickname
+     */
     private String askName() {
         String name;
         String confirm;
         do {
             System.out.print(out + "Insert username\n" + in);
             name = scanner.nextLine();
-            System.out.print(out + "Your name is: " + bold + name + unBold + ". Is it right [Y/n]?\n" + in);
+            System.out.print(out + "Your name is: " + bold + name + rst + ". Is it right [Y/n]?\n" + in);
             confirm = scanner.nextLine();
         } while (confirm.equals("n"));
         nickname = name;
         return name;
     }
+
+    /**
+     * method used to get a chat message from a player
+     * @return the ChatMessage to send to the receiver
+     */
     private ChatMessage askChatMessage() {
         String chatMessage, response = "Y";
         ChatMessage message;
@@ -485,6 +662,11 @@ public class TextualUI implements ViewInterface {
         }
         return message;
     }
+
+    /**
+     * method used to ask a player for a name of a Lobby
+     * @return the chosen name
+     */
     private String askLobbyName() {
         String name;
         String confirm;
@@ -492,12 +674,17 @@ public class TextualUI implements ViewInterface {
         do {
             System.out.print(out + "Insert lobby name\n" + in);
             name = scanner.nextLine();
-            System.out.print(out + "The name is: " + bold + name + unBold + ". Is it right [Y/n]?\n" + in);
+            System.out.print(out + "The name is: " + bold + name + rst + ". Is it right [Y/n]?\n" + in);
             confirm = scanner.nextLine();
         } while (confirm.equals("n") || confirm.equals("N"));
 
         return name;
     }
+
+    /**
+     * method used to get the number of players from a client when creating a lobby.
+     * @return the selected number of players
+     */
     private int askNumPlayers() {
         int numPlayers;
         boolean flag;
@@ -519,7 +706,14 @@ public class TextualUI implements ViewInterface {
         }
         return numPlayers;
     }
+
+    /**
+     * method that given a board in input returns an array of strings that gives a graphical representation of it.
+     * @param matrix is the input game board. It is necessary that the board is in a 9x9 format
+     * @return an array of strings that corresponds to the given board
+     */
     private String[] boardConstructor (TilesType[][] matrix) {
+        if(matrix.length != 9 || matrix[0].length!=9) return null;
         String[] board = new String[20];
         board[0] = "\u001B[38;5;" + 246 + "m        0     1     2     3     4     5     6     7     8   ";
 
@@ -544,12 +738,20 @@ public class TextualUI implements ViewInterface {
 
         return board;
     }
+
+    /**
+     * method used to obtain a graphical representation of the shelf of a player
+     * @param matrix is the shelf of the player. Is necessary that it is in 6x5 format
+     * @param player is the name of the player to associate to the matrix
+     * @return an array of string that represents the player shelf
+     */
     private String[] shelfConstructor(TilesType[][] matrix, String player) {
+        if(matrix.length != 6 || matrix[0].length!=5) return null;
         String[] shelf = new String[18]; //length = 31 + space
         shelf[0] = rst;
         int l;
         int delta = 0;
-        shelf[1] = rst + "    " + bold + player + ": " + unBold + rst;
+        shelf[1] = rst + "    " + bold + player + ": " + rst + rst;
         if (!onlinePlayers.contains(player)){
             shelf[1] += "\u001B[38;5;25m [offline]"+rst;
             delta+=10;
@@ -572,7 +774,7 @@ public class TextualUI implements ViewInterface {
             shelf[1] += " ";
         }
         shelf[2] = rst + "      common goals 1: " + whiteBack + red + bold + " " + commonGoals.get(player)[0].toString() + " "
-                + unBold + rst + "  2: " + whiteBack + red + bold + " " + commonGoals.get(player)[1].toString() + " " + rst;
+                 + rst + "  2: " + whiteBack + red + bold + " " + commonGoals.get(player)[1].toString() + " " + rst;
         for (int i = 33; i < l; i++) {
             shelf[2] += " ";
         }
@@ -607,6 +809,13 @@ public class TextualUI implements ViewInterface {
 
         return shelf;
     }
+
+    /**
+     * method used to concatenate lists of strings. It is used to visualize multiple elements on the same line in the terminal
+     * @param left is the array of string that will be placed on the left
+     * @param right is the array of string that will be places on the right
+     * @return an array of strings obtained by concatenate the input arrays
+     */
     private String[] concatStringArrays(String[] left, String[] right){
         //refactor matrices to get perfects rectangles
         int maxh;
@@ -637,6 +846,12 @@ public class TextualUI implements ViewInterface {
         }
         return matrix;
     }
+
+    /**
+     * method used to convert an array of string into a single string that can be printed and correctly visualized in the terminal
+     * @param in is the input array of string
+     * @return a string obtained by serializing all elements in the array
+     */
     private String convertStringArray(String[] in){
         String s = "";
         for (String value : in) {
@@ -644,6 +859,12 @@ public class TextualUI implements ViewInterface {
         }
         return s;
     }
+
+    /**
+     * method used to get the representation of a personal goal
+     * @param personalGoal is the personal goal that we want to represent
+     * @return an array of strings that graphically represents the personal goal
+     */
     private String[] personalGoalConstructor(PersonalGoal personalGoal){
         String[] shelf = new String[17]; //length = 31 + 7 space
         TilesType[][] matrix = personalGoal.getMatrix();
@@ -659,7 +880,7 @@ public class TextualUI implements ViewInterface {
         for (int i = 23; i < length; i++) {
             shelf[1] += " ";
         }
-        shelf[1] += unBold;
+        shelf[1] += rst;
         shelf[2] = rst + "    points: ";
         String temp = personalPoints.toString();
         shelf[2] += temp;
@@ -690,6 +911,13 @@ public class TextualUI implements ViewInterface {
         shelf[16] = rst + "          0     1     2     3     4                    ";
         return shelf;
     }
+
+    /**
+     * method used to obtain the graphical representation of a common goal
+     * @param commonGoal is the common goal to represent
+     * @param pos it the position of the selected common goal in the game
+     * @return an array of strings that graphically represents the common goal
+     */
     private String[] commonGoalConstructor(String commonGoal, int pos){
         String[] goal;
         goal = new String[16];
@@ -1158,8 +1386,11 @@ public class TextualUI implements ViewInterface {
         return goal;
     }
 
-    //the next methods are added to not create errors but will probably be deleted
-
+    /**
+     * public method requested by the view interface. It is used to handle the response of the view to the event of creation
+     * of a lobby
+     * @param msg is the message that notify the client of the success of the lobby creation
+     */
     @Override
     public void receiveCreatedLobbyMsg(CreatedLobbyMessage msg) {
         isDisplaying = true;
@@ -1169,6 +1400,11 @@ public class TextualUI implements ViewInterface {
         isDisplaying = false;
     }
 
+    /**
+     * public method requested by the view interface. It is used to handle the response of the view to the event of joining
+     * a lobby
+     * @param msg is the message that notify the client that he successfully joined the lobby
+     */
     @Override
     public void receiveJoinedMsg(JoinedMessage msg) {
         isDisplaying = true;
@@ -1177,6 +1413,11 @@ public class TextualUI implements ViewInterface {
         isDisplaying = false;
     }
 
+    /**
+     * public method requested by the view interface. It is used to handle the rejection of the creation of a lobby due to
+     * the fact that a lobby with the selected name already exists
+     * @param msg is the message that contains all the currently available lobbies
+     */
     @Override
     public void receiveExistingLobbyMsg(ExistingLobbyMessage msg) {
         isDisplaying = true;
@@ -1186,6 +1427,11 @@ public class TextualUI implements ViewInterface {
 
     }
 
+    /**
+     * public method requested by the view interface. It is used to handle a generic failure that prevents the creation of
+     * a new lobby
+     * @param msg is the server message that notify the client of the failure in the creation of the lobby
+     */
     @Override
     public void receiveLobbyNotCreatedMsg(LobbyNotCreatedMessage msg) {
         isDisplaying = true;
@@ -1194,6 +1440,11 @@ public class TextualUI implements ViewInterface {
         isDisplaying = false;
     }
 
+    /**
+     * public method requested by the view interface. It is used to notify the client that he was not able to join the selected
+     * lobby because his name was not unique inside the lobby.
+     * @param msg is the server message that notify the client of the failure
+     */
     @Override
     public void receiveNameTakenMsg(NameTakenMessage msg) {
         isDisplaying = true;
@@ -1202,6 +1453,11 @@ public class TextualUI implements ViewInterface {
         isDisplaying = false;
     }
 
+    /**
+     * public method requested by the view interface. It is used to notify the client that he was not able to join the selected
+     * lobby because that lobby does not exist
+     * @param msg is the server message that notify the client of the error
+     */
     @Override
     public void receiveNotExistingLobbyMsg(NotExistingLobbyMessage msg) {
         isDisplaying = true;
@@ -1211,6 +1467,11 @@ public class TextualUI implements ViewInterface {
 
     }
 
+    /**
+     * public method requested by the view interface. It is used to notify the client that he was not able to join the selected
+     * lobby because it was already full
+     * @param msg is the server message that notify the client of the failure
+     */
     @Override
     public void receiveFullLobbyMsg(FullLobbyMessage msg) {
         isDisplaying = true;
@@ -1219,6 +1480,10 @@ public class TextualUI implements ViewInterface {
         isDisplaying = false;
     }
 
+    /**
+     * public method requested by the view interface. It is used to handle the reception of the list of available lobbies
+     * @param msg is the server message containing the names of all available lobbies
+     */
     @Override
     public void receiveRetrievedLobbiesMsg(RetrievedLobbiesMessage msg) {
         isDisplaying = true;
@@ -1228,6 +1493,10 @@ public class TextualUI implements ViewInterface {
         isDisplaying = false;
     }
 
+    /**
+     * public method requested by the view interface. It is used to handle the response of the view to a new chat message
+     * @param msg is the chat message with all the related metadata
+     */
     @Override
     public void receiveChatUpdateMsg(ChatUpdateMessage msg) {
         if (msg.getSender().equals(nickname)) {
@@ -1239,7 +1508,7 @@ public class TextualUI implements ViewInterface {
             }
         } else if(!isDisplaying) {
             isDisplaying = true;
-            System.out.print("\n" + out + bold + msg.getSender() + " just write" + unBold + ":  " + msg.getContent() + "\n" + in);
+            System.out.print("\n" + out + bold + msg.getSender() + " just write" + rst + ":  " + msg.getContent() + "\n" + in);
             isDisplaying = false;
         }
         else {
@@ -1249,6 +1518,10 @@ public class TextualUI implements ViewInterface {
         messages.add(msg);
     }
 
+    /**
+     * public method requested by the view interface. It is used to handle the response of the view to a new private message
+     * @param msg is the private chat message with all the related metadata
+     */
     public void receivePrivateChatUpdateMsg(PrivateChatUpdateMessage msg) {
         if(!isDisplaying) {
             isDisplaying = true;
@@ -1260,7 +1533,7 @@ public class TextualUI implements ViewInterface {
                     throw new RuntimeException("interrupt during sleep!");
                 }
             }
-            if (msg.getSender().equals(nickname)) {
+            else if (msg.getSender().equals(nickname)) {
                 System.out.print(out + "You have sent a private message to: " + bold + msg.getReceiver() + "\n" + in);
             }
             isDisplaying = false;
@@ -1272,15 +1545,31 @@ public class TextualUI implements ViewInterface {
         if(msg.getReceiver().equals(nickname) || msg.getSender().equals(nickname)) messages.add(msg);
     }
 
+    /**
+     * public method requested by the view interface. It is invoked to notify the client of the creation of a new game.
+     * This method triggers an update of the state of the view. It is used both whenever the player needs all the information
+     * about all the game and not only about the latest update
+     * @param msg is a message that contains all the information about the current game state
+     */
     @Override
     public void receiveGameCreatedMsg(GameCreatedMessage msg) {
         updateView(msg.getGameInfo());
     }
+
+    /**
+     * public method requested by the view interface. It is used to handle the updates of the game due to moves.
+     * @param msg is a message that contains all the information needed to update the game from the previous state
+     */
     @Override
     public void receiveGameUpdatedMsg(GameUpdatedMessage msg) {
         updateView(msg.getGameInfo());
     }
-    public void manageEndGame(){
+
+    /**
+     * method used for the management of the ending of a game. In this phase player can visualize the final game state, see
+     * the leaderboard and use the chat
+     */
+    private void manageEndGame(){
         String command;
         boolean inGame = true;
         List<String> availableCommands = List.of("/quit", "/gamestate", "/chat", "/showchat", "/leaderboard", "/help");
@@ -1366,6 +1655,13 @@ public class TextualUI implements ViewInterface {
             }
         }
     }
+
+    /**
+     * public method requested by the view interface. It is used to handle the reception of a game state update that corresponds
+     * to the last move of a game. In this method are calculated the final points of the players
+     * @param msg is the server update message that is sent at the end of a game. It contains the scores of each player divided
+     *            by goal
+     */
     public void receiveGameEndedMsg(GameEndedMessage msg){
 
         FinalGameInfo info = msg.getGameInfo();
@@ -1398,6 +1694,11 @@ public class TextualUI implements ViewInterface {
         //scanner.nextLine();
     }
 
+    /**
+     * public method requested by the view interface. It is used to handle the update of the current player.
+     * Whenever the player is changed is needed a visualization of the new game state.
+     * @param msg is the server message that contains the new current player
+     */
     @Override
     public void receiveUpdatedPlayerMsg(UpdatedPlayerMessage msg) {
         curPlayer = msg.getUpdatedPlayer();
@@ -1406,31 +1707,46 @@ public class TextualUI implements ViewInterface {
         } else displayGameInfo();
     }
 
+    /**
+     * public method requested by the view interface. It is used to handle the rejection of a move from the server
+     * @param msg is the message that notify the invalidity of the requested move
+     */
     @Override
     public void receiveInvalidMoveMsg(InvalidMoveMessage msg) {
         System.out.print(err + "The selected move is not legal! Retry with a different tiles sequence\n" + in);
     }
 
+    /**
+     * public method requested by the view interface. It is used to notify that the lobby has not enough player to continue.
+     * If no player joins the game the lobby will be closed by the server
+     * @param msg is the server message that notify the client that there are not enough player in the lobby
+     */
     @Override
     public void receiveInsufficientPlayersMsg(InsufficientPlayersMessage msg) {
         restoreWindow();
         System.out.print(err + "Not enough player to continue the game. If no one reconnects the game will end soon\n" + in);
     }
 
+    /**
+     * public method requested by the view interface. It is used to handle the forced closure of a lobby.
+     * @param msg is the server message that notify the client that the lobby has been closed
+     */
     @Override
     public void receiveLobbyClosedMsg(LobbyClosedMessage msg) {
-        QuitMessage clientMessage = new QuitMessage();
+        //QuitMessage clientMessage = new QuitMessage();
         restoreWindow();
-        System.out.print(err + "The lobby has been closed because there where not enough player. You are going to return to the main menù");
-        if (client instanceof RMIClient) {
+        System.out.print(err + "The lobby has been closed because there where not enough player. You are going to return to the main menù\n");
+        client.disconnect(false);
+        /*if (client instanceof RMIClient) {
             clientMessage.setRmiClient((RMIClient) client);
         }
         client.sendMsgToServer(clientMessage);
         try {
-            sleep(2000);
+            sleep(4000);
         } catch (InterruptedException e) {
-            throw new RuntimeException();
-        }
+            System.out.println(rst + "wait interrupted");
+        }*/
+        resetState();
         if (client instanceof RMIClient) {
             client = new RMIClient(serverIP, 1099, this);
         } else if (client instanceof SocketClient) {
@@ -1441,6 +1757,11 @@ public class TextualUI implements ViewInterface {
         printCommands();
     }
 
+
+    /**
+     * public method requested by the view interface. It is used to handle the disconnection of a player of the lobby.
+      * @param msg is the server message that notify the other clients of the disconnection of a player
+     */
     @Override
     public void receiveUserDisconnectedMsg(UserDisconnectedMessage msg) {
         System.out.print(err + "Player " + msg.getUser() + " has been disconnected\n" + in);
@@ -1449,11 +1770,19 @@ public class TextualUI implements ViewInterface {
         }
     }
 
+    /**
+     * public method requested by the view interface. It is used to handle the rejection of a command from the server.
+     * @param msg is the server message that notify the failure
+     */
     @Override
     public void receiveInvalidCommandMsg(InvalidCommandMessage msg) {
         System.out.print(err + "Selected command is not available! To get available commands you type /help\n" + in);
     }
 
+    /**
+     * public method requested by the view interface. It is used to notify the disconnection of a client from the server
+     * @param msg is the server message that notify the disconnection from the server
+     */
     @Override
     public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
         restoreWindow();
@@ -1461,15 +1790,32 @@ public class TextualUI implements ViewInterface {
         printCommands();
     }
 
+    /**
+     * public method requested by the view interface. It is used to notify the client that the lobby was not created because
+     * the selected lobby name was not valid
+     * @param msg is the server message used to notify a malformed lobby name
+     */
+    @Override
     public void receiveInvalidLobbyNameMsg(InvalidLobbyNameMessage msg){
         System.out.print(err + "This lobby name is not valid. Empty and null string are not allowed\n" + in);
     }
+
+    /**
+     * public method requested by the view interface. It is used to notify the client that the lobby was not created because
+     * the selected player name was not valid
+     * @param msg is the server message used to notify a wrongly formatted player name
+     */
+    @Override
     public void receiveIllegalPlayerNameMsg(IllegalPlayerNameMessage msg){
         System.out.print(err + "This nickname is not valid. Empty and null string are not allowed\n" + in);
     }
 
-    private boolean isValidIP(String ip)
-    {
+    /**
+     * method used to check id the provided ip address is correctly formatted
+     * @param ip is the string representing the ipv4 address
+     * @return true iff the ip may be valid
+     */
+    private boolean isValidIP(String ip) {
         if(ip.equals("localhost")) return true;
         String[] groups = ip.split("\\.");
         if (groups.length != 4) {
@@ -1485,6 +1831,10 @@ public class TextualUI implements ViewInterface {
             return false;
         }
     }
+
+    /**
+     * method used to manage the creation of a lobby
+     */
     private void createLobby(){
         if (client.getIsInLobbyStatus()) {
             System.out.print(rst + err + "You are already in a lobby\n" + in);
@@ -1503,6 +1853,10 @@ public class TextualUI implements ViewInterface {
             client.sendMsgToServer(clientMessage);
         }
     }
+
+    /**
+     * method used to manage the request of the currently available lobbies
+     */
     private void retrieveLobbies(){
         RetrieveLobbiesMessage clientMessage = new RetrieveLobbiesMessage();
         if (client instanceof RMIClient) {
@@ -1510,6 +1864,10 @@ public class TextualUI implements ViewInterface {
         }
         client.sendMsgToServer(clientMessage);
     }
+
+    /**
+     * method used to manage the process of joining a lobby
+     */
     private void joinLobby(){
         if (client.getIsInLobbyStatus()) {
             System.out.print(rst + err + "You are already in a lobby\n" + in);
@@ -1525,6 +1883,10 @@ public class TextualUI implements ViewInterface {
             client.sendMsgToServer(clientMessage);
         }
     }
+
+    /**
+     * method used to send a message to the procedure needed to send a message to another player or to the whole lobby
+     */
     private void sendMessage(){
         if (client.getIsInLobbyStatus()) {
             System.out.print(out + "You have entered the chat. Write a message\n" + in);
@@ -1539,6 +1901,9 @@ public class TextualUI implements ViewInterface {
         }
     }
 
+    /**
+     * method used to manage the request of a new move
+     */
     private void makeMove(){
         if (client.getIsInLobbyStatus()) {
             if (nickname.equals(curPlayer)) {
@@ -1577,6 +1942,9 @@ public class TextualUI implements ViewInterface {
         }
     }
 
+    /**
+     * method used manage the procedure needed in order to leave a lobby
+     */
     private void quitLobby(){
         if (client.getIsInLobbyStatus()) {
             System.out.print(out + bold + "Are you sure? [y/N]\n" + in);
