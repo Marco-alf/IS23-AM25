@@ -19,6 +19,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
@@ -282,7 +283,17 @@ public class GameScreenController {
         player1Button.setOnAction(actionEvent -> toggleBoard(1));
         player2Button.setOnAction(actionEvent -> toggleBoard(2));
         player3Button.setOnAction(actionEvent -> toggleBoard(3));
-        myshelfButton.setOnAction(actionEvent -> {toggleBoard(0);});
+        myshelfButton.setOnAction(actionEvent -> toggleBoard(0));
+
+        mainpanel.setOnKeyPressed(keyEvent -> {
+            switch (keyEvent.getCode()){
+                case ENTER -> toggleBoard(0);
+                case W -> toggleBoard(1);
+                case A -> {if(s_buttons[2].isVisible())toggleBoard(2);}
+                case D -> {if(s_buttons[3].isVisible())toggleBoard(3);}
+            }
+        });
+
 
         /*player1Button.setStyle("-fx-background-color: BURLYWOOD");
         player2Button.setStyle("-fx-background-color: BURLYWOOD");

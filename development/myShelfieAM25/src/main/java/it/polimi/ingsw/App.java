@@ -18,8 +18,7 @@ public class App {
                 view.start();
             }
             case "Gui" -> {
-                GraphicalUI gui = new GraphicalUI();
-
+                GraphicalUI.main(args);
             }
             default -> System.out.println("arg not valid");
         }

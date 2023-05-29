@@ -58,6 +58,15 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
         launch();
     }
 
+    private void cycleToGame(){
+        if(factory instanceof MenuScreen){
+            update();
+        }
+        if(factory instanceof LobbyScreen){
+            update();
+        }
+    }
+
     @Override
     public void update() {
         factory = factory.next();
@@ -77,7 +86,9 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                update();
+                if(factory instanceof MenuScreen) {
+                    update();
+                }
             }
         });
     }
@@ -87,7 +98,9 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                update();
+                if(factory instanceof MenuScreen) {
+                    update();
+                }
             }
         });
     }
@@ -186,7 +199,7 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                update();
+                cycleToGame();
                 if(factory instanceof GameScreen game){
                     game.updateInitialGameInfo(msg.getGameInfo());
                 }
