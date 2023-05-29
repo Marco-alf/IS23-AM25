@@ -4,6 +4,7 @@ import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.messages.clientMessages.CreateLobbyMessage;
 import it.polimi.ingsw.network.messages.clientMessages.JoinMessage;
+import it.polimi.ingsw.network.messages.clientMessages.QuitMessage;
 import it.polimi.ingsw.network.messages.clientMessages.RetrieveLobbiesMessage;
 import it.polimi.ingsw.network.messages.serverMessages.CreatedLobbyMessage;
 import it.polimi.ingsw.view.GUI.SceneState;
@@ -76,6 +77,11 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         });
         Button cancel = new Button("Cancel");
         cancel.setOnAction(actionEvent -> {
+            QuitMessage clientMessage = new QuitMessage();
+            if (client instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) client);
+            }
+            client.sendMsgToServer(clientMessage);
             client.disconnect(false);
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
