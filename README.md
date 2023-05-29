@@ -17,7 +17,7 @@ The contribuitors are Alfano Marco, Boimah Divine, Boisseau Arianna, Cerutti And
 | TUI | [![YELLOW](http://placehold.it/15/ffdd00/ffdd00)]() |
 | GUI | [![YELLOW](http://placehold.it/15/ffdd00/ffdd00)]() |
 | Partite Multiple | [![GREEN](http://placehold.it/15/44bb44/44bb44)]() |
-| Persistenza | [![YELLOW](http://placehold.it/15/ffdd00/ffdd00)]() |
+| Persistenza | [![RED](http://placehold.it/15/f03c15/f03c15)]() |
 | Resilienza alle disconnessioni| [![YELLOW](http://placehold.it/15/ffdd00/ffdd00)]() |
 | Chat | [![GREEN](http://placehold.it/15/44bb44/44bb44)]() |
 
