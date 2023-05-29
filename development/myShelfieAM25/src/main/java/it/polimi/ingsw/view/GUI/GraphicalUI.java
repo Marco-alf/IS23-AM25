@@ -147,9 +147,14 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveRetrievedLobbiesMsg(RetrievedLobbiesMessage msg) {
-        if(factory instanceof MenuScreen menu){
-            menu.receiveRefresh(msg.getLobbies());
-        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if(factory instanceof MenuScreen menu){
+                    menu.receiveRefresh(msg.getLobbies());
+                }
+            }
+        });
     }
 
     @Override
