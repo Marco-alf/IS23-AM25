@@ -38,13 +38,10 @@ public class GameScreen extends SceneHandler implements SceneFactory{
 
         board = new ImageView(new Image("17_MyShelfie_BGA/boards/livingroom.png"));
 
-        Path res = Path.of("src/main/resources/fxml_files/playGameScreen.fxml");
-        //                      "development/myShelfieAM25/src/main/resources/fxml_files/playGameScreen.fxml"
-
         Parent r = null;
         try {
             controller = new GameScreenController();
-            FXMLLoader loader = new FXMLLoader(res.toUri().toURL());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml_files/playGameScreen.fxml"));
             loader.setController(controller);
             r = loader.load();
 
