@@ -110,7 +110,8 @@ public class Game
 
         /* assumption : game starts with every player online and not disconnected */
         onlinePlayers = new ArrayList<>(this.players);
-        firstPlayer = onlinePlayers.get(0);
+        int randomIndex = gen.nextInt(players.size());
+        firstPlayer = onlinePlayers.get(randomIndex);
         currentPlayer = firstPlayer;
     }
 

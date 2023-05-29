@@ -150,7 +150,11 @@ public class Lobby {
             players.add(onlinePlayer.getName());
         }
         game = new Game(players);
-        currentPlayer = onlinePlayers.get(0);
+        try {
+            currentPlayer = this.getPlayer(game.getCurrentPlayer());
+        } catch (PlayerNotInLobbyException e) {
+            throw new GameCreationException();
+        }
         isGameCreated = true;
     }
 
