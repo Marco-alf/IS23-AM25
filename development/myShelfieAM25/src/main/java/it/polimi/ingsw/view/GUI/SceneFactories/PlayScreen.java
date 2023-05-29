@@ -73,7 +73,7 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
     }
 
     public void initiateTCP(){
-        client = new SocketClient("localhost", 1099, view);
+        client = new SocketClient("localhost", 8088, view);
         client.init();
         state.update();
     }

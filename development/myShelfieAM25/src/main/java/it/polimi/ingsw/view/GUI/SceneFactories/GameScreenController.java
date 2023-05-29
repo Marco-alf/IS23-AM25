@@ -135,7 +135,7 @@ public class GameScreenController {
 
             for (i = 0; i < 5; i++) {
                 for (int j = 0; j < 6; j++) {
-                    shelf0[i][j].setImage(getTexture(info.getShelves().get(players.get(0))[j][i]));
+                    shelf0[i][j].setImage(getTexture(info.getShelves().get(selfName)[j][i]));
                     shelf1[i][j].setImage(getTexture(info.getShelves().get(players.get(1))[j][i]));
                     if (players.size() > 2)
                         shelf2[i][j].setImage(getTexture(info.getShelves().get(players.get(2))[j][i]));
