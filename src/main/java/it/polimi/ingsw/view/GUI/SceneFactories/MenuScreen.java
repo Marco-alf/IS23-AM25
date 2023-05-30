@@ -184,12 +184,14 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
     }
 
     private void refresh(){
-        //asks server to send list of lobbies
-        RetrieveLobbiesMessage clientMessage = new RetrieveLobbiesMessage();
-        if (client instanceof RMIClient) {
-            clientMessage.setRmiClient((RMIClient) client);
+        synchronized (view) {
+            //asks server to send list of lobbies
+            RetrieveLobbiesMessage clientMessage = new RetrieveLobbiesMessage();
+            if (client instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) client);
+            }
+            client.sendMsgToServer(clientMessage);
         }
-        client.sendMsgToServer(clientMessage);
     }
 
     public void receiveRefresh(List<String> lobbies){
