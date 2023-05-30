@@ -482,7 +482,7 @@ class LobbyTest {
     void isLastPlayerTest() {
         String lobbyCreator = "gggg";
         String lobbyName = "lobby";
-        int playerNumber = 2;
+        int playerNumber = 4;
         Lobby lobby = new Lobby(lobbyCreator, lobbyName, playerNumber);
         String player1 = "pippo";
         try {
@@ -496,23 +496,59 @@ class LobbyTest {
         } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
             fail();
         }
+        String player3 = "pluto";
+        try {
+            lobby.addPlayer(player3);
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
+            fail();
+        }
+        String player4 = "minnie";
+        try {
+            lobby.addPlayer(player4);
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
+            fail();
+        }
         try {
             lobby.createGame(true);
         } catch (GameCreationException | NotTestException e) {
             fail();
         }
         assertFalse(lobby.isLastPlayer());
-        Tile tile1 = new Tile(TilesType.TROPHIES, 3, 1);
-        Tile tile2 = new Tile(TilesType.FRAMES, 4, 1);
+        Tile tile1 = new Tile(TilesType.CATS, 3, 0);
         List<Tile> tiles = new ArrayList<>();
         tiles.add(tile1);
-        tiles.add(tile2);
         try {
-            lobby.moveTiles(tiles, 0, player1);
+            lobby.moveTiles(tiles, 0, lobby.getCurrentPlayer());
+        } catch (IllegalMoveException | GameEndedException e) {
+            fail();
+        }
+        assertFalse(lobby.isLastPlayer());
+        tile1 = new Tile(TilesType.GAMES, 4, 0);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        try {
+            lobby.moveTiles(tiles, 0, lobby.getCurrentPlayer());
+        } catch (IllegalMoveException | GameEndedException e) {
+            fail();
+        }
+        assertFalse(lobby.isLastPlayer());
+        tile1 = new Tile(TilesType.TROPHIES, 3, 1);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        try {
+            lobby.moveTiles(tiles, 0, lobby.getCurrentPlayer());
         } catch (IllegalMoveException | GameEndedException e) {
             fail();
         }
         assertTrue(lobby.isLastPlayer());
+        tile1 = new Tile(TilesType.FRAMES, 4, 1);
+        tiles = new ArrayList<>();
+        tiles.add(tile1);
+        try {
+            lobby.moveTiles(tiles, 0, lobby.getCurrentPlayer());
+        } catch (IllegalMoveException | GameEndedException e) {
+            fail();
+        }
     }
 
     @Test

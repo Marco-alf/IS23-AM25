@@ -249,7 +249,11 @@ public class Lobby {
         for (int i = 0; i < onlinePlayers.size(); i++) {
             if (!disconnectedPlayers.contains(onlinePlayers.get(i).getName())) roundPlayers.add(onlinePlayers.get(i).getName());
         }
-        return currentPlayer.getName().equals(roundPlayers.get(roundPlayers.size() - 1));
+        String firstPlayer = game.getFirstPlayer().getName();
+        int firstIndex = roundPlayers.indexOf(firstPlayer);
+        int index = (firstIndex + (playerNumber-1)) % playerNumber;
+        String lastPlayer = roundPlayers.get(index);
+        return currentPlayer.getName().equals(lastPlayer);
     }
 
 
