@@ -5,15 +5,22 @@ import it.polimi.ingsw.network.server.RMIClientInterface;
 import it.polimi.ingsw.view.TextualUI;
 import it.polimi.ingsw.view.ViewInterface;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.DatagramSocket;
+import java.net.ServerSocket;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** rmi based implementation of the client */
 public class RMIClient extends GenericClient implements RMIClientInterface {
+    private static int MIN_PORT_NUMBER = 49152;
+    private static int MAX_PORT_NUMBER = 65535;
+    private static int clientport = 65535;
     /** server reference object, has methods to register and to receive messages */
     private RMIServerInterface rmiServerInterface;
     /** server ip */
@@ -46,7 +53,13 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
     public void init() {
         try{
             rmiServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, port).lookup(RMIServerInterface.NAME);
-            rmiServerInterface.register((RMIClientInterface) UnicastRemoteObject.exportObject(this, 0));
+
+            Random gen = new Random();
+            do {
+                clientport = gen.nextInt(MIN_PORT_NUMBER, MAX_PORT_NUMBER);
+            }while(!available(clientport));
+
+            rmiServerInterface.register((RMIClientInterface) UnicastRemoteObject.exportObject(this, clientport));
             clientConnected.set(true);
             pingThread.start();
         } catch (NotBoundException | RemoteException e) {
@@ -54,15 +67,53 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
         }
     }
 
+    /**
+     * From apache camel project: Checks to see if a specific port is available.
+     *
+     * @param port the port to check for availability
+     */
+    public static boolean available(int port) {
+        if (port < MIN_PORT_NUMBER || port > MAX_PORT_NUMBER) {
+            throw new IllegalArgumentException("Invalid start port: " + port);
+        }
+
+        ServerSocket ss = null;
+        DatagramSocket ds = null;
+        try {
+            ss = new ServerSocket(port);
+            ss.setReuseAddress(true);
+            ds = new DatagramSocket(port);
+            ds.setReuseAddress(true);
+            return true;
+        } catch (IOException e) {
+        } finally {
+            if (ds != null) {
+                ds.close();
+            }
+
+            if (ss != null) {
+                try {
+                    ss.close();
+                } catch (IOException e) {
+                    /* should not be thrown */
+                }
+            }
+        }
+
+        return false;
+    }
+
     /** sends through rmi the serializable message
      * @param arg is the message to send */
     @Override
     public void sendMsgToServer (Serializable arg) {
-        try {
-            rmiServerInterface.receiveMsgFromClient(arg);
-        } catch (RemoteException e) {
-            disconnect(true);
-        }
+        new Thread(()->{
+            try {
+                rmiServerInterface.receiveMsgFromClient(arg);
+            } catch (RemoteException e) {
+                disconnect(true);
+            }
+        }).start();
     }
 
     public void checkServerAliveness () {

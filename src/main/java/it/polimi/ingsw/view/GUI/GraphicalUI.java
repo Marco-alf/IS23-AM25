@@ -284,7 +284,6 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
                     a.setContentText(msg.getType()+" lobby was closed.");
                     a.showAndWait();
                     game.disconnect();
-
                 }
             }
         });
