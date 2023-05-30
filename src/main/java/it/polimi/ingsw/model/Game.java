@@ -310,4 +310,12 @@ public class Game
     public void setAssignedFinalPoint() {
         assignedFinalPoint = true;
     }
+
+    /**
+     * getter for first player
+     * @return reference to first player
+     */
+    public Player getFirstPlayer() {
+        return firstPlayer;
+    }
 }
