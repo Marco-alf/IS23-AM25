@@ -334,13 +334,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * @throws RemoteException whenever an error regarding the player connection happened
      */
     @Override
-    public  void register(RMIClientInterface rmiClient) throws RemoteException {
-        synchronized (rmiClients) {
-            rmiClients.add(rmiClient);
-        }
-        synchronized (rmiClientsStates) {
-            rmiClientsStates.put(rmiClient, ClientState.CONNECTED);
-        }
+    public synchronized void register(RMIClientInterface rmiClient) throws RemoteException {
+        rmiClients.add(rmiClient);
+        rmiClientsStates.put(rmiClient, ClientState.CONNECTED);
         SERVER_LOGGER.log(Level.INFO, "New RMI client connected");
     }
 

@@ -98,8 +98,10 @@ public class SocketServer implements Runnable{
 
     public synchronized void setInGameStatus (String lobby) {
         for (ClientHandler clientHandler : clientHandlers) {
-            if (clientHandler.getLobby().getLobbyName().equals(lobby)) {
-                clientHandler.setStatus(ClientState.IN_GAME);
+            if(clientHandler != null ) {
+                if (clientHandler.getLobby()!=null && clientHandler.getLobby().getLobbyName().equals(lobby)) {
+                    clientHandler.setStatus(ClientState.IN_GAME);
+                }
             }
         }
     }

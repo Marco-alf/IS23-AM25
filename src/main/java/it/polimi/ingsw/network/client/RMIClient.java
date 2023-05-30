@@ -50,22 +50,20 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
      * initializes the rmi connection, locating the remote server object and running the register method with itself as
      * the parameter, then sets the connectedStatus to true */
     public void init() {
-        new Thread(()-> {
-            try{
-                rmiServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, port).lookup(RMIServerInterface.NAME);
+        try{
+            rmiServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, port).lookup(RMIServerInterface.NAME);
 
-                Random gen = new Random();
-                do {
-                    clientport = gen.nextInt(MIN_PORT_NUMBER, MAX_PORT_NUMBER);
-                }while(!available(clientport));
+            Random gen = new Random();
+            do {
+                clientport = gen.nextInt(MIN_PORT_NUMBER, MAX_PORT_NUMBER);
+            }while(!available(clientport));
 
-                rmiServerInterface.register((RMIClientInterface) UnicastRemoteObject.exportObject(this, clientport));
-                clientConnected.set(true);
-                pingThread.start();
-            } catch (NotBoundException | RemoteException e) {
-                disconnect(true);
-            }
-        }).start();
+            rmiServerInterface.register((RMIClientInterface) UnicastRemoteObject.exportObject(this, clientport));
+            clientConnected.set(true);
+            pingThread.start();
+        } catch (NotBoundException | RemoteException e) {
+            disconnect(true);
+        }
     }
 
     /**

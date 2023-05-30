@@ -176,10 +176,10 @@ public class TextualUI implements ViewInterface {
         }
         if (connType.equals("/rmi")) {
             client = new RMIClient(serverIP, 1099, this);
-            client.init();
+            new Thread(()->client.init()).start();
         } else {
             client = new SocketClient(serverIP, 8088, this);
-            client.init();
+            new Thread(()->client.init()).start();
         }
 
         restoreWindow();
@@ -1622,7 +1622,7 @@ public class TextualUI implements ViewInterface {
                             }
                             client = new SocketClient(serverIP, 8088, this);
                         }
-                        client.init();
+                        new Thread(()->client.init()).start();
                         restoreWindow();
                         printCommands();
                         resetState();
@@ -1752,7 +1752,7 @@ public class TextualUI implements ViewInterface {
         } else if (client instanceof SocketClient) {
             client = new SocketClient(serverIP, 8088, this);
         }
-        client.init();
+        new Thread(()->client.init()).start();
         restoreWindow();
         printCommands();
     }
@@ -1969,7 +1969,7 @@ public class TextualUI implements ViewInterface {
                     }
                     client = new SocketClient(serverIP, 8088, this);
                 }
-                client.init();
+                new Thread(()->client.init()).start();
                 resetState();
                 restoreWindow();
                 printCommands();
