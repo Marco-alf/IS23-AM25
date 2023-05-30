@@ -2,7 +2,6 @@ package it.polimi.ingsw.network.client;
 
 import it.polimi.ingsw.network.messages.serverMessages.*;
 import it.polimi.ingsw.network.server.RMIClientInterface;
-import it.polimi.ingsw.view.TextualUI;
 import it.polimi.ingsw.view.ViewInterface;
 
 import java.io.IOException;
@@ -51,20 +50,22 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
      * initializes the rmi connection, locating the remote server object and running the register method with itself as
      * the parameter, then sets the connectedStatus to true */
     public void init() {
-        try{
-            rmiServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, port).lookup(RMIServerInterface.NAME);
+        new Thread(()-> {
+            try{
+                rmiServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, port).lookup(RMIServerInterface.NAME);
 
-            Random gen = new Random();
-            do {
-                clientport = gen.nextInt(MIN_PORT_NUMBER, MAX_PORT_NUMBER);
-            }while(!available(clientport));
+                Random gen = new Random();
+                do {
+                    clientport = gen.nextInt(MIN_PORT_NUMBER, MAX_PORT_NUMBER);
+                }while(!available(clientport));
 
-            rmiServerInterface.register((RMIClientInterface) UnicastRemoteObject.exportObject(this, clientport));
-            clientConnected.set(true);
-            pingThread.start();
-        } catch (NotBoundException | RemoteException e) {
-            disconnect(true);
-        }
+                rmiServerInterface.register((RMIClientInterface) UnicastRemoteObject.exportObject(this, clientport));
+                clientConnected.set(true);
+                pingThread.start();
+            } catch (NotBoundException | RemoteException e) {
+                disconnect(true);
+            }
+        }).start();
     }
 
     /**
@@ -114,6 +115,11 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
                 disconnect(true);
             }
         }).start();
+        /*try {
+            rmiServerInterface.receiveMsgFromClient(arg);
+        } catch (RemoteException e) {
+            disconnect(true);
+        }*/
     }
 
     public void checkServerAliveness () {
@@ -133,6 +139,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
      * commands to the bound view */
     @Override
     public void receiveMsgFromServer(Serializable arg) {
+
         if (arg instanceof ServerMessage msg) {
             if (msg.getType().equals("CreatedLobbyMessage")) {
                 isInLobby = true;

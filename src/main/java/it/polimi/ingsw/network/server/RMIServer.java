@@ -91,22 +91,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
         }
     }
 
-    /**
-     * sendMsgToAllRMI is the method used to send a message to every client that is connected through rmi connection to a specific lobby
-     * @param msg is the forwarded message, it needs to be serializable
-     * @param lobby is the target Lobby
-     */
-    public synchronized void sendMsgToAllRMI (Serializable msg, Lobby lobby) {
-        for (RMIClientInterface rmiClient : rmiClients) {
-            try {
-                if (rmiClientsLobby.get(rmiClient) == lobby) {
-                    rmiClient.receiveMsgFromServer(msg);
-                }
-            } catch (RemoteException e) {
-                manageDisconnection(rmiClient);
-            }
-        }
-    }
+
 
     public synchronized void setInGameStatus (String lobby) {
         for (RMIClientInterface rmiClient : rmiClients) {
@@ -144,11 +129,54 @@ public class RMIServer implements Runnable, RMIServerInterface{
     }
 
     /**
+     * sendMsgToAllRMI is the method used to send a message to every client that is connected through rmi connection to a specific lobby
+     * @param msg is the forwarded message, it needs to be serializable
+     * @param lobby is the target Lobby
+     */
+    public synchronized void sendMsgToAllRMI (Serializable msg, Lobby lobby) {
+        //RMIServer t = this;
+        for (RMIClientInterface rmiClient : rmiClients) {
+            /*new Thread(()->{
+                synchronized (t) {
+                    try {
+                        if (rmiClientsLobby.get(rmiClient) == lobby) {
+                            rmiClient.receiveMsgFromServer(msg);
+                            System.out.println("finally sent" + ((ServerMessage)msg).getType() );
+                        }
+                    } catch (RemoteException e) {
+                        manageDisconnection(rmiClient);
+                    }
+                }
+            }).start();*/
+            try {
+                if (rmiClientsLobby.get(rmiClient) == lobby) {
+                    rmiClient.receiveMsgFromServer(msg);
+
+                }
+            } catch (RemoteException e) {
+                manageDisconnection(rmiClient);
+            }
+            System.out.println("Sent " + ((ServerMessage)msg).getType() + " to RMI client");
+        }
+    }
+
+    /**
      * sendMsgToClient is the method used to send a message to a specific rmi client
      * @param rmiClient is the destinatari of the message
      * @param msg is the serializable message
      */
-    public synchronized void sendMsgToClient (RMIClientInterface rmiClient, ServerMessage msg) {
+    public void sendMsgToClient (RMIClientInterface rmiClient, ServerMessage msg) {
+        /*RMIServer t = this;
+        new Thread(()->{
+            synchronized (t) {
+                try {
+                    rmiClient.receiveMsgFromServer(msg);
+                    System.out.println("finally sent" + msg.getType());
+                } catch (RemoteException e) {
+                    manageDisconnection(rmiClient);
+                }
+            }
+        }).start();*/
         try {
             rmiClient.receiveMsgFromServer(msg);
         } catch (RemoteException e) {
@@ -167,6 +195,8 @@ public class RMIServer implements Runnable, RMIServerInterface{
         ClientMessage msg = (ClientMessage) arg;
         RMIClientInterface sender = msg.getRmiClient();
         //System.out.println(msg.getType());
+        System.out.println("Received " + msg.getType() + " from RMI client");
+
         try {
             if (msg.getType().equals("CreateLobbyMessage") && rmiClientsStates.get(sender) == ClientState.CONNECTED) {
                 CreateLobbyMessage specificMessage = (CreateLobbyMessage) msg;
@@ -254,9 +284,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 serverMessage.setSender(rmiClientsName.get(specificMessage.getRmiClient()));
                 serverMessage.setReceiver(specificMessage.getReceiver());
                 server.sendMsgToAll(serverMessage, rmiClientsLobby.get(specificMessage.getRmiClient()));
-            }else if (msg.getType().equals("QuitMessage") && (rmiClientsStates.get(sender) == ClientState.IN_LOBBY || rmiClientsStates.get(sender) == ClientState.IN_GAME)) {
+            } else if (msg.getType().equals("QuitMessage") && (rmiClientsStates.get(sender) == ClientState.IN_LOBBY || rmiClientsStates.get(sender) == ClientState.IN_GAME)) {
                 manageDisconnection(msg.getRmiClient());
-            }else if (msg.getType().equals("MoveMessage") && rmiClientsStates.get(sender) == ClientState.IN_GAME) {
+            } else if (msg.getType().equals("MoveMessage") && rmiClientsStates.get(sender) == ClientState.IN_GAME) {
                 assert msg instanceof MoveMessage;
                 MoveMessage specificMessage = (MoveMessage) msg;
                 try {
@@ -270,7 +300,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                     updatedPlayerMessage.setUpdatedPlayer(rmiClientsLobby.get(msg.getRmiClient()).getCurrentPlayer());
                     server.sendMsgToAll(updatedPlayerMessage, rmiClientsLobby.get(msg.getRmiClient()));
 
-                    if(info.isGameEnded()){
+                    if (info.isGameEnded()) {
                         GameEndedMessage gameEndedMessage = new GameEndedMessage();
                         gameEndedMessage.setGameInfo((FinalGameInfo) info);
                         server.sendMsgToAll(gameEndedMessage, rmiClientsLobby.get(msg.getRmiClient()));
@@ -296,7 +326,6 @@ public class RMIServer implements Runnable, RMIServerInterface{
         } catch (IllegalPlayerNameException e) {
             sendMsgToClient(sender, new IllegalPlayerNameMessage());
         }
-        System.out.println("Received " + msg.getType() + " from RMI client");
     }
 
     /**
@@ -305,9 +334,13 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * @throws RemoteException whenever an error regarding the player connection happened
      */
     @Override
-    public synchronized void register(RMIClientInterface rmiClient) throws RemoteException {
-        rmiClients.add(rmiClient);
-        rmiClientsStates.put(rmiClient, ClientState.CONNECTED);
+    public  void register(RMIClientInterface rmiClient) throws RemoteException {
+        synchronized (rmiClients) {
+            rmiClients.add(rmiClient);
+        }
+        synchronized (rmiClientsStates) {
+            rmiClientsStates.put(rmiClient, ClientState.CONNECTED);
+        }
         SERVER_LOGGER.log(Level.INFO, "New RMI client connected");
     }
 
