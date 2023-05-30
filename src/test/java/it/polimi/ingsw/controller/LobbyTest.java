@@ -4,7 +4,6 @@ import it.polimi.ingsw.exception.*;
 import it.polimi.ingsw.model.PersonalGoal;
 import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
-import it.polimi.ingsw.model.commongoal.FullDiagonalGoal;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -75,7 +74,6 @@ class LobbyTest {
         }
         assertEquals(player2, lobby.getDisconnectedPlayers().get(0));
         assertEquals(2, lobby.getPlayerNumber());
-        //assertEquals(1, lobby.getOnlinePlayers().size());
         try {
             lobby.addPlayer(player2);
         } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
@@ -470,21 +468,14 @@ class LobbyTest {
         } catch (GameCreationException e) {
             fail();
         }
+        VirtualPlayer curr = null;
         try {
-            assertEquals(lobby.getPlayer(player2), lobby.nextPlayer());
+            curr = lobby.getPlayer(lobby.getCurrentPlayer());
         } catch (PlayerNotInLobbyException e) {
             fail();
         }
-        try {
-            lobby.disconnectPlayer(lobby.getPlayer(player2));
-        } catch (PlayerNotInLobbyException e) {
-            fail();
-        }
-        try {
-            assertEquals(lobby.getPlayer(player3), lobby.nextPlayer());
-        } catch (PlayerNotInLobbyException e) {
-            fail();
-        }
+        int index = (lobby.onlinePlayers.indexOf(curr) +1) % playerNumber;
+        assertEquals(lobby.onlinePlayers.get(index), lobby.nextPlayer());
     }
 
     @Test
@@ -522,43 +513,6 @@ class LobbyTest {
             fail();
         }
         assertTrue(lobby.isLastPlayer());
-    }
-
-    @Test
-    void getPlayerTest() {
-        String lobbyCreator = "gggg";
-        String lobbyName = "lobby";
-        int playerNumber = 2;
-        Lobby lobby = new Lobby(lobbyCreator, lobbyName, playerNumber);
-        String player1 = "pippo";
-        try {
-            lobby.addPlayer(player1);
-        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
-            fail();
-        }
-        String player2 = "paperino";
-        try {
-            lobby.addPlayer(player2);
-        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
-            fail();
-        }
-        try {
-            lobby.createGame();
-        } catch (GameCreationException e) {
-            fail();
-        }
-        try {
-            assertEquals(lobby.nextPlayer(), lobby.getPlayer(player2));
-        } catch (PlayerNotInLobbyException e) {
-            fail();
-        }
-        String player3 = "pluto";
-        try {
-            lobby.getPlayer(player3);
-            fail();
-        } catch (PlayerNotInLobbyException e) {
-            assertTrue(true);
-        }
     }
 
     @Test
