@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,7 +42,7 @@ public class ClientHandler implements Runnable{
     /**
      * the Thread used for handling the forced disconnections
      */
-    //private final Thread pingThread;
+    private final Thread pingThread;
     /**
      * flag that is true if the client is connected
      */
@@ -74,6 +75,7 @@ public class ClientHandler implements Runnable{
         this.server = server;
         genericServer = server.server;
         this.socket = socket;
+        pingThread = new Thread(this::pingClient);
         /*
         pingThread = new Thread(()->{
             while (activeClient){
@@ -120,7 +122,7 @@ public class ClientHandler implements Runnable{
             inputStream = new ObjectInputStream(socket.getInputStream());
             activeClient = true;
 
-            //pingThread.start();
+            pingThread.start();
 
             while(activeClient){
                 try{
@@ -281,6 +283,23 @@ public class ClientHandler implements Runnable{
             manageDisconnection();
         }
         System.out.println("Sent " + ((Message) msg).getType() + " to Socket client");
+    }
+
+    public void pingClient () {
+        while (activeClient) {
+            try {
+                InetAddress serverIp = InetAddress.getByName(socket.getInetAddress().getHostAddress());
+                if (!serverIp.isReachable(socket.getPort())) {
+                    manageDisconnection();
+                }
+                Thread.sleep(PING_TIME);
+            } catch (IOException e) {
+                manageDisconnection();
+            } catch (InterruptedException ignored) {
+
+            }
+        }
+
     }
 
     /**

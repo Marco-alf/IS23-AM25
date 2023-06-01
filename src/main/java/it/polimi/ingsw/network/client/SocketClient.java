@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,7 +36,7 @@ public class SocketClient extends GenericClient{
     /** ping frequency */
     private final int PING_TIME = 5000;
     /** ping thread */
-    //private final Thread pingThread;
+    private final Thread pingThread;
 
     /** constructor sets the parameters and launches the ping thread
      * @param ip server ip address
@@ -47,6 +48,7 @@ public class SocketClient extends GenericClient{
         this.port = port;
         this.view = view;
         messageListener = new Thread(this::readMessages);
+        pingThread = new Thread(this::pingServer);
 
         /*
         pingThread = new Thread(() -> {
@@ -77,6 +79,23 @@ public class SocketClient extends GenericClient{
         }
     }
 
+    public void pingServer () {
+        while (clientConnected.get()) {
+            try {
+                InetAddress serverIp = InetAddress.getByName(ip);
+                if (!serverIp.isReachable(port)) {
+                    disconnect(true);
+                }
+                Thread.sleep(PING_TIME);
+            } catch (IOException e) {
+                disconnect(true);
+            } catch (InterruptedException ignored) {
+
+            }
+        }
+
+    }
+
     /**
      * initializes the socket based connection; creates the socket and establishes the connection to the server, then
      * assigns the socket streams to the local attributes of the class, sets the connectionStatus to true and starts
@@ -90,7 +109,7 @@ public class SocketClient extends GenericClient{
             inputStream = new ObjectInputStream(clientSocket.getInputStream());
             clientConnected.set(true);
             messageListener.start();
-            //pingThread.start();
+            pingThread.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
