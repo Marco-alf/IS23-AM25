@@ -83,7 +83,7 @@ public class TextualUI implements ViewInterface {
     /**
      * commands is a list of all the commands that are available in the lobby
      */
-    private static final List<String> commands = List.of("/create", "/join", "/retrieve","/chat","/showchat", "/help", "/move", "/quit", "/gamestate","/egg","/exit");
+    private static final List<String> commands = List.of("create", "join", "retrieve","chat","showchat", "help", "move", "quit", "gamestate","egg","exit");
     /**
      * rst is an ANSI sequence that reset all the ANSI codes
      */
@@ -146,6 +146,11 @@ public class TextualUI implements ViewInterface {
      */
     private boolean hasInfo = false;
     /**
+     * flag that indicates a quit state. It remains until the quit state ends and the network acknowledges a success
+     */
+    private boolean quitState = false;
+    private boolean waiting = false;
+    /**
      * a GameResults object that contains all the information about how the current game has ended
      */
     private final GameResults results = new GameResults();
@@ -165,16 +170,16 @@ public class TextualUI implements ViewInterface {
             serverIP = scanner.nextLine();
         }
 
-        System.out.println(out + "Insert \u001B[1m/rmi"+rst+" if you want to join server with rmi \u001B[1m/socket"+rst+" if you want to access it with socket");
+        System.out.println(out + "Insert \u001B[1mrmi"+rst+" if you want to join server with rmi \u001B[1msocket"+rst+" if you want to access it with socket");
         System.out.print(in);
 
         String connType = scanner.nextLine();
 
-        while (!connType.equals("/rmi") && !connType.equals("/socket")) {
+        while (!connType.equals("rmi") && !connType.equals("socket")) {
             System.out.print(rst + err + "This type of connection is not supported\n" + in);
             connType = scanner.nextLine();
         }
-        if (connType.equals("/rmi")) {
+        if (connType.equals("rmi")) {
             client = new RMIClient(serverIP, 1099, this);
             new Thread(()->client.init()).start();
         } else {
@@ -188,7 +193,6 @@ public class TextualUI implements ViewInterface {
 
         while (online) {
             inputCommand = askCommand();
-
             while(isDisplaying){
                 try {
                     Thread.sleep(50);
@@ -197,29 +201,39 @@ public class TextualUI implements ViewInterface {
                 }                }
             isDisplaying = true;
             switch (inputCommand) {
-                case "/create" -> createLobby();
-                case "/retrieve" -> retrieveLobbies();
-                case "/join" -> joinLobby();
-                case "/chat" -> sendMessage();
-                case "/showchat" -> {
+                case "create" -> createLobby();
+                case "retrieve" -> retrieveLobbies();
+                case "join" -> joinLobby();
+                case "chat" -> sendMessage();
+                case "showchat" -> {
                     if (client.getIsInLobbyStatus()) {
                         displayChat();
                     } else {
                         System.out.print(rst + err + "You have to be inside a lobby to use the chat\n" + in);
                     }
                 }
-                case "/move" -> makeMove();
-                case "/quit" -> quitLobby();
-                case "/help" -> printCommands();
-                case "/gamestate" -> {
+                case "move" -> makeMove();
+                case "quit" -> {
+                    quitState = true;
+                    quitLobby();
+                    while (waiting){
+                        try {
+                            sleep(500);
+                        } catch (InterruptedException ignored){
+
+                        }
+                    }
+                }
+                case "help" -> printCommands();
+                case "gamestate" -> {
                     if (client.getIsInLobbyStatus()) {
                         displayGameInfo();
                     } else {
                         System.out.print(rst + err + "You have to be inside a game to use this functionality\n" + in);
                     }
                 }
-                case "/egg" -> System.out.print(rst + yellow + "    0\n" + in);//(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
-                case "/exit" -> {
+                case "egg" -> System.out.print(rst + yellow + "    0\n" + in);//(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
+                case "exit" -> {
                     if(client.getIsInLobbyStatus())quitLobby();
                     System.exit(0);
                     online = false;
@@ -231,7 +245,7 @@ public class TextualUI implements ViewInterface {
                 missingGameUpdate = false;
             }
             if (missingChatUpdate) {
-                System.out.println("\n" + out + "You have unread " + bold + "messages" + rst + ". To see them you can use" + bold + " /showchat" + rst + " command\n     > last message: " +
+                System.out.println("\n" + out + "You have unread " + bold + "messages" + rst + ". To see them you can use" + bold + " showchat" + rst + " command\n     > last message: " +
                         lastMessage + "\n" + in);
                 missingChatUpdate = false;
             }
@@ -252,6 +266,7 @@ public class TextualUI implements ViewInterface {
         missingChatUpdate = false;
         missingGameUpdate = false;
         hasInfo = false;
+        quitState = false;
 
         board = null;
         onlinePlayers.clear();
@@ -418,16 +433,16 @@ public class TextualUI implements ViewInterface {
     private void printCommands(){
         System.out.print("\u001B[0m");
         System.out.println("\u001B[1mList of commands:" + rst);
-        System.out.println(yellow + "/create:\u001B[0m create a lobby");
-        System.out.println(yellow + "/join:\u001B[0m join an existing lobby");
-        System.out.println(yellow + "/retrieve:\u001B[0m get a list of available lobbies");
-        System.out.println(yellow + "/chat:\u001B[0m write a message in the chat");
-        System.out.println(yellow + "/showchat:\u001B[0m show the chat history");
-        System.out.println(yellow + "/move:\u001B[0m make a move");
-        System.out.print(yellow + "/gamestate:\u001B[0m show the current game state\n");
-        System.out.println(yellow + "/quit:\u001B[0m leave a lobby");
-        System.out.print(yellow + "/exit:\u001B[0m close the application\n");
-        System.out.print(yellow + "/help:\u001B[0m show this list of commands\n");
+        System.out.println(yellow + "create:\u001B[0m create a lobby");
+        System.out.println(yellow + "join:\u001B[0m join an existing lobby");
+        System.out.println(yellow + "retrieve:\u001B[0m get a list of available lobbies");
+        System.out.println(yellow + "chat:\u001B[0m write a message in the chat");
+        System.out.println(yellow + "showchat:\u001B[0m show the chat history");
+        System.out.println(yellow + "move:\u001B[0m make a move");
+        System.out.print(yellow + "gamestate:\u001B[0m show the current game state\n");
+        System.out.println(yellow + "quit:\u001B[0m leave a lobby");
+        System.out.print(yellow + "exit:\u001B[0m close the application\n");
+        System.out.print(yellow + "help:\u001B[0m show this list of commands\n");
         System.out.print(in);
     }
 
@@ -607,14 +622,15 @@ public class TextualUI implements ViewInterface {
     private String askCommand() {
         String command;
         command = scanner.nextLine();
-        while(!commands.contains(command) && !hasEnded){
+        while(!commands.contains(command) && !hasEnded && online){
             System.out.print("\u001B[38;5;" + 1 + "m\u001B[1m ERROR: invalid command!  ");
             System.out.print("\u001B[0m To see available commands type \u001B[1m\"/help\".\u001B[0m\n" + in);
 
-            if(hasEnded) return "/egg";
+            if(hasEnded) return "egg";
             command = scanner.nextLine();
         }
-        if(hasEnded) return "/egg";
+        if(hasEnded) return "egg";
+        if(!online) return "exit";
         return command;
     }
 
@@ -1422,7 +1438,7 @@ public class TextualUI implements ViewInterface {
     public void receiveExistingLobbyMsg(ExistingLobbyMessage msg) {
         isDisplaying = true;
         restoreWindow();
-        System.out.print(err + "A lobby with the selected name already exists! \n     You can join it with the command /join\n" + in);
+        System.out.print(err + "A lobby with the selected name already exists! \n     You can join it with the command join\n" + in);
         isDisplaying = false;
 
     }
@@ -1462,7 +1478,7 @@ public class TextualUI implements ViewInterface {
     public void receiveNotExistingLobbyMsg(NotExistingLobbyMessage msg) {
         isDisplaying = true;
         restoreWindow();
-        System.out.print(err + "No existing lobby matches the selected name! You can get the names of existing lobbies with the command /retrieve\n" + in);
+        System.out.print(err + "No existing lobby matches the selected name! You can get the names of existing lobbies with the command retrieve\n" + in);
         isDisplaying = false;
 
     }
@@ -1476,7 +1492,7 @@ public class TextualUI implements ViewInterface {
     public void receiveFullLobbyMsg(FullLobbyMessage msg) {
         isDisplaying = true;
         restoreWindow();
-        System.out.print(err + "The selected lobby is full. To see all available lobbies you can use /retrieve\n" + in);
+        System.out.print(err + "The selected lobby is full. To see all available lobbies you can use retrieve\n" + in);
         isDisplaying = false;
     }
 
@@ -1572,7 +1588,7 @@ public class TextualUI implements ViewInterface {
     private void manageEndGame(){
         String command;
         boolean inGame = true;
-        List<String> availableCommands = List.of("/quit", "/gamestate", "/chat", "/showchat", "/leaderboard", "/help");
+        List<String> availableCommands = List.of("quit", "gamestate", "chat", "showchat", "leaderboard", "help");
         ClientMessage clientMessageOut = null;
         while(isDisplaying){
             try {
@@ -1585,11 +1601,11 @@ public class TextualUI implements ViewInterface {
 
         displayLeaderBoard();
         System.out.print("\n" + bold + "Here is a list of currently available commands:\n" +
-                yellow + bold + "/quit:" + rst +" to leave the lobby\n" +
-                yellow + bold + "/gamestate:" + rst +" to see the final state of the game\n" +
-                yellow + bold + "/chat:" + rst +" to use the chat\n" +
-                yellow + bold + "/showchat:"+ rst + " to visualize the chat\n" +
-                yellow + bold + "/leaderboard:" + rst + " to show leaderboard\n" + in);
+                yellow + bold + "quit:" + rst +" to leave the lobby\n" +
+                yellow + bold + "gamestate:" + rst +" to see the final state of the game\n" +
+                yellow + bold + "chat:" + rst +" to use the chat\n" +
+                yellow + bold + "showchat:"+ rst + " to visualize the chat\n" +
+                yellow + bold + "leaderboard:" + rst + " to show leaderboard\n" + in);
         isDisplaying = false;
         while(inGame) {
             command = scanner.nextLine();
@@ -1599,10 +1615,11 @@ public class TextualUI implements ViewInterface {
                 command = scanner.nextLine();
             }
             switch (command) {
-                case "/quit" -> {
+                case "quit" -> {
                     System.out.print(out + bold + "Are you sure? [Y/n]\n" + in);
                     String quit = scanner.nextLine();
                     if (!quit.equals("n") && !quit.equals("N")) {
+                        quitState = true;
                         clientMessageOut = new QuitMessage();
                         if (client instanceof RMIClient) {
                             clientMessageOut.setRmiClient((RMIClient) client);
@@ -1614,24 +1631,30 @@ public class TextualUI implements ViewInterface {
                             }
                             client = new RMIClient(serverIP, 1099, this);
                         } else if (client instanceof SocketClient) {
+                            waiting = true;
                             client.sendMsgToServer(clientMessageOut);
-                            try{
-                                sleep(800);
-                            } catch (InterruptedException e){
-                                e.printStackTrace();
+                            while(waiting){
+                                try{
+                                    sleep(500);
+                                } catch (InterruptedException ignored){
+                                }
                             }
                             client = new SocketClient(serverIP, 8088, this);
                         }
-                        new Thread(()->client.init()).start();
-                        restoreWindow();
-                        printCommands();
+                        new Thread(()->{
+                            client.init();
+                            restoreWindow();
+                            printCommands();
+                            waiting = false;
+                        }).start();
+
                         resetState();
                         inGame = false;
                     }
                 }
-                case "/gamestate" -> displayGameInfo();
+                case "gamestate" -> displayGameInfo();
 
-                case "/chat" -> {
+                case "chat" -> {
                     System.out.print(out + "You have entered the chat. Write a message\n" + in);
                     clientMessageOut = askChatMessage();
                     if (client instanceof RMIClient) {
@@ -1640,12 +1663,12 @@ public class TextualUI implements ViewInterface {
                     isDisplaying = false;
                     client.sendMsgToServer(clientMessageOut);
                 }
-                case "/showchat" -> displayChat();
-                case "/leaderboard" -> {
+                case "showchat" -> displayChat();
+                case "leaderboard" -> {
                     displayLeaderBoard();
                     System.out.print(in);
                 }
-                case "/help" -> printCommands();
+                case "help" -> printCommands();
             }
             isDisplaying = false;
             try{
@@ -1737,24 +1760,21 @@ public class TextualUI implements ViewInterface {
         restoreWindow();
         System.out.print(err + "The lobby has been closed because there where not enough player. You are going to return to the main menù\n");
         client.disconnect(false);
-        /*if (client instanceof RMIClient) {
-            clientMessage.setRmiClient((RMIClient) client);
-        }
-        client.sendMsgToServer(clientMessage);
-        try {
-            sleep(4000);
-        } catch (InterruptedException e) {
-            System.out.println(rst + "wait interrupted");
-        }*/
+
         resetState();
         if (client instanceof RMIClient) {
             client = new RMIClient(serverIP, 1099, this);
         } else if (client instanceof SocketClient) {
             client = new SocketClient(serverIP, 8088, this);
         }
-        new Thread(()->client.init()).start();
-        restoreWindow();
-        printCommands();
+        quitState = true;
+        new Thread(()->{
+            client.init();
+            restoreWindow();
+            printCommands();
+            resetState();
+            waiting = false;
+        }).start();
     }
 
 
@@ -1776,7 +1796,7 @@ public class TextualUI implements ViewInterface {
      */
     @Override
     public void receiveInvalidCommandMsg(InvalidCommandMessage msg) {
-        System.out.print(err + "Selected command is not available! To get available commands you type /help\n" + in);
+        System.out.print(err + "Selected command is not available! To get available commands you type help\n" + in);
     }
 
     /**
@@ -1787,7 +1807,15 @@ public class TextualUI implements ViewInterface {
     public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
         restoreWindow();
         System.out.print("\n" + rst + red + bold + "You have been disconnected\n");
-        printCommands();
+        if(!quitState) {
+            online = false;
+            System.out.print(rst + red + bold + "Server is unreachable: check your connection then relaunch the application!\n");
+            System.exit(0);
+        }
+        else{
+            quitState = false;
+        }
+        waiting = false;
     }
 
     /**
@@ -1951,28 +1979,34 @@ public class TextualUI implements ViewInterface {
             String quit = scanner.nextLine();
             if (quit.equals("y") || quit.equals("Y")) {
                 QuitMessage clientMessage = new QuitMessage();
+                waiting = true;
                 if (client instanceof RMIClient) {
                     clientMessage.setRmiClient((RMIClient) client);
                     client.sendMsgToServer(clientMessage);
-                    try{
-                        sleep(500);
-                    } catch (InterruptedException e){
-                        e.printStackTrace();
-                    }
+                    //while (waiting){
+                        try{
+                            sleep(500);
+                        } catch (InterruptedException ignored){
+                        }
+                    //}
                     client = new RMIClient(serverIP, 1099, this);
                 } else if (client instanceof SocketClient) {
                     client.sendMsgToServer(clientMessage);
-                    try{
-                        sleep(500);
-                    } catch (InterruptedException e){
-                        e.printStackTrace();
+                    while (waiting){
+                        try{
+                            sleep(500);
+                        } catch (InterruptedException ignored){
+                        }
                     }
                     client = new SocketClient(serverIP, 8088, this);
                 }
-                new Thread(()->client.init()).start();
+                new Thread(()->{
+                    client.init();
+                    restoreWindow();
+                    printCommands();
+                    waiting = false;
+                }).start();
                 resetState();
-                restoreWindow();
-                printCommands();
             }
 
         } else {
