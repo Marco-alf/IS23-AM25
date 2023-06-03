@@ -13,8 +13,9 @@ public class InitialGameInfo extends GameInfo{
     private final String commonGoal1;
     private final String commonGoal2;
 
-    private Map<String, TilesType[][]> shelves = new HashMap<>();
-    private Map<String, PersonalGoal> personalGoals = new HashMap<>();
+    private final Map<String, TilesType[][]> shelves;
+    private final Map<String, PersonalGoal> personalGoals;
+    private final Map<String, int[]> commonPoints;
 
     public InitialGameInfo(Game game) {
         super(game);
@@ -22,6 +23,7 @@ public class InitialGameInfo extends GameInfo{
         this.commonGoal2 = game.getCommonGoals().get(1);
         this.shelves = game.getShelves();
         this.personalGoals = game.getPersonalGoals();
+        this.commonPoints  = game.getCommonGoalPoints();
     }
 
     public Map<String, TilesType[][]> getShelves() {
@@ -34,6 +36,9 @@ public class InitialGameInfo extends GameInfo{
 
     public String getCommonGoal2() {
         return commonGoal2;
+    }
+    public int getCommonPoints(String player, int goalNumber){
+        return commonPoints.get(player)[goalNumber];
     }
 
     public Map<String, PersonalGoal> getPersonalGoals() {

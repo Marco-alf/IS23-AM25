@@ -3,7 +3,6 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exception.*;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -220,6 +219,14 @@ public class Game
 
     public int getCommonGoal2Points () {
         return currentPlayer.calculateCommonPoints()[1];
+    }
+
+    public Map<String, int[]> getCommonGoalPoints(){
+        Map<String, int[]> points = new HashMap<>();
+        for(Player p : players){
+            points.put(p.getName(), p.calculateCommonPoints());
+        }
+        return points;
     }
     public boolean getEndGame () {
         return endGame;

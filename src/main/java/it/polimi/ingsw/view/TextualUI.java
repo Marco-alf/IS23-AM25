@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.model.PersonalGoal;
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
 import it.polimi.ingsw.model.data.FinalGameInfo;
@@ -455,7 +456,7 @@ public class TextualUI implements ViewInterface {
         if (info instanceof InitialGameInfo) {
             shelves = ((InitialGameInfo) info).getShelves();
             for (String player : shelves.keySet()) {
-                commonGoals.put(player, new Integer[]{0, 0});
+                commonGoals.put(player, new Integer[]{((InitialGameInfo) info).getCommonPoints(player, 0), ((InitialGameInfo) info).getCommonPoints(player, 1)});
             }
             onlinePlayers.addAll(info.getPlayers());
             personalGoal = ((InitialGameInfo) info).getPersonalGoals().get(nickname);
@@ -623,8 +624,7 @@ public class TextualUI implements ViewInterface {
         String command;
         command = scanner.nextLine();
         while(!commands.contains(command) && !hasEnded && online){
-            System.out.print("\u001B[38;5;" + 1 + "m\u001B[1m ERROR: invalid command!  ");
-            System.out.print("\u001B[0m To see available commands type \u001B[1m\"/help\".\u001B[0m\n" + in);
+            System.out.print("\u001B[38;5;" + 1 + "m\u001B[1m ERROR: invalid command! To see available commands type \u001B[1m\"help\".\u001B[0m\n" + in);
 
             if(hasEnded) return "egg";
             command = scanner.nextLine();
@@ -1746,8 +1746,10 @@ public class TextualUI implements ViewInterface {
      */
     @Override
     public void receiveInsufficientPlayersMsg(InsufficientPlayersMessage msg) {
-        restoreWindow();
-        System.out.print(err + "Not enough player to continue the game. If no one reconnects the game will end soon\n" + in);
+        if(!hasEnded) {
+            restoreWindow();
+            System.out.print(err + "Not enough player to continue the game. If no one reconnects the game will end soon\n" + in);
+        }
     }
 
     /**
@@ -1757,24 +1759,26 @@ public class TextualUI implements ViewInterface {
     @Override
     public void receiveLobbyClosedMsg(LobbyClosedMessage msg) {
         //QuitMessage clientMessage = new QuitMessage();
-        restoreWindow();
-        System.out.print(err + "The lobby has been closed because there where not enough player. You are going to return to the main menù\n");
-        client.disconnect(false);
-
-        resetState();
-        if (client instanceof RMIClient) {
-            client = new RMIClient(serverIP, 1099, this);
-        } else if (client instanceof SocketClient) {
-            client = new SocketClient(serverIP, 8088, this);
-        }
-        quitState = true;
-        new Thread(()->{
-            client.init();
+        if(!hasEnded) {
             restoreWindow();
-            printCommands();
+            System.out.print(err + "The lobby has been closed because there where not enough player. You are going to return to the main menù\n");
+            client.disconnect(false);
+
             resetState();
-            waiting = false;
-        }).start();
+            if (client instanceof RMIClient) {
+                client = new RMIClient(serverIP, 1099, this);
+            } else if (client instanceof SocketClient) {
+                client = new SocketClient(serverIP, 8088, this);
+            }
+            quitState = true;
+            new Thread(() -> {
+                client.init();
+                restoreWindow();
+                printCommands();
+                resetState();
+                waiting = false;
+            }).start();
+        }
     }
 
 
@@ -1787,6 +1791,11 @@ public class TextualUI implements ViewInterface {
         System.out.print(err + "Player " + msg.getUser() + " has been disconnected\n" + in);
         if(onlinePlayers.contains(msg.getUser())) {
             onlinePlayers.remove(msg.getUser());
+            if(isDisplaying){
+                this.missingGameUpdate = true;
+            }else{
+                displayGameInfo();
+            }
         }
     }
 
