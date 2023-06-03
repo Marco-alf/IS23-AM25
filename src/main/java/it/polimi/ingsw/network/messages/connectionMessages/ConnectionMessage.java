@@ -7,10 +7,9 @@ import it.polimi.ingsw.network.messages.Message;
  */
 public class ConnectionMessage extends Message {
     /**
-     * override of the getType() method
-     * @return the string "ConnectionMessage" corresponding to the current message type
+     * constructor for the ConnectionMessage class
      */
-    public String getType() {
-        return "ConnectionMessage";
+    public ConnectionMessage(){
+        this.type = "ConnectionMessage";
     }
 }

@@ -5,11 +5,9 @@ package it.polimi.ingsw.network.messages.connectionMessages;
  */
 public class Ping extends ConnectionMessage {
     /**
-     * override of the getType() method
-     * @return the string "Ping" corresponding to the current message type
+     * constructor for the Ping class
      */
-    @Override
-    public String getType() {
-        return "Ping";
+    public Ping(){
+        this.type = "Ping";
     }
 }

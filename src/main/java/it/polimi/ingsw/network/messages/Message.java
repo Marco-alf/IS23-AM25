@@ -4,13 +4,13 @@ package it.polimi.ingsw.network.messages;
 import java.io.Serializable;
 
 /**
- * Message is the standard message that the server sends to a client
+ * Message is the standard message that the server sends to a client and viceversa
  */
 public class Message implements Serializable {
     /**
      * Type of the message
      */
-    protected String type;
+    protected String type = "Message";
     /**
      * serialVersionUID is the version used by the serialization/deserialization protocol
      */
@@ -21,6 +21,6 @@ public class Message implements Serializable {
      * @return a string with representing the message class
      */
     public String getType() {
-        return "Message";
+        return type;
     }
 }
