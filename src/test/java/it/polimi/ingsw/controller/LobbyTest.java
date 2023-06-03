@@ -297,8 +297,8 @@ class LobbyTest {
         }
         assertEquals(TilesType.TROPHIES, lobby.getGameInfo().getShelf()[5][0]);
         assertEquals(TilesType.FRAMES, lobby.getGameInfo().getShelf()[4][0]);
-        assertEquals(player1, lobby.getGameInfo().getPlayers().get(0));
-        assertEquals(player2, lobby.getGameInfo().getPlayers().get(1));
+        assertEquals(player1, lobby.getGameInfo().getOnlinePlayers().get(0));
+        assertEquals(player2, lobby.getGameInfo().getOnlinePlayers().get(1));
         assertEquals(player1, lobby.getGameInfo().getCurrentPlayer());
         tile1 = new Tile(TilesType.CATS, 3, 2);
         tile2 = new Tile(TilesType.FRAMES, 4, 2);

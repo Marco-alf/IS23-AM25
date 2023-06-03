@@ -25,8 +25,17 @@ public class Game
     /**
      * currentPlayer is the reference to the player that is supposed to move next, the player of the current turn*/
     private Player currentPlayer;
+    /**
+     * reference to the first player of the game
+     */
     private Player firstPlayer;
+    /**
+     * boolean that indicates if it's the last round of the game
+     */
     private boolean lastRound = false;
+    /**
+     * boolean that indicates if the game has ended
+     */
     private boolean endGame = false;
 
     /**
@@ -170,14 +179,25 @@ public class Game
         return onlinePlayers.stream().map(Player::getName).collect(Collectors.toList());
     }
 
+    /**
+     * getter for the current player name
+     * @return a String with the current player name
+     */
     public String getCurrentPlayer() {
         return currentPlayer.getName();
     }
-
+    /**
+     * getter for the current player shelf
+     * @return a TileseType[][] representing the current player shelf
+     */
     public TilesType[][] getShelf () {
         return currentPlayer.getShelf();
     }
 
+    /**
+     * getter for the shelves of all player
+     * @return return an HashMap where the keys are the players' names and the values are their shelves
+     */
     public Map<String, TilesType[][]> getShelves () {
         Map<String, TilesType[][]> shelves = new HashMap<>();
         for (Player player : players) {
@@ -186,13 +206,24 @@ public class Game
         return shelves;
     }
 
+    /**
+     * method used to get the point that the current player have scored by adjacency
+     * @return an int with the adjacency points
+     */
     public int getAdjPoints () {
         return currentPlayer.calculateAdjacencyPoints();
     }
+    /**
+     * method used to get the point that the current player have obtained from the personal goal
+     * @return an int with the personal goal points
+     */
     public int getPersonalPoints () {
         return currentPlayer.calculatePersonalPoints();
     }
-
+    /**
+     * method used to get the point that the current player have obtained from the common goals
+     * @return an int with the common goals points
+     */
     public List<String> getCommonGoals () {
         List<String> commonGoals = new ArrayList<>();
         for (int i = 0; i < board.getCommonGoals().length; i++) {
@@ -201,6 +232,10 @@ public class Game
         return commonGoals;
     }
 
+    /**
+     * method used to get the personal goals of each player
+     * @return a HashMap with the name of the player as key and value his personal goal
+     */
     public Map<String, PersonalGoal> getPersonalGoals () {
         Map<String, PersonalGoal> personalGoals = new HashMap<>();
         for (Player player : players) {
@@ -209,18 +244,34 @@ public class Game
         return personalGoals;
     }
 
+    /**
+     * method used to retrieve the latest state of the board
+     * @return a game board as a matrix of tiles
+     */
     public TilesType[][] getNewBoard () {
         return board.getEnumArray();
     }
 
+    /**
+     * getter for the points of the first common goal of the current player
+     * @return the points that the current player have scored in the first common goal
+     */
     public int getCommonGoal1Points () {
         return currentPlayer.calculateCommonPoints()[0];
     }
 
+    /**
+     * getter for the points of the second common goal of the current player
+     * @return the points that the current player have scored in the second common goal
+     */
     public int getCommonGoal2Points () {
         return currentPlayer.calculateCommonPoints()[1];
     }
 
+    /**
+     * getter for the points scored by all player regarding common goals
+     * @return an HashMap with the name of the player as key and an int[2] with the points as value
+     */
     public Map<String, int[]> getCommonGoalPoints(){
         Map<String, int[]> points = new HashMap<>();
         for(Player p : players){
@@ -228,6 +279,11 @@ public class Game
         }
         return points;
     }
+
+    /**
+     * getter for the endgame boolean value
+     * @return true iff the game is ended
+     */
     public boolean getEndGame () {
         return endGame;
     }
@@ -291,14 +347,24 @@ public class Game
 
     }
 
+    /**
+     * getter for the isLastRound boolean value
+     * @return true iff is the last round of the game
+     */
     public boolean isLastRound() {
         return lastRound;
     }
 
+    /**
+     * setter for the isLastRound boolean variable
+     */
     private void setLastRound() {
         if (currentPlayer.isBookshelfFull()) lastRound = true;
     }
 
+    /**
+     * setter for the setEndGame variable
+     */
     public void setGameEnded () {
         endGame = true;
     }

@@ -113,7 +113,7 @@ public class GameScreenController {
 
             livingroomBoard = info.getNewBoard();
             refreshBoard();
-            players = new ArrayList<>(info.getPlayers());
+            players = new ArrayList<>(info.getOnlinePlayers());
             otherPlayers = new ArrayList<>(players);
             otherPlayers.remove(selfName);
 

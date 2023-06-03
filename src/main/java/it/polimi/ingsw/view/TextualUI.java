@@ -23,7 +23,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Thread.sleep;
 
-
+/**
+ * TextualUI is the class that manages the whole TUI
+ */
 public class TextualUI implements ViewInterface {
     /**
      * scanner is the Scanner object used for reading from System.in input stream
@@ -458,7 +460,7 @@ public class TextualUI implements ViewInterface {
             for (String player : shelves.keySet()) {
                 commonGoals.put(player, new Integer[]{((InitialGameInfo) info).getCommonPoints(player, 0), ((InitialGameInfo) info).getCommonPoints(player, 1)});
             }
-            onlinePlayers.addAll(info.getPlayers());
+            onlinePlayers.addAll(info.getOnlinePlayers());
             personalGoal = ((InitialGameInfo) info).getPersonalGoals().get(nickname);
             commonGoal1 = ((InitialGameInfo) info).getCommonGoal1();
             commonGoal2 = ((InitialGameInfo) info).getCommonGoal2();

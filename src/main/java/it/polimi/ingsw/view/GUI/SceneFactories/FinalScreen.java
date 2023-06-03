@@ -36,7 +36,7 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
     }
 
     public void setInfo(FinalGameInfo info){
-        List<String> names = new ArrayList<>(info.getPlayers());
+        List<String> names = new ArrayList<>(info.getOnlinePlayers());
         Map<String, Integer> pointsMap = new HashMap<>();
         for (String name : names) {
             pointsMap.put( name, info.getFinalPoints().get(name).stream().mapToInt(Integer::intValue).sum() );
