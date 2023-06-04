@@ -546,7 +546,12 @@ public class GameScreenController {
         }
         client.sendMsgToServer(clientMessage);
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         client.disconnect(false);
-        client = null;
     }
 }

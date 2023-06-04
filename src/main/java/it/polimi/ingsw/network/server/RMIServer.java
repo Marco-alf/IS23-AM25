@@ -378,6 +378,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                                 server.gameBroker.closeLobby(lobby);
                                 LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
                                 server.sendMsgToAll(lobbyClosedMessage, lobby);
+                                rmiClientsLobby.values().remove(lobby);
                             }
                         } else if (name.equals(curPlayer)) {
                             UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();
@@ -392,6 +393,8 @@ public class RMIServer implements Runnable, RMIServerInterface{
 
         } catch (PlayerNotInLobbyException ignored) {
 
+        } catch (Exception e ){
+            System.out.println("FATAL: BAD DISCONNECTION MANAGEMENT, EXCEPTION NOT HANDLED");
         }
 
     }

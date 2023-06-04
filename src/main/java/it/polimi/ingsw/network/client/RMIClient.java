@@ -1,5 +1,6 @@
 package it.polimi.ingsw.network.client;
 
+import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 import it.polimi.ingsw.network.server.RMIClientInterface;
 import it.polimi.ingsw.view.ViewInterface;
@@ -137,7 +138,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
      * commands to the bound view */
     @Override
     public void receiveMsgFromServer(Serializable arg) {
-
+        System.out.println("Received message from Server: "+ ((Message)arg).getType());
         if (arg instanceof ServerMessage msg) {
             if (msg.getType().equals("CreatedLobbyMessage")) {
                 isInLobby = true;
