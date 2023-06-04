@@ -363,19 +363,19 @@ public class TextualUI implements ViewInterface {
             System.out.print(yellow + bold + "  \"\\\"\\\"\\|/\"/\"/\" \n");
             System.out.println(yellow + bold + "    <*><*><*>\n");
         }
-        System.out.print(rst + yellow + bold +"1. "+results.getLeaderboard().get(0)+":\n");
-        System.out.println(rst + bold + "Total points: " + yellow + bold + results.getTotals().get(0));
-        System.out.println(rst + "Personal Goal points: " + bold + results.getPersonalPoints().get(0));
-        System.out.println(rst + "Common Goal points: " + bold + results.getCommonPoints().get(0));
-        System.out.println(rst + "Adjacency points: " + bold + results.getAdjacencyPoints().get(0));
+        System.out.print(rst + yellow + bold +"  1. "+results.getLeaderboard().get(0)+":\n");
+        System.out.println(rst + bold + "   Total points: " + yellow + bold + results.getTotals().get(0));
+        System.out.println(rst + "   Personal Goal points: " + bold + results.getPersonalPoints().get(0));
+        System.out.println(rst + "   Common Goal points: " + bold + results.getCommonPoints().get(0));
+        System.out.println(rst + "   Adjacency points: " + bold + results.getAdjacencyPoints().get(0));
 
         for (int i = 1; i < results.getLeaderboard().size(); i++) {
             int j = i + 1;
-            System.out.println(yellow + bold + "\n" + j + ". " + results.getLeaderboard().get(i) + ": ");
-            System.out.println(rst + bold + "Total points: " + yellow + results.getTotals().get(i));
-            System.out.println(rst + "Personal Goal points: " + bold + results.getPersonalPoints().get(i));
-            System.out.println(rst + "Common Goal points: " + bold + results.getCommonPoints().get(i));
-            System.out.println(rst + "Adjacency points: " + bold + results.getAdjacencyPoints().get(i));
+            System.out.println(yellow + bold + "\n  " + j + ". " + results.getLeaderboard().get(i) + ": ");
+            System.out.println(rst + bold + "   Total points: " + yellow + results.getTotals().get(i));
+            System.out.println(rst + "   Personal Goal points: " + bold + results.getPersonalPoints().get(i));
+            System.out.println(rst + "   Common Goal points: " + bold + results.getCommonPoints().get(i));
+            System.out.println(rst + "   Adjacency points: " + bold + results.getAdjacencyPoints().get(i));
         }
     }
 
@@ -815,7 +815,7 @@ public class TextualUI implements ViewInterface {
             }
             for(int j=37; j < l; j++)shelf[h]+=" ";
             h++;
-            shelf[h] = "      +";
+            shelf[h] = yellow + "      +";
             for (int j = 0; j < 5; j++) {
                 shelf[h] += "-----+";
             }
@@ -1602,12 +1602,12 @@ public class TextualUI implements ViewInterface {
         isDisplaying = true;
 
         displayLeaderBoard();
-        System.out.print("\n" + bold + "Here is a list of currently available commands:\n" +
-                yellow + bold + "quit:" + rst +" to leave the lobby\n" +
-                yellow + bold + "gamestate:" + rst +" to see the final state of the game\n" +
-                yellow + bold + "chat:" + rst +" to use the chat\n" +
-                yellow + bold + "showchat:"+ rst + " to visualize the chat\n" +
-                yellow + bold + "leaderboard:" + rst + " to show leaderboard\n" + in);
+        System.out.print("\n" + out + bold + "Here is a list of currently available commands:\n" +
+                yellow + bold + "   quit:" + rst +" to leave the lobby\n" +
+                yellow + bold + "   gamestate:" + rst +" to see the final state of the game\n" +
+                yellow + bold + "   chat:" + rst +" to use the chat\n" +
+                yellow + bold + "   showchat:"+ rst + " to visualize the chat\n" +
+                yellow + bold + "   leaderboard:" + rst + " to show leaderboard\n" + in);
         isDisplaying = false;
         while(inGame) {
             command = scanner.nextLine();
@@ -1620,50 +1620,63 @@ public class TextualUI implements ViewInterface {
                 case "quit" -> {
                     System.out.print(out + bold + "Are you sure? [Y/n]\n" + in);
                     String quit = scanner.nextLine();
-                    if (!quit.equals("n") && !quit.equals("N")) {
-                        quitState = true;
-                        clientMessageOut = new QuitMessage();
-                        if (client instanceof RMIClient) {
-                            clientMessageOut.setRmiClient((RMIClient) client);
-                            client.sendMsgToServer(clientMessageOut);
-                            try{
-                                sleep(800);
-                            } catch (InterruptedException e){
-                                e.printStackTrace();
-                            }
-                            client = new RMIClient(serverIP, 1099, this);
-                        } else if (client instanceof SocketClient) {
-                            waiting = true;
-                            client.sendMsgToServer(clientMessageOut);
-                            while(waiting){
-                                try{
-                                    sleep(500);
-                                } catch (InterruptedException ignored){
+                    if (client.getIsInLobbyStatus()) {
+                        if (!quit.equals("n") && !quit.equals("N")) {
+                            quitState = true;
+                            clientMessageOut = new QuitMessage();
+                            if (client instanceof RMIClient) {
+                                clientMessageOut.setRmiClient((RMIClient) client);
+                                client.sendMsgToServer(clientMessageOut);
+                                try {
+                                    sleep(800);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
                                 }
+                                client = new RMIClient(serverIP, 1099, this);
+                            } else if (client instanceof SocketClient) {
+                                waiting = true;
+                                client.sendMsgToServer(clientMessageOut);
+                                while (waiting) {
+                                    try {
+                                        sleep(500);
+                                    } catch (InterruptedException ignored) {
+                                    }
+                                }
+                                client = new SocketClient(serverIP, 8088, this);
                             }
-                            client = new SocketClient(serverIP, 8088, this);
-                        }
-                        new Thread(()->{
-                            client.init();
-                            restoreWindow();
-                            printCommands();
-                            waiting = false;
-                        }).start();
+                            new Thread(() -> {
+                                client.init();
+                                restoreWindow();
+                                printCommands();
+                                waiting = false;
+                            }).start();
 
+                            resetState();
+                            inGame = false;
+                        }
+                    }else{
+                        waiting = false;
                         resetState();
+                        restoreWindow();
+                        printCommands();
                         inGame = false;
                     }
                 }
                 case "gamestate" -> displayGameInfo();
 
                 case "chat" -> {
-                    System.out.print(out + "You have entered the chat. Write a message\n" + in);
-                    clientMessageOut = askChatMessage();
-                    if (client instanceof RMIClient) {
-                        clientMessageOut.setRmiClient((RMIClient) client);
+                    if(onlinePlayers.size() > 1) {
+                        System.out.print(out + "You have entered the chat. Write a message\n" + in);
+                        clientMessageOut = askChatMessage();
+                        if (client instanceof RMIClient) {
+                            clientMessageOut.setRmiClient((RMIClient) client);
+                        }
+                        isDisplaying = false;
+                        client.sendMsgToServer(clientMessageOut);
                     }
-                    isDisplaying = false;
-                    client.sendMsgToServer(clientMessageOut);
+                    else{
+                        System.out.print(err + "No other player in the lobby\n" + in);
+                    }
                 }
                 case "showchat" -> displayChat();
                 case "leaderboard" -> {
@@ -1679,6 +1692,7 @@ public class TextualUI implements ViewInterface {
                 throw new RuntimeException();
             }
         }
+        resetState();
     }
 
     /**
@@ -1760,7 +1774,6 @@ public class TextualUI implements ViewInterface {
      */
     @Override
     public void receiveLobbyClosedMsg(LobbyClosedMessage msg) {
-        //QuitMessage clientMessage = new QuitMessage();
         if(!hasEnded) {
             restoreWindow();
             System.out.print(err + "The lobby has been closed because there where not enough player. You are going to return to the main menù\n");
@@ -1780,7 +1793,20 @@ public class TextualUI implements ViewInterface {
                 resetState();
                 waiting = false;
             }).start();
+        } else{
+            client.disconnect(false);
+            if (client instanceof RMIClient) {
+                client = new RMIClient(serverIP, 1099, this);
+            } else if (client instanceof SocketClient) {
+                client = new SocketClient(serverIP, 8088, this);
+            }
+            quitState = true;
+            new Thread(() -> {
+                client.init();
+                waiting = false;
+            }).start();
         }
+
     }
 
 
@@ -1796,7 +1822,7 @@ public class TextualUI implements ViewInterface {
             if(isDisplaying){
                 this.missingGameUpdate = true;
             }else{
-                displayGameInfo();
+                if(!hasEnded)displayGameInfo();
             }
         }
     }
