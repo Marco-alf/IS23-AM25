@@ -355,6 +355,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
         String name = rmiClientsName.get(rmiClient);
         rmiClients.remove(rmiClient);
         rmiClientsStates.remove(rmiClient);
+        rmiClientsLobby.remove(rmiClient);
         try {
             if (lobby != null) {
                 String curPlayer = lobby.getCurrentPlayer();
