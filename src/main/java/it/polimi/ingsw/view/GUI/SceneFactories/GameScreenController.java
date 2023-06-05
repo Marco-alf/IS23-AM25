@@ -34,6 +34,59 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static javafx.scene.paint.Color.BURLYWOOD;
 
 public class GameScreenController {
+
+    private enum GoalNumbers {
+        EIGHT(
+                8,
+                new Image("17_MyShelfie_BGA/scoring_tokens/scoring_8.jpg")
+        ),
+        SIX(
+                6,
+                new Image("17_MyShelfie_BGA/scoring_tokens/scoring_6.jpg")
+        ),
+        FOUR(
+                4,
+                new Image("17_MyShelfie_BGA/scoring_tokens/scoring_4.jpg")
+        ),
+        TWO(
+                2,
+                new Image("17_MyShelfie_BGA/scoring_tokens/scoring_2.jpg")
+        );
+        private final int num;
+        private final Image texture;
+        private GoalNumbers(int num, Image texture){
+            this.num = num;
+            this.texture = texture;
+        }
+        public static GoalNumbers next(GoalNumbers prev, int size){
+            if(size>4 || size<2 || prev == null){
+                return null;
+            }
+            GoalNumbers toReturn;
+            switch (prev.num){
+                case 8 -> {
+                    toReturn = size>2 ? SIX : FOUR;
+                }
+                case 6 -> {
+                    toReturn = FOUR;
+                }
+                case 4 -> {
+                    toReturn = TWO;
+                }
+                default -> {
+                    toReturn = null;
+                }
+            }
+            return toReturn;
+        }
+
+        private int getNum(){
+            return num;
+        }
+        public Image getTexture(){
+            return texture;
+        }
+    }
     GameScreen gameScreen;
 
     private final AtomicBoolean myTurn = new AtomicBoolean(false);
@@ -60,7 +113,9 @@ public class GameScreenController {
     VBox myshelf;
 
     @FXML
-    ImageView goal1, goal2;
+    ImageView goal1, goal2, commongoal1stack, commongoal2stack;
+
+    private GoalNumbers goal1token = GoalNumbers.EIGHT, goal2token = GoalNumbers.EIGHT;
 
     List<String> players = new ArrayList<>();
     List<String> otherPlayers = new ArrayList<>();
@@ -146,6 +201,23 @@ public class GameScreenController {
                         shelf3[i][j].setImage(getTexture(info.getShelves().get(players.get(3))[j][i]));
                 }
             }
+            int counter1=0, counter2=0;
+            for(String p : players){
+                counter1 += info.getCommonPoints(p, 0)>0 ? 1 : 0;
+                counter2 += info.getCommonPoints(p, 1)>0 ? 1 : 0;
+            }
+            while(counter1>0 || counter2>0){
+                if(counter1>0){
+                    goal1token = GoalNumbers.next(goal1token, players.size());
+                    counter1--;
+                }
+                if(counter2>0){
+                    goal2token = GoalNumbers.next(goal2token, players.size());
+                    counter2--;
+                }
+            }
+            commongoal1stack.setImage(goal1token != null ? goal1token.getTexture() : null);
+            commongoal2stack.setImage(goal2token != null ? goal2token.getTexture() : null);
 
 
             personalGoalView.setImage(new Image("17_MyShelfie_BGA/personal_goal_cards/Personal_Goals" + (info.getPersonalGoals().get(selfName).ordinal() + 1) + ".png"));
@@ -180,6 +252,15 @@ public class GameScreenController {
                 for (int j = 0; j < 6; j++) {
                     old[i][j].setImage(getTexture(info.getShelf()[j][i]));
                 }
+            }
+
+            if(info.getCommonGoal1Points()>0){
+                goal1token = GoalNumbers.next(goal1token, players.size());
+                commongoal1stack.setImage(goal1token != null ? goal1token.getTexture() : null);
+            }
+            if(info.getCommonGoal2Points()>0){
+                goal2token = GoalNumbers.next(goal2token, players.size());
+                commongoal2stack.setImage(goal2token != null ? goal2token.getTexture() : null);
             }
 
         }
@@ -297,7 +378,6 @@ public class GameScreenController {
                 case P -> gameScreen.disconnect();
             }
         });
-
 
         /*player1Button.setStyle("-fx-background-color: BURLYWOOD");
         player2Button.setStyle("-fx-background-color: BURLYWOOD");

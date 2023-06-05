@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <!--  fx:controller="it.polimi.ingsw.view.GUI.SceneFactories.GameScreenController" -->
@@ -99,14 +100,40 @@
                             <RowConstraints minHeight="95.0" prefHeight="95.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                         </GridPane>
-                                <ImageView fx:id="goal1" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../17_MyShelfie_BGA/common_goal_cards/1.jpg" />
-                           </image></ImageView>
-                                <ImageView fx:id="goal2" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../17_MyShelfie_BGA/common_goal_cards/2.jpg" />
-                           </image></ImageView>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                                      <ImageView fx:id="goal1" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../17_MyShelfie_BGA/common_goal_cards/1.jpg" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="commongoal1stack" fitHeight="85.0" fitWidth="85.0" pickOnBounds="true" preserveRatio="true" rotate="-8.0" StackPane.alignment="CENTER_RIGHT">
+                                 <StackPane.margin>
+                                    <Insets bottom="15.0" right="35.0" />
+                                 </StackPane.margin>
+                                 <image>
+                                    <Image url="@../17_MyShelfie_BGA/scoring_tokens/scoring_8.jpg" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                                      <ImageView fx:id="goal2" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../17_MyShelfie_BGA/common_goal_cards/2.jpg" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="commongoal2stack" fitHeight="85.0" fitWidth="85.0" pickOnBounds="true" preserveRatio="true" rotate="-8.0" StackPane.alignment="CENTER_RIGHT">
+                                 <image>
+                                    <Image url="@../17_MyShelfie_BGA/scoring_tokens/scoring_8.jpg" />
+                                 </image>
+                                 <StackPane.margin>
+                                    <Insets bottom="15.0" right="35.0" />
+                                 </StackPane.margin>
+                              </ImageView>
+                           </children>
+                        </StackPane>
                             </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
