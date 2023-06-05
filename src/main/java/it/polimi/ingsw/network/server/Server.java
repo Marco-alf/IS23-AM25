@@ -4,6 +4,8 @@ import it.polimi.ingsw.controller.GameBroker;
 import it.polimi.ingsw.controller.Lobby;
 
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
 /**
@@ -52,6 +54,12 @@ public class Server implements Runnable{
      */
     @Override
     public void run() {
+        try {
+            System.out.println("In order to play connect to: \u001B[1m" + InetAddress.getLocalHost().getHostAddress() + "\u001B[0m");
+        } catch (UnknownHostException e) {
+            System.out.println("ERROR: Localhost ip not found!");
+            throw new RuntimeException(e);
+        }
         socketServer = new SocketServer(this, socketPort);
         rmiServer = new RMIServer(this, rmiPort);
         new Thread(socketServer).start();

@@ -37,7 +37,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     /**
      * PING_TIME is the period of the checking for disconnected player
      */
-    private final int PING_TIME = 200;
+    private final int PING_TIME = 1000;
     /**
      * rmiClients is the list of clients served by the RMIServer
      */
@@ -80,11 +80,10 @@ public class RMIServer implements Runnable, RMIServerInterface{
     public void run() {
         try {
             System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
-            System.out.println("Per giocare connettersi a: " + InetAddress.getLocalHost().getHostAddress());
             RMIServerInterface stub = (RMIServerInterface) UnicastRemoteObject.exportObject(this, 0);
             LocateRegistry.createRegistry(port);
             LocateRegistry.getRegistry(port).bind(RMIServerInterface.NAME, stub);
-            SERVER_LOGGER.info("RmiServer started.");
+            SERVER_LOGGER.info("RMI server started on port " + port);
             pingThread.start();
         } catch (UnknownHostException | AlreadyBoundException | RemoteException e) {
             throw new RuntimeException(e);

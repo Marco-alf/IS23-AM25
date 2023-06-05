@@ -157,6 +157,14 @@ public class TextualUI implements ViewInterface {
      * a GameResults object that contains all the information about how the current game has ended
      */
     private final GameResults results = new GameResults();
+    /**
+     * port number for rmi connection
+     */
+    private int rmiPort = 1099;
+    /**
+     * port number for tcp connection
+     */
+    private int tcpPort = 8088;
 
     /**
      * That's the main function of the TUI that it's responsible for handling all the activities of a client that is using
@@ -183,10 +191,18 @@ public class TextualUI implements ViewInterface {
             connType = scanner.nextLine();
         }
         if (connType.equals("rmi")) {
-            client = new RMIClient(serverIP, 1099, this);
+            System.out.println(out + "Insert port exposed by the server. If not sure press " + bold + "ENTER" + rst + " to use the default port 1099");
+            System.out.print(in);
+            inputCommand = scanner.nextLine();
+            if(!inputCommand.equals("")) rmiPort = Integer.parseInt(inputCommand);
+            client = new RMIClient(serverIP, rmiPort, this);
             new Thread(()->client.init()).start();
         } else {
-            client = new SocketClient(serverIP, 8088, this);
+            System.out.println(out + "Insert port exposed by the server. If not sure press" + bold + "ENTER" + rst + "to use the default port 8088");
+            System.out.print(in);
+            inputCommand = scanner.nextLine();
+            if(!inputCommand.equals("")) tcpPort = Integer.parseInt(inputCommand);
+            client = new SocketClient(serverIP, tcpPort, this);
             new Thread(()->client.init()).start();
         }
 
@@ -1632,7 +1648,7 @@ public class TextualUI implements ViewInterface {
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
-                                client = new RMIClient(serverIP, 1099, this);
+                                client = new RMIClient(serverIP, rmiPort, this);
                             } else if (client instanceof SocketClient) {
                                 waiting = true;
                                 client.sendMsgToServer(clientMessageOut);
@@ -1642,7 +1658,7 @@ public class TextualUI implements ViewInterface {
                                     } catch (InterruptedException ignored) {
                                     }
                                 }
-                                client = new SocketClient(serverIP, 8088, this);
+                                client = new SocketClient(serverIP, tcpPort, this);
                             }
                             new Thread(() -> {
                                 client.init();
@@ -1781,9 +1797,9 @@ public class TextualUI implements ViewInterface {
 
             resetState();
             if (client instanceof RMIClient) {
-                client = new RMIClient(serverIP, 1099, this);
+                client = new RMIClient(serverIP, rmiPort, this);
             } else if (client instanceof SocketClient) {
-                client = new SocketClient(serverIP, 8088, this);
+                client = new SocketClient(serverIP, tcpPort, this);
             }
             quitState = true;
             new Thread(() -> {
@@ -1796,9 +1812,9 @@ public class TextualUI implements ViewInterface {
         } else{
             client.disconnect(false);
             if (client instanceof RMIClient) {
-                client = new RMIClient(serverIP, 1099, this);
+                client = new RMIClient(serverIP, rmiPort, this);
             } else if (client instanceof SocketClient) {
-                client = new SocketClient(serverIP, 8088, this);
+                client = new SocketClient(serverIP, tcpPort, this);
             }
             quitState = true;
             new Thread(() -> {
@@ -2026,7 +2042,7 @@ public class TextualUI implements ViewInterface {
                         } catch (InterruptedException ignored){
                         }
                     //}
-                    client = new RMIClient(serverIP, 1099, this);
+                    client = new RMIClient(serverIP, rmiPort, this);
                 } else if (client instanceof SocketClient) {
                     client.sendMsgToServer(clientMessage);
                     while (waiting){
@@ -2035,7 +2051,7 @@ public class TextualUI implements ViewInterface {
                         } catch (InterruptedException ignored){
                         }
                     }
-                    client = new SocketClient(serverIP, 8088, this);
+                    client = new SocketClient(serverIP, tcpPort, this);
                 }
                 new Thread(()->{
                     client.init();
