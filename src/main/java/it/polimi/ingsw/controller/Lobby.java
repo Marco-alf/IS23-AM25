@@ -37,12 +37,21 @@ public class Lobby {
      * List of online players
      */
     protected List<VirtualPlayer> onlinePlayers;
+    /**
+     * List of disconnected players
+     */
     private final List<String> disconnectedPlayers = new ArrayList<>();
     /**
      * Reference to the game
      */
     private Game game;
+    /**
+     * boolean that is true if the game has been created, false otherwise
+     */
     private boolean isGameCreated = false;
+    /**
+     * Reference to gameInfo
+     */
     private GameInfo gameInfo;
 
     /**
@@ -65,6 +74,10 @@ public class Lobby {
     public String getLobbyName() {
         return lobbyName;
     }
+
+    /**
+     * @return the number of players in the lobby
+     */
     public int getPlayerNumber() {
         return playerNumber;
     }
@@ -179,10 +192,17 @@ public class Lobby {
         }
     }
 
+    /**
+     * Method used to check if the number of players is enough to continue playing
+     * @return true if the number of players is more than 2, false otherwise
+     */
     public boolean checkNumberOfPlayers () {
         return (onlinePlayers.size() - disconnectedPlayers.size()) < 2;
     }
 
+    /**
+     * @return true if the number of player still in game is at least 2, false if there are no player in game
+     */
     public boolean waitForPlayers () {
         for (int i = 0; i < 200; i++) {
             try  {
@@ -196,37 +216,48 @@ public class Lobby {
         return false;
     }
 
+    /**
+     * @return true if is the last turn of the game, false otherwise
+     */
     private boolean isLastTurn () {
         return game.isLastRound() && isLastPlayer();
     }
 
-
-
     /**
-     * Writes a message on the chat
-     * @param message is the content of the message (String)
-     * @param player is the player that sent the message
+     * @return the reference to game info
      */
-    public void writeMessage(String message, String player) {}
     public GameInfo getGameInfo () {
         if(!isGameCreated) return null;
         return gameInfo;
     }
+
+    /**
+     * @return the reference to the game info created at the beginning of the game
+     */
     public InitialGameInfo getInitialGameInfo () {
         if(!isGameCreated) return null;
         return new InitialGameInfo(game);
     }
 
+    /**
+     * @return the name (String) of the player that can play in this turn
+     */
     public String getCurrentPlayer() {
         if(!isGameCreated) return null;
         if(currentPlayer == null) return null;
         return currentPlayer.getName();
     }
 
+    /**
+     * @return the list of disconnected players
+     */
     public List<String> getDisconnectedPlayers() {
         return disconnectedPlayers;
     }
 
+    /**
+     * @return true if the game has been created, false otherwise
+     */
     public boolean isGameCreated() {
         return isGameCreated;
     }
@@ -244,6 +275,9 @@ public class Lobby {
         return onlinePlayers.get(index);
     }
 
+    /**
+     * @return true if the current player is the last player among the online players
+     */
     public boolean isLastPlayer () {
         List<String> roundPlayers = new ArrayList<>();
         for (int i = 0; i < onlinePlayers.size(); i++) {
@@ -256,7 +290,11 @@ public class Lobby {
         return currentPlayer.getName().equals(lastPlayer);
     }
 
-
+    /**
+     * @param name name of the virtual player
+     * @return the reference to the virtual player corresponding to the parameter
+     * @throws PlayerNotInLobbyException if the name asked is not an online player
+     */
     public VirtualPlayer getPlayer(String name) throws PlayerNotInLobbyException {
         for (VirtualPlayer onlinePlayer : onlinePlayers) {
             if (onlinePlayer.getName().equals(name)) return onlinePlayer;

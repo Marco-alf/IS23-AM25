@@ -26,10 +26,6 @@ public class VirtualPlayer {
         lobby.disconnectPlayer(this);
     }
 
-    public void writeMessage(String message) {
-        lobby.writeMessage(message, name);
-    }
-
     public String getName() {
         return name;
     }
