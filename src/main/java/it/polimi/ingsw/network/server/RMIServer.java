@@ -42,6 +42,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * rmiClients is the list of clients served by the RMIServer
      */
     private final List<RMIClientInterface> rmiClients = new ArrayList<>();
+    /**
+     * rmiClientsToRemove is a list of clients that are no more online, so they have to be disconnected
+     */
     private final List<RMIClientInterface> rmiClientsToRemove = new ArrayList<>();
     /**
      * rmiClientsName maps the unique name of every player to the respective network interface
@@ -91,7 +94,10 @@ public class RMIServer implements Runnable, RMIServerInterface{
     }
 
 
-
+    /**
+     * function used to correctly initialize a rmiClient to be in a lobby
+     * @param lobby is the lobby joined by the player
+     */
     public synchronized void setInGameStatus (String lobby) {
         for (RMIClientInterface rmiClient : rmiClients) {
             if(rmiClient != null ) {
@@ -375,6 +381,11 @@ public class RMIServer implements Runnable, RMIServerInterface{
         SERVER_LOGGER.log(Level.INFO, "New RMI client connected");
     }
 
+    /**
+     * function used to check the server reachability
+     * @return true
+     * @throws RemoteException if not reachable
+     */
     @Override
     public boolean checkAliveness() throws RemoteException {
         return true;

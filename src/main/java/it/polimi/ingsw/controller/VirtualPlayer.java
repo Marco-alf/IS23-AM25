@@ -8,24 +8,39 @@ import it.polimi.ingsw.model.TilesType;
 import java.util.List;
 
 /**
- * TODO: getShelf(), update(GameState gameState), update(Message: chatState)
+ * VirtualPlayer is a class used to masks a player. It provides the main information regarding it
  */
 public class VirtualPlayer {
+    /**
+     * name is the name of the corresponding player
+     */
     private final String name;
+    /**
+     * lobby is the reference to the lobby where the client is playing
+     */
     private final Lobby lobby;
+
+    /**
+     * the constructor of VirtualPlayer initialize the final attributes of the class
+     * @param name is the name of the corresponding player
+     * @param lobby is the reference to the lobby where the user is playing
+     */
     public VirtualPlayer(String name, Lobby lobby) {
         this.name = name;
         this.lobby = lobby;
     }
 
-    public void placeTiles(List<Tile> tiles, int shelfColumn) throws IllegalMoveException, GameEndedException {
-        lobby.moveTiles(tiles, shelfColumn, name);
-    }
-
+    /**
+     * disconnect is the method invoked in order to propagate a request to quit from a lobby
+     */
     public void disconnect() {
         lobby.disconnectPlayer(this);
     }
 
+    /**
+     * getName is a getter for the name of the player
+     * @return the name of the corresponding player
+     */
     public String getName() {
         return name;
     }

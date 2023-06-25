@@ -29,6 +29,9 @@ public abstract class CommonGoal {
      * ArrayList players matches the index of points in this array
      */
     protected int[] points; // stack of points, it varies with the number of players in the game
+    /**
+     * type is a string that uniquely identifies the category of common goal
+     */
     protected String type;
 
     /**
@@ -55,6 +58,10 @@ public abstract class CommonGoal {
 
     }
 
+    /**
+     * getType is a getter for the type of the common goal
+     * @return a string that identifies the type of this common goal
+     */
     public String getType () {
         return type;
     }

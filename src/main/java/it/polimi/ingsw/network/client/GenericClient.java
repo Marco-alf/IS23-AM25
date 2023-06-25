@@ -30,6 +30,10 @@ public abstract class GenericClient {
         return isInLobby;
     }
 
+    /**
+     * setter for isInLobby attribute
+     * @param status is the new status of the client
+     */
     public void setInLobbyStatus(boolean status) {
         isInLobby = status;
     }

@@ -61,6 +61,10 @@ public class Player {
         return name;
     }
 
+    /**
+     * getPersonalGoal is a getter for the personal goal of the player
+     * @return personalGoal attribute
+     */
     public PersonalGoal getPersonalGoal() {
         return personalGoal;
     }

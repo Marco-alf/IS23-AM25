@@ -17,6 +17,9 @@ public class Shelf {
      * attributes xBound and yBound represents dimension of the shelf
      */
     private static final int xBound = 5, yBound = 6;
+    /**
+     * isFull is a boolean that indicates whether the shelf is considered full or not
+     */
     private boolean isFull;
 
     /**
@@ -93,6 +96,11 @@ public class Shelf {
         return adj;
     }
 
+    /**
+     * mapPoints is a function used to link the dimension of a group of adjacent tiles to the respective points
+     * @param dim is the size of the group of similar tiles
+     * @return the points associated to groups of that size
+     */
     private int mapPoints(int dim){
         if(dim<3) return 0;
         if(dim==3) return 2;
@@ -143,6 +151,10 @@ public class Shelf {
         return shelfCopy;
     }
 
+    /**
+     * setFull is a method used to check whether a shelf is completely full.
+     * If the shelf is full its state is updated by setting isFull to true
+     */
     public void setFull() {
         for (int i = 0; i < yBound; i++) {
             for (int j = 0; j < xBound; j++) {
@@ -152,6 +164,10 @@ public class Shelf {
         isFull = true;
     }
 
+    /**
+     * isFullStatus is a getter isFull. Is used to check whether the shelf is full
+     * @return true iff the board is considered full
+     */
     public boolean isFullStatus() {
         return isFull;
     }

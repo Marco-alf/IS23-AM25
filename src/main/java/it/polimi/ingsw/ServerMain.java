@@ -2,7 +2,14 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.network.server.Server;
 
+/**
+ * ServerMain is a class used to launch the server
+ */
 public class ServerMain {
+    /**
+     * this main initialize a Thread where the Server will run.
+     * @param args is ignored
+     */
     public static void main(String[] args) {
         int socketPort = 8088;
         int rmiPort = 1099;

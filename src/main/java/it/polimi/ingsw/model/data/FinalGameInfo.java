@@ -5,7 +5,9 @@ import it.polimi.ingsw.model.Game;
 
 import java.util.*;
 
-
+/**
+ * FinalGameInfo is a class that represents the information exchanged via network that are relative to the final state if a game
+ */
 public class FinalGameInfo extends GameInfo{
     /**
      * finalPoints is an HashMap where the keys are the name of the players and the value is a list with the points

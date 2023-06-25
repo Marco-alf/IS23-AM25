@@ -14,5 +14,11 @@ public interface RMIClientInterface extends Remote {
      * @throws RemoteException is thrown whenever the remote is unable to respond to the request
      */
     void receiveMsgFromServer (Serializable msg) throws RemoteException;
+
+    /**
+     * checkAliveness is method used to check if the client is reachable
+     * @return true if the client has been reached
+     * @throws RemoteException if there is no connection
+     */
     boolean checkAliveness () throws RemoteException;
  }

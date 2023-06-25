@@ -6,7 +6,15 @@ import it.polimi.ingsw.view.TextualUI;
 
 import java.util.Scanner;
 
+/**
+ * App is the main class of the project which purpose is to act as launcher for all the components of the game.
+ */
 public class App {
+    /**
+     * main method invoked when the jar is run. Its purpose is to let the user select the game component to run.
+     * @param args the expected argument of App is a string that represents the choice of the program to run.
+     *             From App is possible to run the Server, the GraphicalUI or the TextualUI.
+     */
     public static void main(String[] args) {
         String err = "\u001B[1m\u001B[38;5;" + 1 + "m ERROR: ";
         String rst = "\u001B[0m";

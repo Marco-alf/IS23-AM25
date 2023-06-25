@@ -18,8 +18,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** rmi based implementation of the client */
 public class RMIClient extends GenericClient implements RMIClientInterface {
+    /**
+     * MIN_PORT_NUMBER is the minimum number acceptable for a network port
+     */
     private static int MIN_PORT_NUMBER = 49152;
+    /**
+     * MAX_PORT_NUMBER is the maximum number acceptable for a network port
+     */
     private static int MAX_PORT_NUMBER = 65535;
+    /**
+     * clientport is the number of the port used for the network connection
+     */
     private static int clientport = 65535;
     /** server reference object, has methods to register and to receive messages */
     private RMIServerInterface rmiServerInterface;
@@ -30,9 +39,12 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
     /** view to be bound*/
     private final ViewInterface view;
     /** ping frequency */
-    private final int PING_TIME = 5000;
+    private final int PING_TIME = 1000;
     /** boolean represents the status of the connection (true means connected) */
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
+    /**
+     * pingThread is a runnable used to continuously check the connection with the server
+     */
     private final Thread pingThread;
     /** constructor sets the parameters and launches the ping thread
      * @param ip server ip address
@@ -121,13 +133,19 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
         }*/
     }
 
-    public void checkServerAliveness () {
+    /**
+     * checkServerAliveness is a method used to check if the connection with the server is active
+     */
+    public void checkServerAliveness () {.
+        int count = 0;
         while (clientConnected.get()) {
             try {
                 rmiServerInterface.checkAliveness();
+                count = 0;
                 Thread.sleep(PING_TIME);
             } catch (RemoteException e) {
-                disconnect(true);
+                count++;
+                if(count > 4) disconnect(true);
             } catch (InterruptedException ignored) {
 
             }
@@ -217,6 +235,11 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
 
     }
 
+    /**
+     * checkAliveness is the method invoked by the server in order to check the reachability of the client
+     * @return true
+     * @throws RemoteException when unreachable
+     */
     @Override
     public boolean checkAliveness() throws RemoteException {
         return true;

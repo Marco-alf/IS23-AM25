@@ -77,6 +77,11 @@ public class Server implements Runnable{
         rmiServer.sendMsgToAllRMI(arg, lobby);
     }
 
+    /**
+     * setInGameStatus is used for setting the status of all the player of a lobby to IN_GAME.
+     * This method should be invoked whenever a new game starts
+     * @param lobby is the lobby where the game started
+     */
     public void setInGameStatus (String lobby) {
         socketServer.setInGameStatus(lobby);
         rmiServer.setInGameStatus(lobby);

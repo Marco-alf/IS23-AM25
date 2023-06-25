@@ -19,7 +19,9 @@ public interface RMIServerInterface extends Remote {
      * @param rmiClient is a remote object representing the client to be added to the list of all connected clients
      */
     void register (RMIClientInterface rmiClient) throws RemoteException;
-
+    /**
+     * checkServerAliveness is a method used to check if the connection with the server is active
+     */
     boolean checkAliveness () throws RemoteException;
 
 }
