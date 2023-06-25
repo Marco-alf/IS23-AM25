@@ -935,7 +935,7 @@ public class TextualUI implements ViewInterface {
             }
             for (int j = 38; j < length; j++) shelf[h] += " ";
             h++;
-            shelf[h] = "       +";
+            shelf[h] = rst + yellow + "       +";
             for (int j = 0; j < 5; j++) {
                 shelf[h] += "-----+";
             }

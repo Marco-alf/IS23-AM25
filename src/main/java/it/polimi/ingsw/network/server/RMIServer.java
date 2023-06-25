@@ -37,7 +37,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
     /**
      * PING_TIME is the period of the checking for disconnected player
      */
-    private final int PING_TIME = 5000;
+    private final int PING_TIME = 1000;
     /**
      * rmiClients is the list of clients served by the RMIServer
      */
@@ -102,30 +102,65 @@ public class RMIServer implements Runnable, RMIServerInterface{
         }
     }
 
-
+    /**
+     * For each client a thread is created that checks if the client is reachable.
+     * If the client is unreachable for 5 consecutive iterations it is disconnected from the server
+     */
     public void checkClientAliveness () {
+        List<RMIClientInterface> checkedClients = new ArrayList<>();
         while (true) {
-            for (RMIClientInterface rmiClient : rmiClients) {
-                new Thread(()->{
-                    try {
-                        rmiClient.checkAliveness();
-                    }
-                    catch (RemoteException e) {
-                        if(!rmiClientsToRemove.contains(rmiClient))rmiClientsToRemove.add(rmiClient);
-                    }
-                }).start();
-            }
-            for (RMIClientInterface rmiClientInterface : rmiClientsToRemove) {
+            synchronized (this) {
+                for (RMIClientInterface rmiClient : rmiClients) {
+                    if (!checkedClients.contains(rmiClient)) {
+                        checkedClients.add(rmiClient);
+                        new Thread(() -> {
+                            boolean online = true;
+                            int count = 0;
+                            while (online) {
+                                synchronized (rmiClientsStates) {
+                                    synchronized (rmiClientsLobby) {
+                                        if (ClientState.IN_GAME.equals(rmiClientsStates.get(rmiClient)) && !rmiClientsLobby.containsKey(rmiClient)) {
+                                            rmiClientsToRemove.add(rmiClient);
+                                            online = false;
+                                        }
+                                    }
+                                }
+                                if(online) {
+                                    try {
+                                        if (rmiClient.checkAliveness()) {
+                                            count = 0;
+                                        }
+                                    } catch (RemoteException e) {
+                                        count++;
+                                        if (count > 4) {
+                                            synchronized (rmiClientsToRemove) {
+                                                rmiClientsToRemove.add(rmiClient);
+                                                online = false;
+                                            }
+                                        }
+                                    }
+                                    try {
+                                        Thread.sleep(PING_TIME);
+                                    } catch (InterruptedException ignored) {
 
-                manageDisconnection(rmiClientInterface);
+                                    }
+                                }
+                            }
+                        }).start();
+                    }
+                }
             }
-            rmiClientsToRemove.clear();
+            synchronized (rmiClientsToRemove){
+                for (RMIClientInterface rmiClientInterface : rmiClientsToRemove) {
+                    manageDisconnection(rmiClientInterface);
+                    checkedClients.remove(rmiClientInterface);
+                }
+                rmiClientsToRemove.clear();
+            }
             try {
                 Thread.sleep(PING_TIME);
             } catch (InterruptedException ignored) {
-
             }
-
         }
     }
 
@@ -152,12 +187,11 @@ public class RMIServer implements Runnable, RMIServerInterface{
             try {
                 if (rmiClientsLobby.get(rmiClient) == lobby) {
                     rmiClient.receiveMsgFromServer(msg);
-
+                    System.out.println("Sent " + ((ServerMessage)msg).getType() + " to RMI client");
                 }
             } catch (RemoteException e) {
                 manageDisconnection(rmiClient);
             }
-            System.out.println("Sent " + ((ServerMessage)msg).getType() + " to RMI client");
         }
     }
 
@@ -357,13 +391,13 @@ public class RMIServer implements Runnable, RMIServerInterface{
         rmiClients.remove(rmiClient);
         rmiClientsStates.remove(rmiClient);
         rmiClientsLobby.remove(rmiClient);
+        rmiClientsName.remove(rmiClient);
         try {
             if (lobby != null) {
                 String curPlayer = lobby.getCurrentPlayer();
                 lobby.disconnectPlayer(lobby.getPlayer(name));
 
                 rmiClientsLobby.remove(rmiClient);
-                rmiClientsName.remove(rmiClient);
 
                 UserDisconnectedMessage serverMessage = new UserDisconnectedMessage();
                 serverMessage.setUser(name);
@@ -373,27 +407,14 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 Thread t = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        RMIClientInterface lastClient = null;
                         if (lobby.checkNumberOfPlayers() && curPlayer!=null) {
                             InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
                             server.sendMsgToAll(insufficientPlayersMessage, lobby);
                             if (!lobby.waitForPlayers()) {
-
-                                for (Map.Entry<RMIClientInterface, Lobby> entry : rmiClientsLobby.entrySet()) {
-                                    if (lobby.equals(entry.getValue())) {
-                                        lastClient = entry.getKey();
-                                    }
-                                }
-
                                 server.gameBroker.closeLobby(lobby);
                                 LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
                                 server.sendMsgToAll(lobbyClosedMessage, lobby);
                                 rmiClientsLobby.values().remove(lobby);
-
-                                rmiClients.remove(lastClient);
-                                rmiClientsStates.remove(lastClient);
-                                rmiClientsLobby.remove(lastClient);
-                                rmiClientsName.remove(lastClient);
                             }
                         } else if (name.equals(curPlayer)) {
                             UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();
@@ -408,9 +429,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
 
         } catch (PlayerNotInLobbyException ignored) {
 
-        }// catch (Exception e ){
-          //  System.out.println("FATAL: BAD DISCONNECTION MANAGEMENT, EXCEPTION NOT HANDLED");
-        //}
+        }
 
     }
 
