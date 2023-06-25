@@ -76,19 +76,7 @@ public class ClientHandler implements Runnable{
         genericServer = server.server;
         this.socket = socket;
         pingThread = new Thread(this::pingClient);
-        /*
-        pingThread = new Thread(()->{
-            while (activeClient){
-                try {
-                    Thread.sleep(PING_TIME);
-                    sendMsgToClient(new Ping());
-                } catch (InterruptedException e) {
-                    break;
-                }
-            }
-        });
 
-         */
     }
 
     /**
@@ -331,7 +319,7 @@ public class ClientHandler implements Runnable{
                                     server.gameBroker.closeLobby(lobby);
                                     LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
                                     genericServer.sendMsgToAll(lobbyClosedMessage, lobby);
-
+                                    server.removeLobby(lobby);
                                 }
                             } else if (clientNickname.equals(curPlayer)) {
                                 UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();

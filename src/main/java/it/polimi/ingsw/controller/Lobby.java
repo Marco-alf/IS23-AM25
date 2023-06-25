@@ -204,9 +204,9 @@ public class Lobby {
      * @return true if the number of player still in game is at least 2, false if there are no player in game
      */
     public boolean waitForPlayers () {
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 20; i++) {
             try  {
-                TimeUnit.MILLISECONDS.sleep(100);
+                TimeUnit.MILLISECONDS.sleep(1000);
                 if (onlinePlayers.size() - disconnectedPlayers.size() > 1) return true;
                 if (onlinePlayers.size() - disconnectedPlayers.size() == 0) return false;
             } catch (InterruptedException ignored) {
@@ -263,15 +263,21 @@ public class Lobby {
     }
 
     /**
-     * @return the next player in the game
+     * @return the next player in the game, null if there is no player in the game
      */
     public VirtualPlayer nextPlayer() {
         int index = (onlinePlayers.indexOf(currentPlayer) + 1) % onlinePlayers.size();
         VirtualPlayer player = onlinePlayers.get(index);
-        while (disconnectedPlayers.contains(player.getName())) {
+        while (disconnectedPlayers.contains(player.getName()) && onlinePlayers.size()>disconnectedPlayers.size()) {
             index = (onlinePlayers.indexOf(player) + 1) % onlinePlayers.size();
             player = onlinePlayers.get(index);
+            try {
+                Thread.sleep(10);
+            }catch (InterruptedException ignored){
+
+            }
         }
+        if(onlinePlayers.size()<=disconnectedPlayers.size()) return null;
         return onlinePlayers.get(index);
     }
 

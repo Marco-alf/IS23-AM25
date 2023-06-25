@@ -113,4 +113,15 @@ public class SocketServer implements Runnable{
     public synchronized void removeClient (ClientHandler clientHandler) {
         clientHandlers.remove(clientHandler);
     }
+
+    /**
+     *
+     */
+    public synchronized void removeLobby (Lobby lobby){
+        for(ClientHandler h : clientHandlers){
+            if(h.getLobby().equals(lobby)){
+                removeClient(h);
+            }
+        }
+    }
 }

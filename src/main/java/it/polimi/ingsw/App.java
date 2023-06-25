@@ -11,7 +11,7 @@ public class App {
         String err = "\u001B[1m\u001B[38;5;" + 1 + "m ERROR: ";
         String rst = "\u001B[0m";
         if(args == null || args.length < 1){
-            System.out.println(err + " argument is needed. Options are \"Server\", \"Gui\", \"Tui\"" + rst);
+            System.out.println(err + " argument is needed. Options are \"Server\", \"Gui\", \"Tui\" and relative abbreviations" + rst);
             System.out.println(" Use \"help\" argument to get more information about the application");
 
             System.exit(1);

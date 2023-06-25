@@ -198,7 +198,7 @@ public class TextualUI implements ViewInterface {
             client = new RMIClient(serverIP, rmiPort, this);
             new Thread(()->client.init()).start();
         } else {
-            System.out.println(out + "Insert port exposed by the server. If not sure press" + bold + "ENTER" + rst + "to use the default port 8088");
+            System.out.println(out + "Insert port exposed by the server. If not sure press " + bold + "ENTER" + rst + " to use the default port 8088");
             System.out.print(in);
             inputCommand = scanner.nextLine();
             if(!inputCommand.equals("")) tcpPort = Integer.parseInt(inputCommand);

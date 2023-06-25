@@ -30,7 +30,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
     /** view to be bound*/
     private final ViewInterface view;
     /** ping frequency */
-    private final int PING_TIME = 2000;
+    private final int PING_TIME = 5000;
     /** boolean represents the status of the connection (true means connected) */
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
     private final Thread pingThread;
@@ -138,7 +138,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
      * commands to the bound view */
     @Override
     public void receiveMsgFromServer(Serializable arg) {
-        System.out.println("Received message from Server: "+ ((Message)arg).getType());
+        //System.out.println("Received message from Server: "+ ((Message)arg).getType());
         if (arg instanceof ServerMessage msg) {
             if (msg.getType().equals("CreatedLobbyMessage")) {
                 isInLobby = true;
