@@ -136,7 +136,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
     /**
      * checkServerAliveness is a method used to check if the connection with the server is active
      */
-    public void checkServerAliveness () {.
+    public void checkServerAliveness () {
         int count = 0;
         while (clientConnected.get()) {
             try {

@@ -31,13 +31,6 @@ public class VirtualPlayer {
     }
 
     /**
-     * disconnect is the method invoked in order to propagate a request to quit from a lobby
-     */
-    public void disconnect() {
-        lobby.disconnectPlayer(this);
-    }
-
-    /**
      * getName is a getter for the name of the player
      * @return the name of the corresponding player
      */
