@@ -348,9 +348,10 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
+        if(!isDisconnecting.get()) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
                 /*mainStage.setTitle("ERRORE");
                 TilePane r = new TilePane();
                 r.setAlignment(Pos.CENTER);
@@ -359,14 +360,14 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
                 r.getChildren().add(t);
                 mainStage.setScene(new Scene(r));
                 mainStage.show();*/
-                if(!isDisconnecting.get()) {
+
                     Alert a = new Alert(Alert.AlertType.ERROR);
                     a.setContentText("CONNECTION ERROR!");
                     a.showAndWait();
-                }
-            }
-        });
 
+                }
+            });
+        }
     }
 
     @Override
