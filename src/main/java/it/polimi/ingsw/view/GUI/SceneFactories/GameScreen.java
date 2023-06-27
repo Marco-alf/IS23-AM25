@@ -3,11 +3,13 @@ package it.polimi.ingsw.view.GUI.SceneFactories;
 import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
+import it.polimi.ingsw.network.client.SocketClient;
 import it.polimi.ingsw.network.messages.clientMessages.QuitMessage;
 import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
 import it.polimi.ingsw.network.messages.serverMessages.GameUpdatedMessage;
 import it.polimi.ingsw.network.messages.serverMessages.PrivateChatUpdateMessage;
 import it.polimi.ingsw.network.messages.serverMessages.UpdatedPlayerMessage;
+import it.polimi.ingsw.view.GUI.GraphicalUI;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.fxml.FXMLLoader;
@@ -28,14 +30,12 @@ import java.util.Objects;
 
 public class GameScreen extends SceneHandler implements SceneFactory{
 
-    GenericClient client;
     ImageView board;
     GameScreenController controller;
 
     String selfName;
-    public GameScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client, String selfName) {
+    public GameScreen(SceneState state, Rectangle2D screen, ViewInterface view, String selfName) {
         super(state, screen, view);
-        this.client = client;
         this.selfName = selfName;
 
         board = new ImageView(new Image("17_MyShelfie_BGA/boards/livingroom_scaled.png"));
@@ -47,7 +47,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
             loader.setController(controller);
             r = loader.load();
 
-            controller.initActions(client, selfName, this);
+            controller.initActions(state, selfName, this);
 
             Scale sc = new Scale();
             double xscaling = 1;
@@ -82,11 +82,11 @@ public class GameScreen extends SceneHandler implements SceneFactory{
 
     @Override
     public SceneFactory next() {
-        return new FinalScreen(state, screen, view, client);
+        return new FinalScreen(state, screen, view);
     }
 
     private void quit(){
-        state.forceUpdate(new MenuScreen(state, screen, view, client));
+        state.forceUpdate(new MenuScreen(state, screen, view));
     }
 
     @Override
@@ -116,8 +116,15 @@ public class GameScreen extends SceneHandler implements SceneFactory{
         controller.deactivate(user);
     }
 
-    public void disconnect() {
-        controller.disconnect();
+    public void disconnect(boolean fromserver) {
+
+            state.setIsDisconnecting(true);
+
+        controller.disconnect(fromserver);
+        state.setClient( new SocketClient("localhost", 8088, view));
+        System.gc();
+
+
         state.forceUpdate(new PlayScreen(state, screen, view));
     }
 }

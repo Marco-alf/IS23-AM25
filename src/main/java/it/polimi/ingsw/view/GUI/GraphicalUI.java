@@ -1,22 +1,16 @@
 package it.polimi.ingsw.view.GUI;
 
-import it.polimi.ingsw.model.data.InitialGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
-import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 import it.polimi.ingsw.view.GUI.SceneFactories.*;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -26,12 +20,28 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GraphicalUI extends Application implements SceneState, ViewInterface {
 
     SceneFactory factory;
     Stage mainStage;
     Rectangle2D screen;
+
+
+
+    private GenericClient oneClient = null;
+
+
+    @Override
+    public GenericClient getClient(){
+        return oneClient;
+    };
+    @Override
+    public void setClient(GenericClient client){
+        oneClient = client;
+    };
+
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -71,17 +81,24 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
     @Override
     public void update() {
-        factory = factory.next();
+        SceneFactory swap = factory.next();
+        factory = null;
+        factory = swap;
         mainStage.setScene(factory.getScene());
         mainStage.show();
     }
 
     @Override
     public void forceUpdate(SceneFactory factory) {
+        this.factory = null;
         this.factory = factory;
         mainStage.setScene(factory.getScene());
         mainStage.show();
     }
+
+
+
+
 
     @Override
     public void receiveCreatedLobbyMsg(CreatedLobbyMessage msg) {
@@ -283,7 +300,7 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
                     Alert a = new Alert(Alert.AlertType.ERROR);
                     a.setContentText(msg.getType()+" lobby was closed.");
                     a.showAndWait();
-                    game.disconnect();
+                    game.disconnect(true);
                 }
             }
         });
@@ -314,19 +331,39 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
         });
     }
 
+
+
+
+
+    @Override
+    public boolean getIsDisconnecting() {
+        return isDisconnecting.get();
+    }
+
+    @Override
+    public void setIsDisconnecting(boolean b) {
+        isDisconnecting.set(b);
+    }
+
+
     @Override
     public void receiveConnectionErrorMsg(ConnectionErrorMessage msg) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                mainStage.setTitle("ERRORE");
+                /*mainStage.setTitle("ERRORE");
                 TilePane r = new TilePane();
                 r.setAlignment(Pos.CENTER);
                 Text t = new Text("ERRORE DI CONNESSIONE: SERVER IRRAGGIUNGIBILE");
                 t.setFont(Font.font("Arial", FontWeight.NORMAL, 40));
                 r.getChildren().add(t);
                 mainStage.setScene(new Scene(r));
-                mainStage.show();
+                mainStage.show();*/
+                if(!isDisconnecting.get()) {
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setContentText("CONNECTION ERROR!");
+                    a.showAndWait();
+                }
             }
         });
 

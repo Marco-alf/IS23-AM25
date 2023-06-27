@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
 import it.polimi.ingsw.model.data.GameInfo;
 import it.polimi.ingsw.model.data.InitialGameInfo;
-import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.messages.clientMessages.ChatMessage;
 import it.polimi.ingsw.network.messages.clientMessages.MoveMessage;
@@ -14,6 +13,8 @@ import it.polimi.ingsw.network.messages.clientMessages.QuitMessage;
 import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
 import it.polimi.ingsw.network.messages.serverMessages.GameUpdatedMessage;
 import it.polimi.ingsw.network.messages.serverMessages.PrivateChatUpdateMessage;
+import it.polimi.ingsw.view.GUI.GraphicalUI;
+import it.polimi.ingsw.view.GUI.SceneState;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -87,6 +88,17 @@ public class GameScreenController {
             return texture;
         }
     }
+
+
+
+
+
+
+
+
+
+
+    SceneState state = null;
     GameScreen gameScreen;
 
     private final AtomicBoolean myTurn = new AtomicBoolean(false);
@@ -94,7 +106,6 @@ public class GameScreenController {
     @FXML
     ImageView armchair;
 
-    GenericClient client;
     String selfName;
 
     @FXML
@@ -310,9 +321,9 @@ public class GameScreenController {
         return result;
     }
 
-    public void initActions(GenericClient client, String selfName, GameScreen gameScreen){
+    public void initActions(SceneState state, String selfName, GameScreen gameScreen){
         this.gameScreen = gameScreen;
-        this.client = client;
+        this.state = state;
         this.selfName = selfName;
 
         mainpanel.setVisible(true);
@@ -375,7 +386,7 @@ public class GameScreenController {
                 case W -> toggleBoard(1);
                 case A -> {if(s_buttons[2].isVisible())toggleBoard(2);}
                 case D -> {if(s_buttons[3].isVisible())toggleBoard(3);}
-                case P -> gameScreen.disconnect();
+                case P -> gameScreen.disconnect(false);
             }
         });
 
@@ -453,10 +464,10 @@ public class GameScreenController {
                 clientMessage.setTiles(selected);
                 clientMessage.setColumn(i);
 
-                if (client instanceof RMIClient) {
-                    clientMessage.setRmiClient((RMIClient) client);
+                if (state.getClient() instanceof RMIClient) {
+                    clientMessage.setRmiClient((RMIClient) state.getClient());
                 }
-                client.sendMsgToServer(clientMessage);
+                state.getClient().sendMsgToServer(clientMessage);
             }
         }
     }
@@ -573,10 +584,10 @@ public class GameScreenController {
             clientMessage.setSender(selfName);
             clientMessage.setContent(content);
 
-            if (client instanceof RMIClient) {
-                clientMessage.setRmiClient((RMIClient) client);
+            if (state.getClient() instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) state.getClient());
             }
-            client.sendMsgToServer(clientMessage);
+            state.getClient().sendMsgToServer(clientMessage);
 
             chatField.clear();
         }
@@ -619,19 +630,21 @@ public class GameScreenController {
         recolorPlayers(onlinePlayers, onlineNow, otherPlayers);
     }
 
-    public void disconnect() {
-        QuitMessage clientMessage = new QuitMessage();
-        if (client instanceof RMIClient) {
-            clientMessage.setRmiClient((RMIClient) client);
-        }
-        client.sendMsgToServer(clientMessage);
+    public void disconnect(boolean fromserver) {
+        if(!fromserver) {
+            QuitMessage clientMessage = new QuitMessage();
+            if (state.getClient() instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) state.getClient());
+            }
+            state.getClient().sendMsgToServer(clientMessage);
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-
-        client.disconnect(false);
+        state.getClient().disconnect(false);
+        state.setClient(null);
     }
 }

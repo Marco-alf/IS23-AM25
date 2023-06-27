@@ -3,6 +3,7 @@ package it.polimi.ingsw.view.GUI.SceneFactories;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.client.SocketClient;
+import it.polimi.ingsw.view.GUI.GraphicalUI;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
@@ -30,18 +31,19 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
             null,
             BackgroundPosition.CENTER,
             new BackgroundSize(100,100, true, true, true, false)));
-    GenericClient client;
     static int porta = 1099;
 
     public PlayScreen(SceneState state, Rectangle2D screen, ViewInterface view){
         super(state, screen, view);
         scene = new Scene(playButton(), screen.getWidth(), screen.getHeight());
+
+        state.setIsDisconnecting(false);
     }
 
     @Override
     public SceneFactory next() {
-        if (client != null){
-            return new MenuScreen(state, screen, view, client);
+        if (state.getClient() != null){
+            return new MenuScreen(state, screen, view);
             //System.exit(69);
         }
 
@@ -123,14 +125,14 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
     }
 
     public void initiateTCP(){
-        client = new SocketClient("localhost", 8088, view);
-        client.init();
+        state.setClient(new SocketClient("localhost", 8088, view));
+        state.getClient().init();
         state.update();
     }
 
     public void initiateRMI(){
-        client = new RMIClient("localhost", porta , view);
-        client.init();
+        state.setClient(new SocketClient("localhost", 8088, view));
+        state.getClient().init();
         state.update();
     }
 

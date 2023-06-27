@@ -3,6 +3,7 @@ package it.polimi.ingsw.view.GUI.SceneFactories;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.messages.clientMessages.QuitMessage;
+import it.polimi.ingsw.view.GUI.GraphicalUI;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
@@ -18,13 +19,11 @@ import javafx.scene.text.Text;
 
 public class LobbyScreen extends SceneHandler implements SceneFactory{
 
-    GenericClient client;
     String selfName;
 
-    LobbyScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client, String selfName) {
+    LobbyScreen(SceneState state, Rectangle2D screen, ViewInterface view, String selfName) {
         super(state, screen, view);
         scene = new Scene(waitingScreen());
-        this.client = client;
         this.selfName = selfName;
 
     }
@@ -37,11 +36,12 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
         Button cancel = new Button("Go back to menu");
         cancel.setOnAction(actionEvent -> {
             QuitMessage clientMessage = new QuitMessage();
-            if (client instanceof RMIClient) {
-                clientMessage.setRmiClient((RMIClient) client);
+            if (state.getClient() instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) state.getClient());
             }
-            client.sendMsgToServer(clientMessage);
-            client.disconnect(false);
+            state.getClient().sendMsgToServer(clientMessage);
+            state.getClient().disconnect(false);
+            state.setClient(null);
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
 
@@ -55,6 +55,6 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
 
     @Override
     public SceneFactory next() {
-        return new GameScreen(state, screen, view, client, selfName);
+        return new GameScreen(state, screen, view, selfName);
     }
 }

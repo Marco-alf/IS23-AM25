@@ -7,6 +7,7 @@ import it.polimi.ingsw.network.messages.clientMessages.JoinMessage;
 import it.polimi.ingsw.network.messages.clientMessages.QuitMessage;
 import it.polimi.ingsw.network.messages.clientMessages.RetrieveLobbiesMessage;
 import it.polimi.ingsw.network.messages.serverMessages.CreatedLobbyMessage;
+import it.polimi.ingsw.view.GUI.GraphicalUI;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
@@ -30,8 +31,6 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
 
     List<String> lobbies;
     String selected;
-    GenericClient client;
-
     ListView<String> lobbylist;
 
     String nicknameBuffer;
@@ -39,16 +38,15 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
 
     Object lock = new Object();
 
-    public MenuScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client){
+    public MenuScreen(SceneState state, Rectangle2D screen, ViewInterface view){
         super(state, screen, view);
-        this.client = client;
         lobbies = new ArrayList<>();
         lobbylist = new ListView<>();
         scene = new Scene(mainMenu());
     }
     @Override
     public SceneFactory next() {
-        return new LobbyScreen(state, screen, view, client, nicknameBuffer);
+        return new LobbyScreen(state, screen, view, nicknameBuffer);
     }
 
     private Parent mainMenu(){
@@ -78,12 +76,12 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         Button cancel = new Button("Cancel");
         cancel.setOnAction(actionEvent -> {
             QuitMessage clientMessage = new QuitMessage();
-            if (client instanceof RMIClient) {
-                clientMessage.setRmiClient((RMIClient) client);
+            if (state.getClient() instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) state.getClient());
             }
-            client.sendMsgToServer(clientMessage);
-            client.disconnect(false);
-            client = null;
+            state.getClient().sendMsgToServer(clientMessage);
+            state.getClient().disconnect(false);
+            state.setClient(null);
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
 
@@ -130,7 +128,7 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
 
         Button cancel = new Button("Cancel");
         cancel.setOnAction(actionEvent -> {
-            state.forceUpdate(new MenuScreen(state, screen, view, client));
+            state.forceUpdate(new MenuScreen(state, screen, view));
         });
         TilePane horizontal = new TilePane(Orientation.HORIZONTAL);
         horizontal.getChildren().addAll(submit, cancel);
@@ -168,7 +166,7 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
 
         Button cancel = new Button("Cancel");
         cancel.setOnAction(actionEvent -> {
-            state.forceUpdate(new MenuScreen(state, screen, view, client));
+            state.forceUpdate(new MenuScreen(state, screen, view));
         });
         TilePane horizontal = new TilePane(Orientation.HORIZONTAL);
         horizontal.setHgap(screen.getWidth()*0.005);
@@ -187,10 +185,10 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         synchronized (view) {
             //asks server to send list of lobbies
             RetrieveLobbiesMessage clientMessage = new RetrieveLobbiesMessage();
-            if (client instanceof RMIClient) {
-                clientMessage.setRmiClient((RMIClient) client);
+            if (state.getClient() instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) state.getClient());
             }
-            client.sendMsgToServer(clientMessage);
+            state.getClient().sendMsgToServer(clientMessage);
         }
     }
 
@@ -218,10 +216,10 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         clientMessage.setLobbyCreator(nickname);
         clientMessage.setPlayerNumber(size);
 
-        if (client instanceof RMIClient) {
-            clientMessage.setRmiClient((RMIClient) client);
+        if (state.getClient() instanceof RMIClient) {
+            clientMessage.setRmiClient((RMIClient) state.getClient());
         }
-        client.sendMsgToServer(clientMessage);
+        state.getClient().sendMsgToServer(clientMessage);
 
         //scene.setRoot(creategame()) se fallisce
     }
@@ -238,10 +236,10 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         clientMessage.setName(nickname);
         clientMessage.setLobbyName(lobbyname);
 
-        if (client instanceof RMIClient) {
-            clientMessage.setRmiClient((RMIClient) client);
+        if (state.getClient() instanceof RMIClient) {
+            clientMessage.setRmiClient((RMIClient) state.getClient());
         }
-        client.sendMsgToServer(clientMessage);
+        state.getClient().sendMsgToServer(clientMessage);
     }
 
 

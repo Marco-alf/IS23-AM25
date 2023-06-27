@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.data.FinalGameInfo;
 import it.polimi.ingsw.network.client.GenericClient;
 import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.messages.clientMessages.QuitMessage;
+import it.polimi.ingsw.view.GUI.GraphicalUI;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
@@ -26,11 +27,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class FinalScreen extends SceneHandler implements SceneFactory{
-    GenericClient client;
 
-    FinalScreen(SceneState state, Rectangle2D screen, ViewInterface view, GenericClient client) {
+    FinalScreen(SceneState state, Rectangle2D screen, ViewInterface view) {
         super(state, screen, view);
-        this.client = client;
         AnchorPane anchor = new AnchorPane();
         scene = new Scene(anchor);
     }
@@ -75,12 +74,12 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
         Button back = new Button("back to play screen");
         back.setOnMouseReleased(actionEvent -> {
             QuitMessage clientMessage = new QuitMessage();
-            if (client instanceof RMIClient) {
-                clientMessage.setRmiClient((RMIClient) client);
+            if (state.getClient() instanceof RMIClient) {
+                clientMessage.setRmiClient((RMIClient) state.getClient());
             }
-            client.sendMsgToServer(clientMessage);
+            state.getClient().sendMsgToServer(clientMessage);
 
-            client.disconnect(false);
+            state.getClient().disconnect(false);
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
         r.getChildren().add(back);
