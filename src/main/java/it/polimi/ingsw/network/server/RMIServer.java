@@ -9,6 +9,7 @@ import it.polimi.ingsw.network.client.RMIServerInterface;
 import it.polimi.ingsw.network.messages.clientMessages.*;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;

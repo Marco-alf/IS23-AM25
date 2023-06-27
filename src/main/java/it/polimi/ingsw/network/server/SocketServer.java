@@ -73,7 +73,7 @@ public class SocketServer implements Runnable{
         try {
             while (true){
                 Socket clientSocket = serverSocket.accept();
-                //clientSocket.setSoTimeout(60000);
+                clientSocket.setSoTimeout(10000);
                 ClientHandler clientConnection = new ClientHandler(this, clientSocket);
                 clientHandlers.add(clientConnection);
                 executor.submit(clientConnection);
@@ -114,14 +114,4 @@ public class SocketServer implements Runnable{
         clientHandlers.remove(clientHandler);
     }
 
-    /**
-     *
-     */
-    public synchronized void removeLobby (Lobby lobby){
-        for(ClientHandler h : clientHandlers){
-            if(h.getLobby().equals(lobby)){
-                removeClient(h);
-            }
-        }
-    }
 }

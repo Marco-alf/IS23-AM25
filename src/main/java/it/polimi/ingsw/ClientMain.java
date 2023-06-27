@@ -11,6 +11,11 @@ public class ClientMain {
      * @param args is ignored
      */
     public static void main(String[] args) {
+        try{
+            System.setProperty("sun.rmi.transport.tcp.responseTimeout", "1000");
+        } catch (Exception e){
+            System.out.println("RMI not set");
+        }
         TextualUI view = new TextualUI();
         view.start();
     }

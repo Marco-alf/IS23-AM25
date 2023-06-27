@@ -16,6 +16,11 @@ public class App {
      *             From App is possible to run the Server, the GraphicalUI or the TextualUI.
      */
     public static void main(String[] args) {
+        try{
+            System.setProperty("sun.rmi.transport.tcp.responseTimeout", "1000");
+        } catch (Exception e){
+            System.out.println("RMI not set");
+        }
         String err = "\u001B[1m\u001B[38;5;" + 1 + "m ERROR: ";
         String rst = "\u001B[0m";
         if(args == null || args.length < 1){
