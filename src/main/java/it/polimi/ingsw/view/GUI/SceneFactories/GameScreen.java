@@ -38,7 +38,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
         this.client = client;
         this.selfName = selfName;
 
-        board = new ImageView(new Image("17_MyShelfie_BGA/boards/livingroom.png"));
+        board = new ImageView(new Image("17_MyShelfie_BGA/boards/livingroom_scaled.png"));
 
         Parent r = null;
         try {

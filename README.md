@@ -29,6 +29,8 @@ I componenti del gruppo sono Alfano Marco, Boimah Divine, Boisseau Arianna, Ceru
 ## Test e Documentazione
 Percentuale di copertura per classi, metodi e linee di codice:
 
+![COVERAGE](images_for_readme/TestCoverage.png)
+
 # English Version
 
 [*My Shelfie*](https://www.craniocreations.it/en/product/my-shelfie) a board game designed by _Phil Walker-Harding_ and _Mattew Dunstan_ and published by _Cranio Creations_.
@@ -58,3 +60,5 @@ The contribuitors are Alfano Marco, Boimah Divine, Boisseau Arianna, Cerutti And
 
 ## Tests and Documentation
 Percentage coverages for classes, methods and lines of code:
+
+![COVERAGE](images_for_readme/TestCoverage.png)
