@@ -1,6 +1,5 @@
 package it.polimi.ingsw.network.client;
 
-import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.serverMessages.*;
 import it.polimi.ingsw.network.server.RMIClientInterface;
 import it.polimi.ingsw.view.ViewInterface;
@@ -142,11 +141,13 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
             try {
                 rmiServerInterface.checkAliveness();
                 count = 0;
-                Thread.sleep(PING_TIME);
             } catch (RemoteException e) {
                 count++;
                 if(count > 4) disconnect(true);
-            } catch (InterruptedException ignored) {
+            }
+            try{
+                Thread.sleep(1000);
+            }catch (InterruptedException ignored) {
 
             }
         }

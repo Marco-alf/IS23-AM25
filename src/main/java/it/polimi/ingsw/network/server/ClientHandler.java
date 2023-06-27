@@ -17,6 +17,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -26,7 +27,7 @@ public class ClientHandler implements Runnable{
     /**
      * PING_TIME is the time period of the checking for disconnected player
      */
-    private final int PING_TIME = 5000;
+    private final int PING_TIME = 1000;
     /**
      * reference to the SocketServer that instantiated the ClientHandler
      */
@@ -116,7 +117,7 @@ public class ClientHandler implements Runnable{
                 try{
                     Object object = inputStream.readObject();
                     synchronized (this){
-                        ClientMessage msg = (ClientMessage) object;
+                        Message msg = (Message) object;
                         if (msg.getType().equals("CreateLobbyMessage") && state == ClientState.CONNECTED) {
                             CreateLobbyMessage specificMessage = (CreateLobbyMessage) msg;
                             String lobbyName = specificMessage.getLobbyName();
@@ -235,7 +236,7 @@ public class ClientHandler implements Runnable{
                         }
                         System.out.println("Received " + msg.getType() + " from Socket client");
                     }
-                } catch (ClassNotFoundException e) {
+                } catch (ClassNotFoundException | SocketTimeoutException e) {
                     manageDisconnection();
                 } catch (ExistingLobbyException e) {
                     sendMsgToClient(new ExistingLobbyMessage());
@@ -276,13 +277,8 @@ public class ClientHandler implements Runnable{
     public void pingClient () {
         while (activeClient) {
             try {
-                InetAddress serverIp = InetAddress.getByName(socket.getInetAddress().getHostAddress());
-                if (!serverIp.isReachable(socket.getPort())) {
-                    manageDisconnection();
-                }
+                sendMsgToClient(new Ping());
                 Thread.sleep(PING_TIME);
-            } catch (IOException e) {
-                manageDisconnection();
             } catch (InterruptedException ignored) {
 
             }
@@ -319,7 +315,6 @@ public class ClientHandler implements Runnable{
                                     server.gameBroker.closeLobby(lobby);
                                     LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
                                     genericServer.sendMsgToAll(lobbyClosedMessage, lobby);
-                                    server.removeLobby(lobby);
                                 }
                             } else if (clientNickname.equals(curPlayer)) {
                                 UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();

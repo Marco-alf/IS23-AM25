@@ -323,7 +323,7 @@ public class Lobby {
             if (currentPlayer.getName().equals(player.getName())) {
                 try {
                     currentPlayer = nextPlayer();
-                    game.updateCurrentPlayer(currentPlayer.getName());
+                    if(currentPlayer!=null) game.updateCurrentPlayer(currentPlayer.getName());
                 } catch (InvalidPlayerNameException e) {
                     throw new RuntimeException(e);
                 }

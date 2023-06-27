@@ -34,7 +34,7 @@ public class SocketClient extends GenericClient{
     /** listener thread to manage input stream */
     private final Thread messageListener;
     /** ping frequency */
-    private final int PING_TIME = 5000;
+    private final int PING_TIME = 1000;
     /** ping thread */
     private final Thread pingThread;
 
@@ -82,15 +82,10 @@ public class SocketClient extends GenericClient{
     public void pingServer () {
         while (clientConnected.get()) {
             try {
-                InetAddress serverIp = InetAddress.getByName(ip);
-                if (!serverIp.isReachable(port)) {
-                    disconnect(true);
-                }
+                sendMsgToServer(new Ping());
                 Thread.sleep(PING_TIME);
-            } catch (IOException e) {
-                disconnect(true);
             } catch (InterruptedException ignored) {
-
+                disconnect(true);
             }
         }
 
@@ -106,6 +101,7 @@ public class SocketClient extends GenericClient{
             clientSocket = new Socket();
             clientSocket.connect(new InetSocketAddress(ip, port));
             outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            clientSocket.setSoTimeout(5000);
             inputStream = new ObjectInputStream(clientSocket.getInputStream());
             clientConnected.set(true);
             messageListener.start();

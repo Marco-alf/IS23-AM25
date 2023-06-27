@@ -1801,7 +1801,7 @@ public class TextualUI implements ViewInterface {
             } else if (client instanceof SocketClient) {
                 client = new SocketClient(serverIP, tcpPort, this);
             }
-            quitState = true;
+            //quitState = true;
             new Thread(() -> {
                 client.init();
                 restoreWindow();
@@ -1816,7 +1816,7 @@ public class TextualUI implements ViewInterface {
             } else if (client instanceof SocketClient) {
                 client = new SocketClient(serverIP, tcpPort, this);
             }
-            quitState = true;
+            //quitState = true;
             new Thread(() -> {
                 client.init();
                 waiting = false;
