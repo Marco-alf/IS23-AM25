@@ -286,7 +286,7 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
             public void run() {
                 Alert a = new Alert(Alert.AlertType.ERROR);
                 a.setContentText(msg.getType()+" insufficient players for the lobby");
-                a.showAndWait();
+                a.show();
             }
         });
     }
@@ -299,7 +299,7 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
                 if(factory instanceof GameScreen game){
                     Alert a = new Alert(Alert.AlertType.ERROR);
                     a.setContentText(msg.getType()+" lobby was closed.");
-                    a.showAndWait();
+                    a.show();
                     game.disconnect(true);
                 }
             }
@@ -363,8 +363,7 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
 
                     Alert a = new Alert(Alert.AlertType.ERROR);
                     a.setContentText("CONNECTION ERROR!");
-                    a.showAndWait();
-
+                    a.show();
                 }
             });
         }
