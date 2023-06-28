@@ -204,11 +204,11 @@ public class Lobby {
      * @return true if the number of player still in game is at least 2, false if there are no player in game
      */
     public boolean waitForPlayers () {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 200; i++) {
             try  {
-                TimeUnit.MILLISECONDS.sleep(1000);
+                TimeUnit.MILLISECONDS.sleep(100);
                 if (onlinePlayers.size() - disconnectedPlayers.size() > 1) return true;
-                if (onlinePlayers.size() - disconnectedPlayers.size() == 0) return false;
+                if (onlinePlayers.size() - disconnectedPlayers.size() <= 0) return false;
             } catch (InterruptedException ignored) {
 
             }

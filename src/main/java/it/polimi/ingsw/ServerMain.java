@@ -14,7 +14,7 @@ public class ServerMain {
         int socketPort = 8088;
         int rmiPort = 1099;
         try{
-            System.setProperty("sun.rmi.transport.tcp.responseTimeout", "1000");
+            System.setProperty("sun.rmi.transport.tcp.responseTimeout", "5000");
         } catch (Exception e){
             System.out.println("RMI not set");
         }
