@@ -222,8 +222,7 @@ public class GameScreenController {
             }
 
             for(String p : players){
-                System.out.println(p+ "    old:    "+commonscores1.get(p) + "     new:"+info.getCommonGoal1Points());
-                System.out.println(p+ "    old:    "+commonscores2.get(p) + "     new:"+info.getCommonGoal2Points());
+                
                 commonscores1.put(p, info.getCommonPoints(p, 0));
                 commonscores2.put(p, info.getCommonPoints(p, 1));
             }
@@ -285,10 +284,8 @@ public class GameScreenController {
                 }
             }
 
-            System.out.println(oldplayer+ "    old:    "+commonscores1.get(oldplayer) + "     new:"+info.getCommonGoal1Points());
-            System.out.println(oldplayer+ "    old:    "+commonscores2.get(oldplayer) + "     new:"+info.getCommonGoal2Points());
             if(info.getCommonGoal1Points()>0   &&    commonscores1.get(oldplayer) != info.getCommonGoal1Points() ){
-                System.out.println("      -------- inside goal1 ----------    ");
+
                 commonscores1.replace(oldplayer, info.getCommonGoal1Points());
                 if(oldplayer.equals(selfName)){
                     conqGoal1.setImage(goal1token.getTexture());
@@ -298,7 +295,7 @@ public class GameScreenController {
 
             }
             if(info.getCommonGoal2Points()>0   &&   commonscores2.get(oldplayer) != info.getCommonGoal2Points() ){
-                System.out.println("      -------- inside goal2 ----------    ");
+
                 commonscores2.replace(oldplayer, info.getCommonGoal2Points());
                 if(oldplayer.equals(selfName)){
                     conqGoal2.setImage(goal2token.getTexture());
