@@ -166,13 +166,33 @@ public class GameScreenController {
     @FXML
     ImageView personalGoalView;
 
-    private final Image cats = new Image("17_MyShelfie_BGA/item_tiles/Gatti1.1.png");
-    private final Image trophies = new Image("17_MyShelfie_BGA/item_tiles/Trofei1.1.png");
-    private final Image frames = new Image("17_MyShelfie_BGA/item_tiles/Cornici1.1.png");
-    private final Image games = new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png");
-    private final Image books = new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png");
-    private final Image plants = new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png");
+    private final Image [] cats = new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Gatti1.1.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Gatti1.2.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Gatti1.3.png")
+    };
 
+    private final Image [] trophies = new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Trofei1.1.png"),
+                                                    new Image("17_MyShelfie_BGA/item_tiles/Trofei1.2.png"),
+                                                    new Image("17_MyShelfie_BGA/item_tiles/Trofei1.3.png"),
+    };
+
+    private final Image [] frames = new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Cornici1.1.png"),
+                                                    new Image("17_MyShelfie_BGA/item_tiles/Cornici1.2.png"),
+                                                    new Image("17_MyShelfie_BGA/item_tiles/Cornici1.3.png")
+    };
+    private final Image[] games =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png")
+    };
+    private final Image[] books =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png")
+    };
+
+    private final Image[] plants =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png")
+    };
 
     private Button[] s_buttons = new Button[]{myshelfButton, player1Button, player2Button, player3Button };
     Background buttonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
@@ -563,12 +583,12 @@ public class GameScreenController {
             return null;
         }
         switch (type){
-            case TROPHIES -> result = trophies;
-            case GAMES -> result = games;
-            case BOOKS -> result = books;
-            case PLANTS -> result = plants;
-            case FRAMES -> result = frames;
-            case CATS -> result = cats;
+            case TROPHIES -> result = trophies[0];
+            case GAMES -> result = games[0];
+            case BOOKS -> result = books[0];
+            case PLANTS -> result = plants[0];
+            case FRAMES -> result = frames[0];
+            case CATS -> result = cats[0];
             default -> result = null;
         }
         return result;
