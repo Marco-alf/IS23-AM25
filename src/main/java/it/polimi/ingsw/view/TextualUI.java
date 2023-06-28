@@ -254,7 +254,7 @@ public class TextualUI implements ViewInterface {
                 case "egg" -> System.out.print(rst + yellow + "    0\n" + in);//(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
                 case "exit" -> {
                     if(client.getIsInLobbyStatus())quitLobby();
-                    System.out.print("rst");
+                    System.out.print(rst);
                     System.exit(0);
                     online = false;
                 }
