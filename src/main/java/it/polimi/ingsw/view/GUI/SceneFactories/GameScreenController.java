@@ -26,10 +26,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static javafx.scene.paint.Color.BURLYWOOD;
@@ -72,7 +69,7 @@ public class GameScreenController {
                     toReturn = FOUR;
                 }
                 case 4 -> {
-                    toReturn = TWO;
+                    toReturn = size >2 ? TWO : null;
                 }
                 default -> {
                     toReturn = null;
@@ -86,6 +83,13 @@ public class GameScreenController {
         }
         public Image getTexture(){
             return texture;
+        }
+
+        public static Image getTextureFromNumber(int search){
+            return Arrays.stream(values()).filter(x->x.num == search)
+                    .findFirst()
+                    .map(GoalNumbers::getTexture)
+                    .orElse(null);
         }
     }
 
@@ -121,8 +125,9 @@ public class GameScreenController {
     @FXML
     BorderPane player1, player2, player3;
     @FXML
-    VBox myshelf;
-
+    VBox myshelf, side;
+    @FXML
+    ImageView conqGoal1, conqGoal2;
     @FXML
     ImageView goal1, goal2, commongoal1stack, commongoal2stack;
 
@@ -173,6 +178,9 @@ public class GameScreenController {
     Background buttonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
     Background disconnButtonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
 
+    Map<String, Integer> commonscores1 = new HashMap<>();
+    Map<String, Integer> commonscores2 = new HashMap<>();
+
 
     public void updateInitialGameInfo(InitialGameInfo info) {
         synchronized (myTurn) {
@@ -212,6 +220,14 @@ public class GameScreenController {
                         shelf3[i][j].setImage(getTexture(info.getShelves().get(players.get(3))[j][i]));
                 }
             }
+
+            for(String p : players){
+                System.out.println(p+ "    old:    "+commonscores1.get(p) + "     new:"+info.getCommonGoal1Points());
+                System.out.println(p+ "    old:    "+commonscores2.get(p) + "     new:"+info.getCommonGoal2Points());
+                commonscores1.put(p, info.getCommonPoints(p, 0));
+                commonscores2.put(p, info.getCommonPoints(p, 1));
+            }
+
             int counter1=0, counter2=0;
             for(String p : players){
                 counter1 += info.getCommonPoints(p, 0)>0 ? 1 : 0;
@@ -230,10 +246,14 @@ public class GameScreenController {
             commongoal1stack.setImage(goal1token != null ? goal1token.getTexture() : null);
             commongoal2stack.setImage(goal2token != null ? goal2token.getTexture() : null);
 
+            conqGoal1.setImage( GoalNumbers.getTextureFromNumber(info.getCommonPoints(selfName,0)) );
+            conqGoal2.setImage( GoalNumbers.getTextureFromNumber(info.getCommonPoints(selfName,1)) );
+
 
             personalGoalView.setImage(new Image("17_MyShelfie_BGA/personal_goal_cards/Personal_Goals" + (info.getPersonalGoals().get(selfName).ordinal() + 1) + ".png"));
             goal1.setImage(new Image("17_MyShelfie_BGA/common_goal_cards/" + commongoaltranslator(info.getCommonGoal1()) + ".jpg"));
             goal2.setImage(new Image("17_MyShelfie_BGA/common_goal_cards/" + commongoaltranslator(info.getCommonGoal2()) + ".jpg"));
+
 
         }
         updateCurrentPlayer(info.getCurrentPlayer());
@@ -265,11 +285,24 @@ public class GameScreenController {
                 }
             }
 
-            if(info.getCommonGoal1Points()>0){
+            System.out.println(oldplayer+ "    old:    "+commonscores1.get(oldplayer) + "     new:"+info.getCommonGoal1Points());
+            System.out.println(oldplayer+ "    old:    "+commonscores2.get(oldplayer) + "     new:"+info.getCommonGoal2Points());
+            if(info.getCommonGoal1Points()>0   &&    commonscores1.get(oldplayer) != info.getCommonGoal1Points() ){
+                System.out.println("      -------- inside goal1 ----------    ");
+                commonscores1.replace(oldplayer, info.getCommonGoal1Points());
+                if(oldplayer.equals(selfName)){
+                    conqGoal1.setImage(goal1token.getTexture());
+                }
                 goal1token = GoalNumbers.next(goal1token, players.size());
                 commongoal1stack.setImage(goal1token != null ? goal1token.getTexture() : null);
+
             }
-            if(info.getCommonGoal2Points()>0){
+            if(info.getCommonGoal2Points()>0   &&   commonscores2.get(oldplayer) != info.getCommonGoal2Points() ){
+                System.out.println("      -------- inside goal2 ----------    ");
+                commonscores2.replace(oldplayer, info.getCommonGoal2Points());
+                if(oldplayer.equals(selfName)){
+                    conqGoal2.setImage(goal2token.getTexture());
+                }
                 goal2token = GoalNumbers.next(goal2token, players.size());
                 commongoal2stack.setImage(goal2token != null ? goal2token.getTexture() : null);
             }
@@ -333,7 +366,7 @@ public class GameScreenController {
         player3.setVisible(false);
         armchair.setVisible(true);
 
-        personalGoalView.setVisible(false);
+        side.setVisible(false);
         viewBoard.setGridLinesVisible(false);
 
         for(int i=0;  i<5; i++){
@@ -382,11 +415,13 @@ public class GameScreenController {
 
         mainpanel.setOnKeyPressed(keyEvent -> {
             switch (keyEvent.getCode()){
-                case ENTER -> toggleBoard(0);
+                case SPACE -> toggleBoard(0);
+                case S -> toggleBoard(0);
                 case W -> toggleBoard(1);
                 case A -> {if(s_buttons[2].isVisible())toggleBoard(2);}
                 case D -> {if(s_buttons[3].isVisible())toggleBoard(3);}
                 case P -> gameScreen.disconnect(false);
+                case J -> System.exit(0);
             }
         });
 
@@ -430,7 +465,6 @@ public class GameScreenController {
         chatField.setOnAction(actionEvent -> {
             sendChat();
         });
-        armchair.setImage(new Image("17_MyShelfie_BGA/misc/firstplayertoken.png"));
 
         chatList.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
@@ -544,7 +578,7 @@ public class GameScreenController {
     }
 
     public void toggleBoard(int i){
-        personalGoalView.setVisible(i==0 && !personalGoalView.isVisible());
+        side.setVisible(i==0 && !side.isVisible());
         myshelf.setVisible(i == 0 && !myshelf.isVisible());
         player1.setVisible(i == 1 && !player1.isVisible());
         player2.setVisible(i == 2 && !player2.isVisible());
@@ -607,21 +641,24 @@ public class GameScreenController {
     private void changeChairPos(){
         double x = 0;
         double y = 0;
+        double theta = 0;
         if(currentPlayer.equals(selfName)){
-            x=491;
-            y=850;
+            x=545;
+            y=891;
+            theta= -90;
         } else {
             for(int i=0; i<otherPlayers.size(); i++){
                 if(currentPlayer.equals(otherPlayers.get(i)))
                     switch(i+1){
-                        case 1 -> {x=491; y=35;}
-                        case 2 -> {x=50; y=160;}
-                        case 3 -> {x=1724; y=160;}
+                        case 1 -> {x=491; y=41; theta = 90;}
+                        case 2 -> {x=55; y=160; theta = 0;}
+                        case 3 -> {x=1735; y=160;theta = -180;}
                     }
             }
         }
         armchair.setLayoutX(x);
         armchair.setLayoutY(y);
+        armchair.setRotate(theta);
     }
 
     public void deactivate(String user) {

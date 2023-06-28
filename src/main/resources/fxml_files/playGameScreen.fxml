@@ -255,10 +255,23 @@
             </BorderPane>
          </children>
       </VBox>
-      <ImageView fx:id="personalGoalView" fitWidth="300.0" layoutX="1340.0" layoutY="370.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="armchair" fitHeight="148.0" fitWidth="364.0" layoutX="1724.0" layoutY="160.0" pickOnBounds="true" preserveRatio="true">
+      <VBox fx:id="side" layoutX="1402.0" layoutY="345.0" prefHeight="200.0" prefWidth="207.0">
+         <children>
+            <HBox alignment="TOP_CENTER" prefHeight="95.0" prefWidth="200.0">
+               <children>
+                  <ImageView fx:id="conqGoal1" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="conqGoal2" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
+            <ImageView fx:id="personalGoalView" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </VBox>
+      <ImageView fx:id="armchair" fitHeight="148.0" fitWidth="364.0" layoutX="1724.0" layoutY="160.0" pickOnBounds="true" preserveRatio="true" rotate="-178.1">
          <image>
-            <Image url="@../17_MyShelfie_BGA/misc/firstplayertoken.png" />
+            <Image url="@../17_MyShelfie_BGA/misc/wojak-pointing.gif" />
          </image>
       </ImageView>
     </children>
