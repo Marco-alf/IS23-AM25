@@ -417,6 +417,10 @@ public class GameScreenController {
                 player3shelf.add(shelf3[i][j], i, j);
             }
         }
+        realShelf.setGridLinesVisible(false);
+        player1shelf.setGridLinesVisible(false);
+        player2shelf.setGridLinesVisible(false);
+        player3shelf.setGridLinesVisible(false);
 
         for(int i=0;  i<9; i++){
             for(int j=0;  j<9; j++){
@@ -479,6 +483,7 @@ public class GameScreenController {
             arrowsView[i].setOnMouseClicked(mouseEvent -> {tryMove(finalI);});
             arrows.add(arrowsView[i], i, 0);
         }
+        arrows.setGridLinesVisible(false);
 
         s_buttons = new  Button[]{myshelfButton, player1Button, player2Button, player3Button };
         for (Button s_button : s_buttons) {
