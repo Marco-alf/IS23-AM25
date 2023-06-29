@@ -177,6 +177,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * @param lobby is the target Lobby
      */
     public synchronized void sendMsgToAllRMI (Serializable msg, Lobby lobby) {
+
         //RMIServer t = this;
         for (RMIClientInterface rmiClient : rmiClients) {
             /*new Thread(()->{
@@ -414,7 +415,34 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 if (lobby.isGameCreated()) serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
                 server.sendMsgToAll(serverMessage, lobby);
 
+                if (lobby.checkNumberOfPlayers()) {
+                    InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
+                    server.sendMsgToAll(insufficientPlayersMessage, lobby);
+
+                    Thread t = new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                                if (!lobby.waitForPlayers()) {
+                                    server.gameBroker.closeLobby(lobby);
+                                    LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
+                                    server.sendMsgToAll(lobbyClosedMessage, lobby);
+                                    rmiClientsLobby.values().remove(lobby);
+                                }
+
+                        }
+                    });
+                    t.start();
+
+                } else if (name.equals(curPlayer)) {
+                    UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();
+                    updateMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
+                    server.sendMsgToAll(updateMessage, lobby);
+                }
+
                 Thread t = new Thread(new Runnable() {
+
                     @Override
                     public void run() {
                         if (lobby.checkNumberOfPlayers()) {

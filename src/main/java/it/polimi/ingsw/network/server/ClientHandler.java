@@ -310,25 +310,30 @@ public class ClientHandler implements Runnable{
                     serverMessage.setUser(clientNickname);
                     if (lobby.isGameCreated()) serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
                     genericServer.sendMsgToAll(serverMessage, lobby);
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (lobby.checkNumberOfPlayers()) {
-                                InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
-                                genericServer.sendMsgToAll(insufficientPlayersMessage, lobby);
-                                if (!lobby.waitForPlayers()) {
-                                    server.gameBroker.closeLobby(lobby);
-                                    LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
-                                    genericServer.sendMsgToAll(lobbyClosedMessage, lobby);
-                                }
-                            } else if (clientNickname.equals(curPlayer)) {
-                                UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();
-                                updateMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
-                                genericServer.sendMsgToAll(updateMessage, lobby);
+
+                    if (lobby.checkNumberOfPlayers()) {
+                        InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
+                        genericServer.sendMsgToAll(insufficientPlayersMessage, lobby);
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                    if (!lobby.waitForPlayers()) {
+                                        server.gameBroker.closeLobby(lobby);
+                                        LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
+                                        genericServer.sendMsgToAll(lobbyClosedMessage, lobby);
+                                    }
                             }
-                        }
-                    });
-                    t.start();
+
+                        });
+                        t.start();
+
+                    } else if (clientNickname.equals(curPlayer)) {
+                        UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();
+                        updateMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
+                        genericServer.sendMsgToAll(updateMessage, lobby);
+                    }
+
 
                 }
 
