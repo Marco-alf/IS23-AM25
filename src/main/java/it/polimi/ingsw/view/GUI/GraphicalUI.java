@@ -24,11 +24,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GraphicalUI extends Application implements SceneState, ViewInterface {
 
-    SceneFactory factory;
-    Stage mainStage;
-    Rectangle2D screen;
-
-
+    private SceneFactory factory;
+    private Stage mainStage;
+    private Rectangle2D screen;
 
     private GenericClient oneClient = null;
 

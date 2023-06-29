@@ -102,8 +102,8 @@ public class GameScreenController {
 
 
 
-    SceneState state = null;
-    GameScreen gameScreen;
+    private SceneState state = null;
+    private GameScreen gameScreen;
 
     private final AtomicBoolean myTurn = new AtomicBoolean(false);
     private String currentPlayer;
@@ -133,9 +133,9 @@ public class GameScreenController {
 
     private GoalNumbers goal1token = GoalNumbers.EIGHT, goal2token = GoalNumbers.EIGHT;
 
-    List<String> players = new ArrayList<>();
-    List<String> otherPlayers = new ArrayList<>();
-    List<String> onlinePlayers = new ArrayList<>();
+    private List<String> players = new ArrayList<>();
+    private List<String> otherPlayers = new ArrayList<>();
+    private List<String> onlinePlayers = new ArrayList<>();
 
 
     private final ImageView [][] shelf0 = new ImageView[5][6];
@@ -157,7 +157,8 @@ public class GameScreenController {
 
     @FXML
     ListView<String>  chatList;
-    ArrayList<String> chat = new ArrayList<>();
+
+    private ArrayList<String> chat = new ArrayList<>();
     @FXML
     TextField chatField;
     @FXML
@@ -195,14 +196,14 @@ public class GameScreenController {
     };
 
     private Button[] s_buttons = new Button[]{myshelfButton, player1Button, player2Button, player3Button };
-    Background buttonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
-    Background disconnButtonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
+    private Background buttonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
+    private Background disconnButtonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
 
-    Map<String, Integer> commonscores1 = new HashMap<>();
-    Map<String, Integer> commonscores2 = new HashMap<>();
+    private Map<String, Integer> commonscores1 = new HashMap<>();
+    private Map<String, Integer> commonscores2 = new HashMap<>();
 
 
-    public void updateInitialGameInfo(InitialGameInfo info) {
+    protected void updateInitialGameInfo(InitialGameInfo info) {
         synchronized (myTurn) {
 
             livingroomBoard = info.getNewBoard();
@@ -278,7 +279,7 @@ public class GameScreenController {
         updateCurrentPlayer(info.getCurrentPlayer());
     }
 
-    public void updateGame(GameInfo info) {
+    protected void updateGame(GameInfo info) {
         synchronized (myTurn) {
             String oldplayer = currentPlayer;
             livingroomBoard = info.getNewBoard();
@@ -371,7 +372,7 @@ public class GameScreenController {
         return result;
     }
 
-    public void initActions(SceneState state, String selfName, GameScreen gameScreen){
+    protected void initActions(SceneState state, String selfName, GameScreen gameScreen){
         this.gameScreen = gameScreen;
         this.state = state;
         this.selfName = selfName;
@@ -594,7 +595,7 @@ public class GameScreenController {
         return result;
     }
 
-    public void toggleBoard(int i){
+    private void toggleBoard(int i){
         side.setVisible(i==0 && !side.isVisible());
         myshelf.setVisible(i == 0 && !myshelf.isVisible());
         player1.setVisible(i == 1 && !player1.isVisible());
@@ -602,7 +603,7 @@ public class GameScreenController {
         player3.setVisible(i == 3 && !player3.isVisible());
     }
 
-    public synchronized void updateChat(ChatUpdateMessage msg) {
+    protected synchronized void updateChat(ChatUpdateMessage msg) {
         synchronized (chatList) {
             String s = " ~ ";
             String message = msg.getTimestamp() + s + msg.getSender() + s + msg.getContent();
@@ -610,7 +611,7 @@ public class GameScreenController {
             chatList.scrollTo(chatList.getItems().size());
         }
     }
-    public synchronized void updateChat(PrivateChatUpdateMessage msg) {
+    protected synchronized void updateChat(PrivateChatUpdateMessage msg) {
         synchronized (chatList) {
             String s = " ~ ";
             String fromto = selfName.equals(msg.getReceiver()) ? "[from: "+msg.getSender() : "[to: "+msg.getReceiver();
@@ -619,7 +620,7 @@ public class GameScreenController {
             chatList.scrollTo(chatList.getItems().size());
         }
     }
-    private synchronized void sendChat(){
+    protected synchronized void sendChat(){
         synchronized (chatList) {
             String content = chatField.getText();
             if (content == null || content.isBlank()) {

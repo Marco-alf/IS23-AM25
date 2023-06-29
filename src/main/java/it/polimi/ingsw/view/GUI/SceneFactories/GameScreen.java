@@ -30,15 +30,12 @@ import java.util.Objects;
 
 public class GameScreen extends SceneHandler implements SceneFactory{
 
-    ImageView board;
-    GameScreenController controller;
+    private GameScreenController controller;
 
     String selfName;
     public GameScreen(SceneState state, Rectangle2D screen, ViewInterface view, String selfName) {
         super(state, screen, view);
         this.selfName = selfName;
-
-        board = new ImageView(new Image("17_MyShelfie_BGA/boards/livingroom_scaled.png"));
 
         Parent r = null;
         try {
@@ -65,7 +62,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
             r.getTransforms().add(sc);
             scene = new Scene(r, 1920, 1080);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            quit();
         }
 
 

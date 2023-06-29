@@ -8,10 +8,10 @@ import javafx.scene.Scene;
 import javafx.scene.transform.Scale;
 
 public abstract class SceneHandler implements SceneFactory{
-    Scene scene;
-    Rectangle2D screen;
-    SceneState state;
-    ViewInterface view;
+    protected Scene scene;
+    protected Rectangle2D screen;
+    protected SceneState state;
+    protected ViewInterface view;
     SceneHandler(SceneState state, Rectangle2D screen, ViewInterface view){
         this.state = state;
         this.screen = screen;
@@ -24,7 +24,7 @@ public abstract class SceneHandler implements SceneFactory{
     }
 
 
-    public void adjustScaling(Parent p){
+    protected void adjustScaling(Parent p){
         Scale scala = new Scale();
         scala.setPivotX(screen.getWidth()/2);
         scala.setPivotY(screen.getHeight()/2);

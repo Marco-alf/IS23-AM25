@@ -23,14 +23,14 @@ import javafx.scene.text.Text;
 import java.util.Arrays;
 
 public class PlayScreen extends SceneHandler implements SceneFactory{
-    Background back = new Background(new BackgroundImage(new Image("17_MyShelfie_BGA/Publisher_material/Display_1.jpg"),
+    private final Background back = new Background(new BackgroundImage(new Image("17_MyShelfie_BGA/Publisher_material/Display_1.jpg"),
             null,
             null,
             BackgroundPosition.CENTER,
             new BackgroundSize(100,100, true, true, true, false)));
-    static int porta = 1099;
+    private static final int porta = 1099;
 
-    TextField askip;
+    private TextField askip;
 
     public PlayScreen(SceneState state, Rectangle2D screen, ViewInterface view){
         super(state, screen, view);
@@ -127,7 +127,7 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
         return g;
     }
 
-    public void initiateTCP(){
+    private void initiateTCP(){
         if(isIPbroken(askip)){
             return;
         }
@@ -136,7 +136,7 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
         state.update();
     }
 
-    public void initiateRMI(){
+    private void initiateRMI(){
         if(isIPbroken(askip)){
             return;
         }
