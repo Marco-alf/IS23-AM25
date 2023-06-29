@@ -26,14 +26,25 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * SceneFactory for the final screen, will generate the scoreboard and return the user to the starting screen when asked.
+ * */
 public class FinalScreen extends SceneHandler implements SceneFactory{
 
+    /**
+     * Constructor for finalGameScreen, calling super().
+     * */
     FinalScreen(SceneState state, Rectangle2D screen, ViewInterface view) {
         super(state, screen, view);
         AnchorPane anchor = new AnchorPane();
         scene = new Scene(anchor);
     }
 
+    /**
+     * Method to set up the final scoreboard, this receives the points, calculates the ranking and then displays the
+     * results.
+     * @param info contains all info needed to calculate each player's points
+     * */
     public void setInfo(FinalGameInfo info){
         List<String> names = new ArrayList<>(info.getOnlinePlayers());
         Map<String, Integer> pointsMap = new HashMap<>();
@@ -89,6 +100,10 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
         scene.setRoot(r);
     }
 
+    /**
+     * Method called the user has finished looking at the final scoreboard
+     * @return new PlayScreen instance, returning to starting screen.
+     * */
     @Override
     public SceneFactory next() {
         return new PlayScreen(state, screen, view);

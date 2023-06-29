@@ -27,23 +27,30 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Scene Factory for lobby creation and selection, users will be asked to prompt infos to create or join lobbies
+ * */
 public class MenuScreen extends SceneHandler implements SceneFactory{
 
-    List<String> lobbies;
-    String selected;
-    ListView<String> lobbylist;
+    private List<String> lobbies;
+    private String selected;
+    private final ListView<String> lobbylist;
 
-    String nicknameBuffer;
-    String lobbynameBuffer;
+    private String nicknameBuffer;
 
-    Object lock = new Object();
-
+    /**
+     * Constructor for MenuScreen, will create lobby selection node and add it to scene graph.
+     * */
     public MenuScreen(SceneState state, Rectangle2D screen, ViewInterface view){
         super(state, screen, view);
         lobbies = new ArrayList<>();
         lobbylist = new ListView<>();
         scene = new Scene(mainMenu());
     }
+    /**
+     * Method called when entering a lobby, it will transition to waiting screen
+     * @return new LobbyScreen instance, with nicknamebuffer as the name chosen by the user as his
+     * */
     @Override
     public SceneFactory next() {
         return new LobbyScreen(state, screen, view, nicknameBuffer);
@@ -106,6 +113,9 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         return r;
     }
 
+    /**
+     * Scene getter is modified to refresh lobby list before returning the Scene object
+     * */
     @Override
     public Scene getScene() {
         refresh();
@@ -192,6 +202,10 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         }
     }
 
+    /**
+     * Method called from ViewInterface implementation on GraphicalUI to update lobbies shown to the user
+     * @param lobbies list of all lobby names
+     * */
     public void receiveRefresh(List<String> lobbies){
         if(lobbies == null){
             System.exit(420);
@@ -208,7 +222,6 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
             return;
         }
         nicknameBuffer = nickname;
-        lobbynameBuffer = lobbyname;
 
 
         CreateLobbyMessage clientMessage = new CreateLobbyMessage();
@@ -230,7 +243,6 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
             return;
         }
         nicknameBuffer = nickname;
-        lobbynameBuffer = lobbyname;
 
         JoinMessage clientMessage = new JoinMessage();
         clientMessage.setName(nickname);

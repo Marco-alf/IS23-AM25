@@ -31,6 +31,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static javafx.scene.paint.Color.BURLYWOOD;
 
+/**
+ * Controller for game scene, it will handle calls from GameScreen and apply updates to the elements shown.
+ * JavaFx controls' objects will call the client directly sending messages to the server, covering the user's possible
+ * actions.
+ * */
 public class GameScreenController {
 
     private enum GoalNumbers {
@@ -645,7 +650,7 @@ public class GameScreenController {
         }
     }
 
-    public void updateCurrentPlayer(String player){
+    protected void updateCurrentPlayer(String player){
         synchronized (myTurn) {
             currentPlayer = player;
             myTurn.set(player.equals(selfName));
@@ -679,13 +684,13 @@ public class GameScreenController {
         armchair.setRotate(theta);
     }
 
-    public void deactivate(String user) {
+    protected void deactivate(String user) {
         List<String> onlineNow = new ArrayList<>(onlinePlayers);
         onlineNow.remove(user);
         recolorPlayers(onlinePlayers, onlineNow, otherPlayers);
     }
 
-    public void disconnect(boolean fromserver) {
+    protected void disconnect(boolean fromserver) {
         if(!fromserver) {
             QuitMessage clientMessage = new QuitMessage();
             if (state.getClient() instanceof RMIClient) {

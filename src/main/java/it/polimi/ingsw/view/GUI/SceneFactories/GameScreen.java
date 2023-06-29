@@ -28,14 +28,19 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Objects;
 
+/**
+ * Scene Factory for game creation and management of game interface, calls and updates.
+ * */
 public class GameScreen extends SceneHandler implements SceneFactory{
 
     private GameScreenController controller;
 
-    String selfName;
+    /**
+     * Constructor for GameScreen, will load fxml and create its controller.
+     * controller will be initialized calling initActions() and
+     * */
     public GameScreen(SceneState state, Rectangle2D screen, ViewInterface view, String selfName) {
         super(state, screen, view);
-        this.selfName = selfName;
 
         Parent r = null;
         try {
@@ -69,14 +74,26 @@ public class GameScreen extends SceneHandler implements SceneFactory{
 
     }
 
+    /**
+     * Method to update shown information of the game from zero, called from ViewInterface implementation on GraphicalUI
+     * @param info InitialGameInfo object, containing all information of the game
+     * */
     public void updateInitialGameInfo(InitialGameInfo info){
         controller.updateInitialGameInfo(info);
     }
 
+    /**
+     * Method to update the turn indicator, called from ViewInterface implementation on GraphicalUI
+     * @param player Name of the player that now has the right to make a move
+     * */
     public void updateCurrentPlayer(String player){
         controller.updateCurrentPlayer(player);
     }
 
+    /**
+     * Method called when game ends, it will show the ranking of the game
+     * @return new LobbyScreen instance, with nicknamebuffer as the name chosen by the user as his
+     * */
     @Override
     public SceneFactory next() {
         return new FinalScreen(state, screen, view);
@@ -86,6 +103,10 @@ public class GameScreen extends SceneHandler implements SceneFactory{
         state.forceUpdate(new MenuScreen(state, screen, view));
     }
 
+    /**
+     * Custom implementation of adjust scaling, made to fit the fxml to the screen
+     * @param p node to have its scaling changed
+     * */
     @Override
     public void adjustScaling(Parent p){
         Scale scala = new Scale();
@@ -95,24 +116,50 @@ public class GameScreen extends SceneHandler implements SceneFactory{
         double yscaling = screen.getHeight()/1080 ;
         scala.setX(xscaling);
         scala.setY(yscaling);
+        p.getTransforms().clear();
         p.getTransforms().add(scala);
     }
 
+    /**
+     * Updates the chat adding a single message, called from ViewInterface implementation on GraphicalUI
+     * @param msg Contains a message
+     * */
     public void updateChat(ChatUpdateMessage msg) {
         controller.updateChat(msg);
     }
+    /**
+     * Updates the chat adding a single Private message, called from ViewInterface implementation on GraphicalUI
+     * @param msg Contains a Private message
+     * */
     public void updateChat(PrivateChatUpdateMessage msg) {
         controller.updateChat(msg);
     }
 
+    /**
+     * Updates the UI to change game state, changing board, shelves and turn indicator.
+     * Method called from ViewInterface implementation on GraphicalUI
+     * @param msg Contains a message
+     * */
     public void updateGame(GameUpdatedMessage msg) {
         controller.updateGame(msg.getGameInfo());
     }
 
+    /**
+     * Updates user banners to have disconnected one as transparent.
+     * Method called from ViewInterface implementation on GraphicalUI
+     * @param user The user that has just disconnected
+     * */
     public void deactivate(String user) {
         controller.deactivate(user);
     }
 
+    /**
+     * Method to disconnect this client from the server, if fromserver parameter is false this client will send a
+     * QuitMessage to the server, signalling its will to cease all connection.
+     * This method is either called from ViewInterface implementation on GraphicalUI or as a server consequence of a
+     * message from a server signalling the closure of the lobby
+     * @param fromserver true if this call comes from the server, false if it's called from JavaFx controls
+     * */
     public void disconnect(boolean fromserver) {
 
             state.setIsDisconnecting(true);

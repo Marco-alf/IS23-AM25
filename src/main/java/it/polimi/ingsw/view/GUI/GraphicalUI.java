@@ -22,6 +22,10 @@ import javafx.stage.WindowEvent;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Main Class for GUI based on JavaFX, extends JavaFx's application, implements SceneState to handle SceneFactories and
+ * ViewInterface to receive messages forwarding from client connection.
+ * */
 public class GraphicalUI extends Application implements SceneState, ViewInterface {
 
     private SceneFactory factory;
@@ -41,6 +45,11 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
     };
 
 
+    /**
+     * Start method is called from JavaFx's launch() function, this override will set the stage and instantiate the
+     * first factory.
+     * Closing the JavaFx stage will terminate the program with exit code '0'.
+     * */
     @Override
     public void start(Stage stage) throws IOException {
         screen = Screen.getPrimary().getBounds();
@@ -64,6 +73,9 @@ public class GraphicalUI extends Application implements SceneState, ViewInterfac
         });
     }
 
+    /**
+     * Main function to launch the Graphical interface.
+     * */
     public static void main(String[] args) {
         launch();
     }

@@ -17,10 +17,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+/**
+ * Factory to produce the waiting screen scene
+ * */
 public class LobbyScreen extends SceneHandler implements SceneFactory{
 
-    String selfName;
+    private final String selfName;
 
+    /**
+     * Constructor used to instantiate the scene graph as the waiting screen and buffer the user's name
+     * */
     LobbyScreen(SceneState state, Rectangle2D screen, ViewInterface view, String selfName) {
         super(state, screen, view);
         scene = new Scene(waitingScreen());
@@ -53,6 +59,10 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
         return r;
     }
 
+    /**
+     * Method called when entering a lobby, it will transition to waiting screen
+     * @return new GameScreen instance, selfName as buffer for the user's name
+     * */
     @Override
     public SceneFactory next() {
         return new GameScreen(state, screen, view, selfName);

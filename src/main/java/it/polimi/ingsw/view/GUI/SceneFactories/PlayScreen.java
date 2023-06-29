@@ -23,6 +23,9 @@ import javafx.scene.text.Text;
 
 import java.util.Arrays;
 
+/**
+ * First factory, handles starting screen and connection selection, connection creation will be handled at this stage
+ * */
 public class PlayScreen extends SceneHandler implements SceneFactory{
     private final Background back = new Background(new BackgroundImage(new Image("17_MyShelfie_BGA/Publisher_material/Display_1.jpg"),
             null,
@@ -33,6 +36,9 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
 
     private TextField askip;
 
+    /**
+     * Constructor to instantiate the first scene node graph, will show a "play" screen
+     * */
     public PlayScreen(SceneState state, Rectangle2D screen, ViewInterface view){
         super(state, screen, view);
         scene = new Scene(playButton(), screen.getWidth(), screen.getHeight());
@@ -40,6 +46,10 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
         state.setIsDisconnecting(false);
     }
 
+    /**
+     * Method overridden to return factory for lobby creation and selection.
+     * @return a new MenuScreen instance
+     * */
     @Override
     public SceneFactory next() {
         if (state.getClient() != null){
