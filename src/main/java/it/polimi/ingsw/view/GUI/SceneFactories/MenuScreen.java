@@ -17,8 +17,9 @@ import javafx.geometry.VPos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -32,6 +33,11 @@ import java.util.List;
  * */
 public class MenuScreen extends SceneHandler implements SceneFactory{
 
+    private final Background back = new Background(new BackgroundImage(new Image("17_MyShelfie_BGA/misc/sfondo_parquet.jpg"),
+            null,
+            null,
+            BackgroundPosition.CENTER,
+            new BackgroundSize(100,100, true, true, true, false)));
     private List<String> lobbies;
     private String selected;
     private final ListView<String> lobbylist;
@@ -57,6 +63,10 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
     }
 
     private Parent mainMenu(){
+        StackPane stack = new StackPane();
+        stack.setBackground(back);
+
+
         GridPane r = new GridPane();
 
         Text title = new Text("MyShelfie Menu");
@@ -110,7 +120,8 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         r.setAlignment(Pos.CENTER);
 
         adjustScaling(r);
-        return r;
+        stack.getChildren().add(r);
+        return stack;
     }
 
     /**
@@ -123,6 +134,10 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
     }
 
     private Parent joinGame(){
+        StackPane stack = new StackPane();
+        stack.setBackground(back);
+
+
         TilePane r = new TilePane(Orientation.VERTICAL);
 
         Text title = new Text(selected);
@@ -150,10 +165,16 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         r.setAlignment(Pos.CENTER);
 
         adjustScaling(r);
-        return r;
+
+        stack.getChildren().add(r);
+        return stack;
     }
 
     private Parent createGame(){
+        StackPane stack = new StackPane();
+        stack.setBackground(back);
+
+
         TilePane r = new TilePane(Orientation.VERTICAL);
         Text title = new Text("Create a game!");
         title.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
@@ -188,7 +209,9 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         r.setAlignment(Pos.CENTER);
 
         adjustScaling(r);
-        return r;
+
+        stack.getChildren().add(r);
+        return stack;
     }
 
     private void refresh(){

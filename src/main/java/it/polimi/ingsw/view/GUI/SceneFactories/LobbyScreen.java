@@ -12,7 +12,9 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.TilePane;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -22,6 +24,11 @@ import javafx.scene.text.Text;
  * */
 public class LobbyScreen extends SceneHandler implements SceneFactory{
 
+    private final Background back = new Background(new BackgroundImage(new Image("17_MyShelfie_BGA/misc/base_pagina2.jpg"),
+            null,
+            null,
+            BackgroundPosition.CENTER,
+            new BackgroundSize(100,100, true, true, true, false)));
     private final String selfName;
 
     /**
@@ -35,9 +42,13 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
     }
 
     private Parent waitingScreen(){
+        StackPane stack = new StackPane();
+        stack.setBackground(back);
+
         TilePane r = new TilePane(Orientation.VERTICAL);
         Text title = new Text("Waiting for players!");
         title.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
+        title.setFill(Color.WHITE);
 
         Button cancel = new Button("Go back to menu");
         cancel.setOnAction(actionEvent -> {
@@ -46,6 +57,7 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
                 clientMessage.setRmiClient((RMIClient) state.getClient());
             }
             state.getClient().sendMsgToServer(clientMessage);
+            state.setIsDisconnecting(true);
             state.getClient().disconnect(false);
             state.setClient(null);
             state.forceUpdate(new PlayScreen(state, screen, view));
@@ -56,7 +68,9 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
         r.getChildren().addAll(title, cancel);
 
         adjustScaling(r);
-        return r;
+
+        stack.getChildren().add(r);
+        return stack;
     }
 
     /**

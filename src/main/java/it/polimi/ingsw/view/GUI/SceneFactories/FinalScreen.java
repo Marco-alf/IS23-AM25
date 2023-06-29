@@ -13,8 +13,9 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -30,6 +31,11 @@ import java.util.stream.IntStream;
  * SceneFactory for the final screen, will generate the scoreboard and return the user to the starting screen when asked.
  * */
 public class FinalScreen extends SceneHandler implements SceneFactory{
+    private final Background back = new Background(new BackgroundImage(new Image("17_MyShelfie_BGA/misc/base_pagina2.jpg"),
+            null,
+            null,
+            BackgroundPosition.CENTER,
+            new BackgroundSize(100,100, true, true, true, false)));
 
     /**
      * Constructor for finalGameScreen, calling super().
@@ -46,6 +52,9 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
      * @param info contains all info needed to calculate each player's points
      * */
     public void setInfo(FinalGameInfo info){
+        StackPane stack = new StackPane();
+        stack.setBackground(back);
+
         List<String> names = new ArrayList<>(info.getOnlinePlayers());
         Map<String, Integer> pointsMap = new HashMap<>();
         for (String name : names) {
@@ -79,6 +88,7 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
             };
             results[i] = new Text(s + names.get(i) + " with "+ pointsMap.get(names.get(i)) + " points");
             results[i].setFont(Font.font("Arial", FontWeight.NORMAL, 20));
+            results[i].setFill(Color.WHITE);
             r.getChildren().add(results[i]);
         }
 
@@ -97,7 +107,8 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
         r.setAlignment(Pos.CENTER);
         adjustScaling(r);
 
-        scene.setRoot(r);
+        stack.getChildren().add(r);
+        scene.setRoot(stack);
     }
 
     /**
