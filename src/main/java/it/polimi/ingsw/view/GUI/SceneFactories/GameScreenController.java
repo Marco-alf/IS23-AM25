@@ -625,11 +625,13 @@ public class GameScreenController {
     }
     protected synchronized void updateChat(PrivateChatUpdateMessage msg) {
         synchronized (chatList) {
-            String s = " ~ ";
-            String fromto = selfName.equals(msg.getReceiver()) ? "[from: "+msg.getSender() : "[to: "+msg.getReceiver();
-            String message = msg.getTimestamp() + s + fromto + "]" + s + msg.getContent();
-            chatList.getItems().add(message);
-            chatList.scrollTo(chatList.getItems().size());
+            if(msg.getReceiver().equals(selfName) || msg.getSender().equals(selfName)) {
+                String s = " ~ ";
+                String fromto = selfName.equals(msg.getReceiver()) ? "[from: " + msg.getSender() : "[to: " + msg.getReceiver();
+                String message = msg.getTimestamp() + s + fromto + "]" + s + msg.getContent();
+                chatList.getItems().add(message);
+                chatList.scrollTo(chatList.getItems().size());
+            }
         }
     }
     protected synchronized void sendChat(){
