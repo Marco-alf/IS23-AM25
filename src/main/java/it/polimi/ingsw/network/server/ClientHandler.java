@@ -281,7 +281,7 @@ public class ClientHandler implements Runnable{
             outputStream.flush();
             outputStream.reset();
         } catch (IOException e) {
-            //manageDisconnection();
+            manageDisconnection();
         }
         Message temp = (Message) msg;
         if(!temp.getType().equals(new Ping().getType())) {
