@@ -62,9 +62,10 @@ public class GameBroker {
      * @param lobby reference to the lobby that need to be closed
      */
     public void closeLobby(Lobby lobby) {
-        lobbies.remove(lobby.getLobbyName());
-        System.out.println("lobby closed");
-
+        if(lobbies.containsKey(lobby.getLobbyName())){
+            lobbies.remove(lobby.getLobbyName());
+            System.out.println("Lobby closed");
+        }
     }
 
     /**

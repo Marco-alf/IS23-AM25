@@ -254,6 +254,7 @@ public class TextualUI implements ViewInterface {
                 case "egg" -> System.out.print(rst + yellow + "    0\n" + in);//(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
                 case "exit" -> {
                     if(client.getIsInLobbyStatus())quitLobby();
+                    System.out.print(rst);
                     System.exit(0);
                     online = false;
                 }
@@ -262,11 +263,6 @@ public class TextualUI implements ViewInterface {
             if(missingGameUpdate) {
                 displayGameInfo();
                 missingGameUpdate = false;
-            }
-            if (missingChatUpdate) {
-                System.out.println("\n" + out + "You have unread " + bold + "messages" + rst + ". To see them you can use" + bold + " showchat" + rst + " command\n     > last message: " +
-                        lastMessage + "\n" + in);
-                missingChatUpdate = false;
             }
             isDisplaying=false;
             if(hasEnded) {
@@ -561,8 +557,12 @@ public class TextualUI implements ViewInterface {
         output = concatStringArrays(output, commonGoalConstructor(commonGoal2, 2));
 
         info = convertStringArray(output);
-
         System.out.print(info);
+        if (missingChatUpdate) {
+            System.out.println("\n" + out + "You have unread " + bold + "messages" + rst + ". To see them you can use" + bold + " showchat" + rst + " command\n     > last message: " +
+                    lastMessage + "\n" + in);
+            missingChatUpdate = false;
+        }
         if(!hasEnded) System.out.println(out + "current player is: " + red + bold + this.curPlayer + rst);
         System.out.print(in);
         isDisplaying = false;
@@ -1862,7 +1862,7 @@ public class TextualUI implements ViewInterface {
         System.out.print("\n" + rst + red + bold + "You have been disconnected\n");
         if(!quitState) {
             online = false;
-            System.out.print(rst + red + bold + "Server is unreachable: check your connection then relaunch the application!\n");
+            System.out.print(rst + red + bold + "Server is unreachable: check your connection then relaunch the application!\n" + "rst");
             System.exit(0);
         }
         else{

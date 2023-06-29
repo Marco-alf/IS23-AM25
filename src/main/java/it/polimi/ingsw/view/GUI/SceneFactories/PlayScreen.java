@@ -1,18 +1,16 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
-import it.polimi.ingsw.network.client.GenericClient;
-import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.client.SocketClient;
-import it.polimi.ingsw.view.GUI.GraphicalUI;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -21,9 +19,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextBoundsType;
 
-import java.util.Stack;
+import java.util.Arrays;
 
 public class PlayScreen extends SceneHandler implements SceneFactory{
     Background back = new Background(new BackgroundImage(new Image("17_MyShelfie_BGA/Publisher_material/Display_1.jpg"),
@@ -32,6 +29,8 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
             BackgroundPosition.CENTER,
             new BackgroundSize(100,100, true, true, true, false)));
     static int porta = 1099;
+
+    TextField askip;
 
     public PlayScreen(SceneState state, Rectangle2D screen, ViewInterface view){
         super(state, screen, view);
@@ -102,10 +101,14 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
             initiateRMI();
         });
 
+
+        askip = new TextField();
+        askip.setText("localhost");
+
         t.getChildren().addAll(tcp, rmi);
         t.setHgap(screen.getWidth()*0.005);
         t.setAlignment(Pos.CENTER);
-        r.getChildren().addAll(new StackPane(textBox, title), t);
+        r.getChildren().addAll(new StackPane(textBox, title), t, askip);
         r.setHgap(screen.getWidth()*0.005);
         r.setAlignment(Pos.CENTER);
 
@@ -125,15 +128,48 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
     }
 
     public void initiateTCP(){
-        state.setClient(new SocketClient("localhost", 8088, view));
+        if(isIPbroken(askip)){
+            return;
+        }
+        state.setClient(new SocketClient(askip.getText(), 8088, view));
         state.getClient().init();
         state.update();
     }
 
     public void initiateRMI(){
-        state.setClient(new SocketClient("localhost", 8088, view));
+        if(isIPbroken(askip)){
+            return;
+        }
+        state.setClient(new SocketClient(askip.getText(), 8088, view));
         state.getClient().init();
         state.update();
+    }
+
+    private boolean isIPbroken(TextField t){
+        if( isValidIP(t.getText())){
+            return false;
+        }else {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setContentText("enter a valid ip address!");
+            a.showAndWait();
+            return true;
+        }
+    }
+    private boolean isValidIP(String ip) {
+        if(ip.equals("localhost")) return true;
+        String[] groups = ip.split("\\.");
+        if (groups.length != 4) {
+            return false;
+        }
+        try {
+            return Arrays.stream(groups)
+                    .filter(s -> s.length() >= 1)
+                    .map(Integer::parseInt)
+                    .filter(i -> (i >= 0 && i <= 255))
+                    .count() == 4;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
 }

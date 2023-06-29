@@ -12,7 +12,7 @@ public class ClientMain {
      */
     public static void main(String[] args) {
         try{
-            System.setProperty("sun.rmi.transport.tcp.responseTimeout", "1000");
+            System.setProperty("sun.rmi.transport.tcp.responseTimeout", "5000");
         } catch (Exception e){
             System.out.println("RMI not set");
         }

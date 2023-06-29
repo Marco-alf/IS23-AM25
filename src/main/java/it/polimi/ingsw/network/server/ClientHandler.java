@@ -234,7 +234,9 @@ public class ClientHandler implements Runnable{
 
                             }
                         }
-                        System.out.println("Received " + msg.getType() + " from Socket client");
+                        if(!msg.getType().equals(new Ping().getType())){
+                            System.out.println("Received " + msg.getType() + " from Socket client");
+                        }
                     }
                 } catch (ClassNotFoundException | SocketTimeoutException e) {
                     manageDisconnection();
@@ -271,7 +273,10 @@ public class ClientHandler implements Runnable{
         } catch (IOException e) {
             manageDisconnection();
         }
-        System.out.println("Sent " + ((Message) msg).getType() + " to Socket client");
+        Message temp = (Message) msg;
+        if(!temp.getType().equals(new Ping().getType())) {
+            System.out.println("Sent " + ((Message) msg).getType() + " to Socket client");
+        }
     }
 
     public void pingClient () {
@@ -308,7 +313,7 @@ public class ClientHandler implements Runnable{
                     Thread t = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            if (lobby.checkNumberOfPlayers() && curPlayer!=null) {
+                            if (lobby.checkNumberOfPlayers()) {
                                 InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
                                 genericServer.sendMsgToAll(insufficientPlayersMessage, lobby);
                                 if (!lobby.waitForPlayers()) {

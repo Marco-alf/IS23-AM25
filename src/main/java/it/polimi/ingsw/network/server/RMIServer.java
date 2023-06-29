@@ -139,7 +139,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                                         }
                                     } catch (RemoteException e) {
                                         count++;
-                                        if (count > 4) {
+                                        if (count > 2) {
                                             synchronized (rmiClientsToRemove) {
                                                 rmiClientsToRemove.add(rmiClient);
                                                 online = false;
@@ -409,8 +409,6 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 String curPlayer = lobby.getCurrentPlayer();
                 lobby.disconnectPlayer(lobby.getPlayer(name));
 
-                rmiClientsLobby.remove(rmiClient);
-
                 UserDisconnectedMessage serverMessage = new UserDisconnectedMessage();
                 serverMessage.setUser(name);
                 if (lobby.isGameCreated()) serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
@@ -419,7 +417,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 Thread t = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if (lobby.checkNumberOfPlayers() && curPlayer!=null) {
+                        if (lobby.checkNumberOfPlayers()) {
                             InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
                             server.sendMsgToAll(insufficientPlayersMessage, lobby);
                             if (!lobby.waitForPlayers()) {
