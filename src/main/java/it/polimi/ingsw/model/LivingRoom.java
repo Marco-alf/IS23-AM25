@@ -64,7 +64,7 @@ public class LivingRoom {
      * In the constructor firstly the board is initialized with null pointers, then boardFiller is used to fill the board
      * with tiles. After this 2 different common goals are extracted for the game.
      * @param playerNumber is the number of players in the game, it is needed to create different versions of the board.
-     * @throws InvalidPlayerNameException whenever is attempted to create a game with more than 4 player or less than 2
+     * @throws InvalidPlayerNumberException whenever is attempted to create a game with more than 4 player or less than 2
      */
     public LivingRoom(int playerNumber) throws InvalidPlayerNumberException {
         Random random = new Random(System.currentTimeMillis());
@@ -192,6 +192,7 @@ public class LivingRoom {
     }
 
     /**
+     * getEnumArray is a getter for the board as matrix
      * @return the board (a 9x9 TilesType matrix)
      */
     public TilesType[][] getEnumArray() {
@@ -203,6 +204,7 @@ public class LivingRoom {
     }
 
     /**
+     * getCommonGoals is a getter for the commonGoal attribute
      * @return a vector with the two common goals chosen for the game
      */
     public CommonGoal[] getCommonGoals() {
@@ -263,6 +265,8 @@ public class LivingRoom {
     }
 
     /**
+     * calculateCommonPoints is the method used to calculate the points of a played scored in common points
+     * @param player is the player of which we want to know the score related to common goals
      * @return the points from the common goals accumulated by the player
      */
     public int[] calculateCommonPoints(Player player) {

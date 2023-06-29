@@ -1,4 +1,4 @@
-module AM25 {
+module AM25_myShelfie {
     requires javafx.graphics;
     requires javafx.controls;
     requires javafx.fxml;
@@ -6,20 +6,18 @@ module AM25 {
     requires java.rmi;
     requires java.logging;
 
+    exports it.polimi.ingsw.model;
+    exports it.polimi.ingsw.controller;
+    exports it.polimi.ingsw.network.client;
+    exports it.polimi.ingsw.network.server;
+    exports it.polimi.ingsw.network.messages;
+    exports it.polimi.ingsw.view;
+    exports it.polimi.ingsw.exception;
+
     opens it.polimi.ingsw.view.GUI to javafx.graphics;
     exports it.polimi.ingsw.view.GUI to javafx.graphics;
 
     opens it.polimi.ingsw.view.GUI.SceneFactories to javafx.fxml;
     exports it.polimi.ingsw.view.GUI.SceneFactories to javafx.fxml;
 
-    exports it.polimi.ingsw.network.client to java.rmi;
-    exports it.polimi.ingsw.network.server to java.rmi;
-
-    exports it.polimi.ingsw.model to com.fasterxml.jackson.databind;
-
-    exports it.polimi.ingsw.network.messages.serverMessages;
-    exports it.polimi.ingsw.network.messages.clientMessages;
-    exports it.polimi.ingsw.model.data;
-    exports it.polimi.ingsw.view;
-    exports it.polimi.ingsw.view.TUI;
 }

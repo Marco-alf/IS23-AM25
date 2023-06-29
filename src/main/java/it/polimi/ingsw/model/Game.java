@@ -82,6 +82,8 @@ public class Game
     /**
      * constructor of game
      * @param players is list containing every player name (takes as guaranteed they are unique)
+     * @throws ShelfCreationException if the list has the wrong length
+     * @throws PlayersEmptyException if the list of players contains invalid player
      */
     public Game(List<String> players) throws ShelfCreationException, PlayersEmptyException {
         /* initiating board, catching exceptions as one, stacktrace will do the job in debugging*/
@@ -126,6 +128,7 @@ public class Game
     /**
      * updates the player which has the right to move to the player with the specified name
      * @param name name of the player which has now the right to move
+     * @throws InvalidPlayerNameException if the name is empty or null
      */
     public void updateCurrentPlayer(String name) throws InvalidPlayerNameException {
         /* method is not named set because it does not set the variable through the parameter, and instead replaces
@@ -141,6 +144,13 @@ public class Game
      * @throws InvalidPlayerNameException is thrown if the name specified is not registered in this game instance
      * @throws PlayerNotCurrentException is thrown if it is NOT the turn of the player specified
      * @throws NullTilesException is thrown if the list of tiles passed contains a null element
+     * @throws InvalidPlayerNameException if the name of the player making the move is null or empty
+     * @throws NotInLineException if the move requires taking tiles that are not in line
+     * @throws NoFreeEdgeException if the move require taking tiles that have no free edges
+     * @throws OutOfBoundException if the move require taking tiles that are placed outside the board
+     * @throws FullColumnException if the move require placing tiles in a column that has not enough space
+     * @throws PlayerNotOnlineException if the player making the move is recorded as offline in the model
+     * @throws InvalidTileException if the tiles requested does not correspond to the one in the game board
      */
     public void moveTiles(final List<Tile> tiles, int shelfColumn, String name) throws InvalidPlayerNameException,
             PlayerNotCurrentException,
@@ -290,6 +300,7 @@ public class Game
 
     /**
      * removes the player with the specified name from the OnlinePlayers list
+     * @param name is the name of the player to disconnect
      * @throws InvalidPlayerNameException thrown if the name specified is not associated with any player of the game
      */
     public void disconnectPlayer(String name) throws InvalidPlayerNameException {
@@ -298,6 +309,7 @@ public class Game
 
     /**
      * adds back a previously disconnected player with the specified name to the OnlinePlayers list
+     * @param name is the name of the player to reconnect to the game
      * @throws InvalidPlayerNameException thrown if the name specified is not associated with any player of the game
      */
     public void reconnect(String name) throws InvalidPlayerNameException {
@@ -314,7 +326,7 @@ public class Game
     /**
      * method to get the total points that every player has gained over the course of the current game
      * @return the list of all accumulated points of each player in a list ordered by the same index used for players */
-    public List<Integer> getPlayersPoints() throws OutOfBoundException {
+    public List<Integer> getPlayersPoints() {
         List<Integer> results = new ArrayList<>();
         int[] commonPoints;
         for (Player p : players) {
@@ -327,6 +339,7 @@ public class Game
     /**
      * private method used to retrieve the reference of a player from its name
      * @param name name of the player to return
+     * @throws InvalidPlayerNameException if the requested name is empty or null
      * @return Player object instance whose attribute Player.name is the same as parameter name*/
     public Player searchPlayer(String name) throws InvalidPlayerNameException{
         for(Player p : players){

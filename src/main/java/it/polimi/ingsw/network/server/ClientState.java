@@ -7,7 +7,16 @@ package it.polimi.ingsw.network.server;
  * The client is IN_GAME whenever it is playing a game
  */
 public enum ClientState {
+    /**
+     * a client is CONNECTED if it's connected to the server, and it's neither in a lobby nor in a game
+     */
     CONNECTED,
+    /**
+     * a client is IN_LOBBY if it's in a lobby waiting for other player
+     */
     IN_LOBBY,
+    /**
+     * a client is IN_GAME if it is playing a game
+     */
     IN_GAME
 }

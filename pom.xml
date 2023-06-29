@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>it.polimi.ingsw</groupId>
-  <artifactId>AM25</artifactId>
+  <artifactId>AM25_myShelfie</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>AM25</name>
+  <name>AM25_myShelfie</name>
   <url>http://maven.apache.org</url>
 
     <properties>

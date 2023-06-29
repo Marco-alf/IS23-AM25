@@ -24,6 +24,7 @@ public class GameBroker {
     }
 
     /**
+     * getLobbies return the names of the existing lobbies
      * @return the list of existing lobbies
      */
     public List<String> getLobbies() {

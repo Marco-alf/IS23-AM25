@@ -9,6 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * InitialGameInfo is a class of GameInfo that is used to represents all the information regarding the current game state
+ * Is used every time a client connect to a game to initialize the view
+ */
 public class InitialGameInfo extends GameInfo{
     /**
      * commonGoal1 is a String that uniquely identify the first common goal

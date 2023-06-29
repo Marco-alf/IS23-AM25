@@ -38,7 +38,7 @@ public abstract class CommonGoal {
      * The constructor initializes the ArrayList players and creates the array points based on the number
      * of players in the game
      * @param numPlayers is the number of players in the game
-     * @throws InvalidPlayerNumberException if the number of players is >4 or <2
+     * @throws InvalidPlayerNumberException if the number of players is greater than 4 or lower than 2
      */
     public CommonGoal(int numPlayers) throws InvalidPlayerNumberException{
         players = new ArrayList<>();
@@ -74,6 +74,7 @@ public abstract class CommonGoal {
     protected abstract boolean checkPoints(TilesType[][] shelf);
 
     /**
+     * calculatePoints is a method that given a player return the points that he have scored
      * @param player is the player
      * @return the number of points the player accumulated
      */

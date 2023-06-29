@@ -69,6 +69,7 @@ public class Lobby {
     }
 
     /**
+     * getLobbyName is a getter for the name of the lobby
      * @return the name of the lobby
      */
     public String getLobbyName() {
@@ -76,6 +77,7 @@ public class Lobby {
     }
 
     /**
+     * getPlayerNumber is a getter for the number of the player of the lobby
      * @return the number of players in the lobby
      */
     public int getPlayerNumber() {
@@ -116,6 +118,7 @@ public class Lobby {
     }
 
     /**
+     * getOnlinePlayers is a getter for the list of online players
      * @return a list of the names (String) of the online players
      */
     public List<String> getOnlinePlayers() {
@@ -128,6 +131,7 @@ public class Lobby {
      * @param shelfColumn is the column of the shelf the player wants to move their tiles into
      * @param player is the player that moves the tiles
      * @throws IllegalMoveException if the move is not valid
+     * @throws GameEndedException if the game is already ended
      */
     public void moveTiles(List<Tile> tiles, int shelfColumn, String player) throws
             IllegalMoveException, GameEndedException {
@@ -201,6 +205,8 @@ public class Lobby {
     }
 
     /**
+     * is a method that waits for player to reconnect to the lobby. After a timeout if no player has reconnected is
+     * returned false, otherwise is returned true
      * @return true if the number of player still in game is at least 2, false if there are no player in game
      */
     public boolean waitForPlayers () {
@@ -217,6 +223,7 @@ public class Lobby {
     }
 
     /**
+     * isLastTurn is a test to check if the game is going to end after the next move
      * @return true if is the last turn of the game, false otherwise
      */
     private boolean isLastTurn () {
@@ -224,6 +231,7 @@ public class Lobby {
     }
 
     /**
+     * getGameInfo is a getter for the information about the game
      * @return the reference to game info
      */
     public GameInfo getGameInfo () {
@@ -232,6 +240,7 @@ public class Lobby {
     }
 
     /**
+     * getInitialGameInfo is a getter for the complete information about the current game
      * @return the reference to the game info created at the beginning of the game
      */
     public InitialGameInfo getInitialGameInfo () {
@@ -240,6 +249,7 @@ public class Lobby {
     }
 
     /**
+     * getCurrentPlayer is a getter for the name of the current player
      * @return the name (String) of the player that can play in this turn
      */
     public String getCurrentPlayer() {
@@ -249,6 +259,7 @@ public class Lobby {
     }
 
     /**
+     * getDisconnectedPlayers is a getter for the list of the names of the disconnected players
      * @return the list of disconnected players
      */
     public List<String> getDisconnectedPlayers() {
@@ -256,6 +267,7 @@ public class Lobby {
     }
 
     /**
+     * isGameCreated is a method used whether a game has been created
      * @return true if the game has been created, false otherwise
      */
     public boolean isGameCreated() {
@@ -263,6 +275,7 @@ public class Lobby {
     }
 
     /**
+     * nextPlayer is the method used to calculate the next player in the game
      * @return the next player in the game, null if there is no player in the game
      */
     public VirtualPlayer nextPlayer() {
@@ -282,6 +295,7 @@ public class Lobby {
     }
 
     /**
+     * isLastPlayer is a function used to test if the current player is the last one
      * @return true if the current player is the last player among the online players
      */
     public boolean isLastPlayer () {
@@ -297,6 +311,7 @@ public class Lobby {
     }
 
     /**
+     * getPlayer is a getter for class that representing a player given its name
      * @param name name of the virtual player
      * @return the reference to the virtual player corresponding to the parameter
      * @throws PlayerNotInLobbyException if the name asked is not an online player

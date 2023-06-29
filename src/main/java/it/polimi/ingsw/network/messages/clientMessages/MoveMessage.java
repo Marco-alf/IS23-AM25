@@ -26,7 +26,7 @@ public class MoveMessage extends ClientMessage{
 
     /**
      * setter for tiles
-     * @param tiles is the List<Tile> to move
+     * @param tiles is the List of Tile to move
      */
     public void setTiles(List<Tile> tiles) {
         this.tiles = tiles;

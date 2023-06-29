@@ -23,6 +23,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Level;
 
+/**
+ * clientHandler is the class server-side class that manages the connection with a client
+ */
 public class ClientHandler implements Runnable{
     /**
      * PING_TIME is the time period of the checking for disconnected player
