@@ -100,7 +100,9 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
             }
             state.getClient().sendMsgToServer(clientMessage);
 
+            state.setIsDisconnecting(true);
             state.getClient().disconnect(false);
+            state.setClient(null);
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
         r.getChildren().add(back);
