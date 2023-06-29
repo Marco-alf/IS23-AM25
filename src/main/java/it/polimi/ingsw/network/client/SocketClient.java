@@ -88,7 +88,7 @@ public class SocketClient extends GenericClient{
                 sendMsgToServer(new Ping());
                 Thread.sleep(PING_TIME);
             } catch (InterruptedException ignored) {
-                disconnect(true);
+                //disconnect(true);
             }
         }
 

@@ -198,7 +198,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                     System.out.println("Sent " + ((ServerMessage)msg).getType() + " to RMI client");
                 }
             } catch (RemoteException e) {
-                manageDisconnection(rmiClient);
+                //manageDisconnection(rmiClient);
             }
         }
     }
@@ -223,7 +223,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
         try {
             rmiClient.receiveMsgFromServer(msg);
         } catch (RemoteException e) {
-            manageDisconnection(rmiClient);
+            //manageDisconnection(rmiClient);
         }
         System.out.println("Sent " + msg.getType() + " to RMI client");
     }

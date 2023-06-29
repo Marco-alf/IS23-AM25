@@ -65,12 +65,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
         try{
             rmiServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, port).lookup(RMIServerInterface.NAME);
 
-            Random gen = new Random();
-            do {
-                clientport = gen.nextInt(MIN_PORT_NUMBER, MAX_PORT_NUMBER);
-            }while(!available(clientport));
-
-            rmiServerInterface.register((RMIClientInterface) UnicastRemoteObject.exportObject(this, clientport));
+            rmiServerInterface.register((RMIClientInterface) UnicastRemoteObject.exportObject(this, 0));
             clientConnected.set(true);
             pingThread.start();
         } catch (NotBoundException | RemoteException e) {
@@ -143,7 +138,7 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
                 count = 0;
             } catch (RemoteException e) {
                 count++;
-                if(count > 4) disconnect(true);
+                if(count > 2) disconnect(true);
             }
             try{
                 Thread.sleep(1000);
