@@ -168,103 +168,116 @@ public class TextualUI implements ViewInterface {
      * TUI to play the game
      */
     public void start() {
+        boolean flag = false;
         String inputCommand;
-        restoreWindow();
-        System.out.println(out + "Insert the \u001B[1mserver IP address"+rst+".");
-        System.out.print(in);
-        serverIP = scanner.nextLine();
-        while(!isValidIP(serverIP)){
-            System.out.print(rst + err + "This ip is wrongly formatted\n" + in);
+        while(!flag) {
+            restoreWindow();
+            System.out.println(out + "Insert the \u001B[1mserver IP address" + rst + ".");
+            System.out.print(in);
             serverIP = scanner.nextLine();
-        }
+            while (!isValidIP(serverIP)) {
+                System.out.print(rst + err + "This ip is wrongly formatted\n" + in);
+                serverIP = scanner.nextLine();
+            }
 
-        System.out.println(out + "Insert \u001B[1mrmi"+rst+" if you want to join server with rmi \u001B[1msocket"+rst+" if you want to access it with socket");
-        System.out.print(in);
-
-        String connType = scanner.nextLine();
-
-        while (!connType.equals("rmi") && !connType.equals("socket")) {
-            System.out.print(rst + err + "This type of connection is not supported\n" + in);
-            connType = scanner.nextLine();
-        }
-        if (connType.equals("rmi")) {
-            System.out.println(out + "Insert port exposed by the server. If not sure press " + bold + "ENTER" + rst + " to use the default port 1099");
+            System.out.println(out + "Insert \u001B[1mrmi" + rst + " if you want to join server with rmi \u001B[1msocket" + rst + " if you want to access it with socket");
             System.out.print(in);
-            inputCommand = scanner.nextLine();
-            if(!inputCommand.equals("")) rmiPort = Integer.parseInt(inputCommand);
-            client = new RMIClient(serverIP, rmiPort, this);
-            new Thread(()->client.init()).start();
-        } else {
-            System.out.println(out + "Insert port exposed by the server. If not sure press " + bold + "ENTER" + rst + " to use the default port 8088");
-            System.out.print(in);
-            inputCommand = scanner.nextLine();
-            if(!inputCommand.equals("")) tcpPort = Integer.parseInt(inputCommand);
-            client = new SocketClient(serverIP, tcpPort, this);
-            new Thread(()->client.init()).start();
-        }
 
-        restoreWindow();
-        printCommands();
+            String connType = scanner.nextLine();
+
+            while (!connType.equals("rmi") && !connType.equals("socket")) {
+                System.out.print(rst + err + "This type of connection is not supported\n" + in);
+                connType = scanner.nextLine();
+            }
+            if (connType.equals("rmi")) {
+                System.out.println(out + "Insert port exposed by the server. If not sure press " + bold + "ENTER" + rst + " to use the default port 1099");
+                System.out.print(in);
+                inputCommand = scanner.nextLine();
+                if (!inputCommand.equals("")) rmiPort = Integer.parseInt(inputCommand);
+                client = new RMIClient(serverIP, rmiPort, this);
+
+            } else {
+                System.out.println(out + "Insert port exposed by the server. If not sure press " + bold + "ENTER" + rst + " to use the default port 8088");
+                System.out.print(in);
+                inputCommand = scanner.nextLine();
+                if (!inputCommand.equals("")) tcpPort = Integer.parseInt(inputCommand);
+                client = new SocketClient(serverIP, tcpPort, this);
+            }
+            flag = client.init();
+            if (flag) {
+
+                restoreWindow();
+                printCommands();
 
 
-        while (online) {
-            inputCommand = askCommand();
-            while(isDisplaying){
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }                }
-            isDisplaying = true;
-            switch (inputCommand) {
-                case "create" -> createLobby();
-                case "retrieve" -> retrieveLobbies();
-                case "join" -> joinLobby();
-                case "chat" -> sendMessage();
-                case "showchat" -> {
-                    if (client.getIsInLobbyStatus()) {
-                        displayChat();
-                    } else {
-                        System.out.print(rst + err + "You have to be inside a lobby to use the chat\n" + in);
-                    }
-                }
-                case "move" -> makeMove();
-                case "quit" -> {
-                    quitState = true;
-                    quitLobby();
-                    while (waiting){
+                while (online) {
+                    inputCommand = askCommand();
+                    while (isDisplaying) {
                         try {
-                            sleep(500);
-                        } catch (InterruptedException ignored){
-
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
                         }
                     }
-                }
-                case "help" -> printCommands();
-                case "gamestate" -> {
-                    if (client.getIsInLobbyStatus()) {
+                    isDisplaying = true;
+                    switch (inputCommand) {
+                        case "create" -> createLobby();
+                        case "retrieve" -> retrieveLobbies();
+                        case "join" -> joinLobby();
+                        case "chat" -> sendMessage();
+                        case "showchat" -> {
+                            if (client.getIsInLobbyStatus()) {
+                                displayChat();
+                            } else {
+                                System.out.print(rst + err + "You have to be inside a lobby to use the chat\n" + in);
+                            }
+                        }
+                        case "move" -> makeMove();
+                        case "quit" -> {
+                            quitState = true;
+                            quitLobby();
+                            while (waiting) {
+                                try {
+                                    sleep(500);
+                                } catch (InterruptedException ignored) {
+
+                                }
+                            }
+                        }
+                        case "help" -> printCommands();
+                        case "gamestate" -> {
+                            if (client.getIsInLobbyStatus()) {
+                                displayGameInfo();
+                            } else {
+                                System.out.print(rst + err + "You have to be inside a game to use this functionality\n" + in);
+                            }
+                        }
+                        case "egg" -> System.out.print(rst + yellow + "    0\n" + in);//(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
+                        case "exit" -> {
+                            if (client.getIsInLobbyStatus()) quitLobby();
+                            System.out.print(rst);
+                            System.exit(0);
+                            online = false;
+                        }
+                    }
+
+                    if (missingGameUpdate) {
                         displayGameInfo();
-                    } else {
-                        System.out.print(rst + err + "You have to be inside a game to use this functionality\n" + in);
+                        missingGameUpdate = false;
+                    }
+                    isDisplaying = false;
+                    if (hasEnded) {
+                        manageEndGame();
+                        resetState();
                     }
                 }
-                case "egg" -> System.out.print(rst + yellow + "    0\n" + in);//(rst  + "Wow, you discover the " + yellow +"Easter Egg" + rst + ", probably you should go touch some grass\n" + in);
-                case "exit" -> {
-                    if(client.getIsInLobbyStatus())quitLobby();
-                    System.out.print(rst);
-                    System.exit(0);
-                    online = false;
-                }
-            }
+            } else {
+                System.out.println(err + bold + "Server is not reachable at this ip address");
+                try{
+                    Thread.sleep(4000);
+                }catch (InterruptedException ignored){
 
-            if(missingGameUpdate) {
-                displayGameInfo();
-                missingGameUpdate = false;
-            }
-            isDisplaying=false;
-            if(hasEnded) {
-                manageEndGame();
-                resetState();
+                }
             }
         }
     }
@@ -459,8 +472,10 @@ public class TextualUI implements ViewInterface {
     }
 
     /**
-     * updateView is the method that allows the update of the TUI state.
-     * @param info represents the information that the are needed for the update
+     * updateView is the method that allows the update of the TUI. By getting the information from a GameInfo object
+     * points, goals, online players and all the additional information requested by the TUI regarding a specific game
+     * are updated by this method
+     * @param info represents the information that are needed for the update
      */
     public synchronized void updateView (GameInfo info) {
         board = info.getNewBoard();
@@ -1604,7 +1619,7 @@ public class TextualUI implements ViewInterface {
         String command;
         boolean inGame = true;
         List<String> availableCommands = List.of("quit", "gamestate", "chat", "showchat", "leaderboard", "help");
-        ClientMessage clientMessageOut = null;
+        ClientMessage clientMessageOut;
         while(isDisplaying){
             try {
                 sleep(50);
@@ -1865,7 +1880,7 @@ public class TextualUI implements ViewInterface {
         System.out.print("\n" + rst + red + bold + "You have been disconnected\n");
         if(!quitState) {
             online = false;
-            System.out.print(rst + red + bold + "Server is unreachable: check your connection then relaunch the application!\n" + "rst");
+            System.out.print(rst + red + bold + "Server is unreachable: check your connection then relaunch the application!\n" + rst);
             System.exit(0);
         }
         else{

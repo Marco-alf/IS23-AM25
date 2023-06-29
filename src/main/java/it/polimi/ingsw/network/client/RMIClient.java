@@ -60,16 +60,18 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
 
     /**
      * initializes the rmi connection, locating the remote server object and running the register method with itself as
-     * the parameter, then sets the connectedStatus to true */
-    public void init() {
+     * the parameter, then sets the connectedStatus to true
+     * @return true if the init succeeded */
+    public boolean init() {
         try{
             rmiServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, port).lookup(RMIServerInterface.NAME);
 
             rmiServerInterface.register((RMIClientInterface) UnicastRemoteObject.exportObject(this, 0));
             clientConnected.set(true);
             pingThread.start();
+            return true;
         } catch (NotBoundException | RemoteException e) {
-            disconnect(true);
+            return false;
         }
     }
 
@@ -115,7 +117,11 @@ public class RMIClient extends GenericClient implements RMIClientInterface {
     public void sendMsgToServer (Serializable arg) {
         new Thread(()->{
             try {
-                rmiServerInterface.receiveMsgFromClient(arg);
+                if(rmiServerInterface == null) {
+                    this.view.receiveConnectionErrorMsg(new ConnectionErrorMessage());
+                }else {
+                    rmiServerInterface.receiveMsgFromClient(arg);
+                }
             } catch (RemoteException e) {
                 disconnect(true);
             }

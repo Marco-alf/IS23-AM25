@@ -95,9 +95,10 @@ public class SocketClient extends GenericClient{
     /**
      * initializes the socket based connection; creates the socket and establishes the connection to the server, then
      * assigns the socket streams to the local attributes of the class, sets the connectionStatus to true and starts
-     * the listening and the ping threads */
+     * the listening and the ping threads
+     * @return true if the init succeeded */
     @Override
-    public void init() {
+    public boolean init() {
         try {
             clientSocket = new Socket();
             clientSocket.connect(new InetSocketAddress(ip, port));
@@ -107,8 +108,9 @@ public class SocketClient extends GenericClient{
             clientConnected.set(true);
             messageListener.start();
             pingThread.start();
+            return true;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return false;
         }
     }
 

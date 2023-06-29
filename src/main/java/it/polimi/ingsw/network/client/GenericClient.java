@@ -12,8 +12,9 @@ public abstract class GenericClient {
 
     /**
      * initializes the connection to the game server, will disconnect if failed
+     * @return true if the initialization succeeded, false otherwise
      */
-    public void init() {}
+    public boolean init(){return false;};
 
     /**
      * method used by the view to access to game features by sending messages.
