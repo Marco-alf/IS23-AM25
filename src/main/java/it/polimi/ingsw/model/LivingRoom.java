@@ -202,6 +202,9 @@ public class LivingRoom {
         return boardCopy;
     }
 
+    /**
+     * @return a vector with the two common goals chosen for the game
+     */
     public CommonGoal[] getCommonGoals() {
         return commonGoals;
     }

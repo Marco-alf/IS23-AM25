@@ -8,7 +8,9 @@ import java.rmi.RemoteException;
 
 /** interface used for remote method invocation by the server and implemented by the client */
 public interface RMIServerInterface extends Remote {
-    /** */
+    /**
+     * String used to initialize register
+     */
     String NAME = "myshelfie";
     /** method to receive messages from the client
      * @param msg is a serializable message that is being received by the server

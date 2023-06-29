@@ -79,6 +79,9 @@ public class SocketClient extends GenericClient{
         }
     }
 
+    /**
+     * method used to ping the server every PING_TIME
+     */
     public void pingServer () {
         while (clientConnected.get()) {
             try {

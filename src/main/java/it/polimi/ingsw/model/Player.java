@@ -121,6 +121,9 @@ public class Player {
         shelf.setFull();
     }
 
+    /**
+     * @return true if the player's shelf is full, false otherwise
+     */
     public boolean isBookshelfFull(){
         return shelf.isFullStatus();
     }
