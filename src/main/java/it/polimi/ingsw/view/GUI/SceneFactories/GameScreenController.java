@@ -1,6 +1,5 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
-import it.polimi.ingsw.model.Shelf;
 import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
 import it.polimi.ingsw.model.data.GameInfo;
@@ -11,9 +10,7 @@ import it.polimi.ingsw.network.messages.clientMessages.MoveMessage;
 import it.polimi.ingsw.network.messages.clientMessages.PrivateChatMessage;
 import it.polimi.ingsw.network.messages.clientMessages.QuitMessage;
 import it.polimi.ingsw.network.messages.serverMessages.ChatUpdateMessage;
-import it.polimi.ingsw.network.messages.serverMessages.GameUpdatedMessage;
 import it.polimi.ingsw.network.messages.serverMessages.PrivateChatUpdateMessage;
-import it.polimi.ingsw.view.GUI.GraphicalUI;
 import it.polimi.ingsw.view.GUI.SceneState;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -21,7 +18,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
@@ -181,18 +177,20 @@ public class GameScreenController {
                                                     new Image("17_MyShelfie_BGA/item_tiles/Cornici1.3.png")
     };
     private final Image[] games =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png")
+                                                new Image("17_MyShelfie_BGA/item_tiles/Giochi1.2.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Giochi1.3.png")
     };
     private final Image[] books =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png")
+                                                new Image("17_MyShelfie_BGA/item_tiles/Libri1.2.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Libri1.3.png")
     };
 
     private final Image[] plants =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png")
+                                                new Image("17_MyShelfie_BGA/item_tiles/Piante1.2.png"),
+                                                new Image("17_MyShelfie_BGA/item_tiles/Piante1.3.png")
     };
+
+    private final Map<TilesType, List<Integer> > bag = new HashMap<>();
 
     private Button[] s_buttons = new Button[]{myshelfButton, player1Button, player2Button, player3Button };
     Background buttonback = new Background(new BackgroundFill(BURLYWOOD,new CornerRadii(0), new Insets(0)));
@@ -300,7 +298,9 @@ public class GameScreenController {
             }
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 6; j++) {
-                    old[i][j].setImage(getTexture(info.getShelf()[j][i]));
+                    if( old[i][j].getImage() == null ) {
+                        old[i][j].setImage(getTexture(info.getShelf()[j][i]));
+                    }
                 }
             }
 
@@ -385,6 +385,8 @@ public class GameScreenController {
 
         side.setVisible(false);
         viewBoard.setGridLinesVisible(false);
+
+        resetBag();
 
         for(int i=0;  i<5; i++){
             for(int j=0;  j<6; j++){
@@ -524,12 +526,26 @@ public class GameScreenController {
     }
 
     private void refreshBoard(){
+        resetBag();
         for(int i=0;  i<9; i++){
             for(int j=0;  j<9; j++){
                 //if(livingroomBoard[i][j]!= null) {
-                    imageViewBoard[j][i].setImage(getTexture(livingroomBoard[i][j]));
+                    imageViewBoard[j][i].setImage(getTextureBag(livingroomBoard[i][j]));
                 //}
             }
+        }
+    }
+    private void oneRefreshBoard(int i, int j, TilesType t){
+
+    }
+    private void resetBag(){
+        bag.clear();
+        for(TilesType t : TilesType.values()){
+            List<Integer> a = new ArrayList<>();
+            a.add(7);
+            a.add(7);
+            a.add(8);
+            bag.put(t, a);
         }
     }
     private void select(int i, int j){
@@ -577,18 +593,47 @@ public class GameScreenController {
         }
     }
 
+
+    Random r = new Random();
+    private Image getTextureBag(TilesType type){
+        Image result;
+        if(type == null){
+            return null;
+        }
+        List<Integer> xlist = bag.get(type);
+        int x = r.nextInt(0, xlist.size() );
+        if(xlist.get(x) == 0){
+            return null;
+        }
+        int index = xlist.get(x);
+        switch (type){
+            case TROPHIES -> result = trophies[x];
+            case GAMES -> result = games[x];
+            case BOOKS -> result = books[x];
+            case PLANTS -> result = plants[x];
+            case FRAMES -> result = frames[x];
+            case CATS -> result = cats[x];
+            default -> result = null;
+        }
+        xlist.set(x, xlist.get(x)-1 );
+        if(xlist.get(x) == 0){
+            xlist.remove(x);
+        }
+        return result;
+    }
     private Image getTexture(TilesType type){
         Image result;
         if(type == null){
             return null;
         }
+        int x = 0;
         switch (type){
-            case TROPHIES -> result = trophies[0];
-            case GAMES -> result = games[0];
-            case BOOKS -> result = books[0];
-            case PLANTS -> result = plants[0];
-            case FRAMES -> result = frames[0];
-            case CATS -> result = cats[0];
+            case TROPHIES -> result = trophies[x];
+            case GAMES -> result = games[x];
+            case BOOKS -> result = books[x];
+            case PLANTS -> result = plants[x];
+            case FRAMES -> result = frames[x];
+            case CATS -> result = cats[x];
             default -> result = null;
         }
         return result;
