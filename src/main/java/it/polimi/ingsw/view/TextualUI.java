@@ -152,6 +152,9 @@ public class TextualUI implements ViewInterface {
      * flag that indicates a quit state. It remains until the quit state ends and the network acknowledges a success
      */
     private boolean quitState = false;
+    /**
+     * flag used to notify that the TUI is waiting for a response from the server
+     */
     private boolean waiting = false;
     /**
      * a GameResults object that contains all the information about how the current game has ended

@@ -157,7 +157,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                     }
                 }
             }
-            synchronized (rmiClientsToRemove){
+            synchronized (this){
                 for (RMIClientInterface rmiClientInterface : rmiClientsToRemove) {
                     manageDisconnection(rmiClientInterface);
                     checkedClients.remove(rmiClientInterface);
