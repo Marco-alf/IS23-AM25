@@ -1,7 +1,6 @@
-package it.polimi.ingsw.view;
+package it.polimi.ingsw.view.TUI;
 
 import it.polimi.ingsw.model.PersonalGoal;
-import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.model.TilesType;
 import it.polimi.ingsw.model.data.FinalGameInfo;
@@ -12,14 +11,9 @@ import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.client.SocketClient;
 import it.polimi.ingsw.network.messages.clientMessages.*;
 import it.polimi.ingsw.network.messages.serverMessages.*;
+import it.polimi.ingsw.view.ViewInterface;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Thread.sleep;
 

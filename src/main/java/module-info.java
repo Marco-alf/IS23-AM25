@@ -21,4 +21,5 @@ module AM25 {
     exports it.polimi.ingsw.network.messages.clientMessages;
     exports it.polimi.ingsw.model.data;
     exports it.polimi.ingsw.view;
+    exports it.polimi.ingsw.view.TUI;
 }

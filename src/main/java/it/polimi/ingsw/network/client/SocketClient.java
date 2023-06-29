@@ -2,14 +2,12 @@ package it.polimi.ingsw.network.client;
 
 import it.polimi.ingsw.network.messages.connectionMessages.Ping;
 import it.polimi.ingsw.network.messages.serverMessages.*;
-import it.polimi.ingsw.view.TextualUI;
 import it.polimi.ingsw.view.ViewInterface;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;

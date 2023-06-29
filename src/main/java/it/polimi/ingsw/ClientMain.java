@@ -1,6 +1,6 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.view.TextualUI;
+import it.polimi.ingsw.view.TUI.TextualUI;
 
 /**
  * ClientMain is the launcher of the Textual User Interface
