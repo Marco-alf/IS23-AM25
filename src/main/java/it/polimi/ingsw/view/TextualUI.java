@@ -1796,6 +1796,12 @@ public class TextualUI implements ViewInterface {
         if(!hasEnded) {
             restoreWindow();
             System.out.print(err + "The lobby has been closed because there where not enough player. You are going to return to the main menù\n");
+            System.out.print(yellow + bold + " YOU WON!"+rst);
+            try{
+                Thread.sleep(3000);
+            }catch (InterruptedException ignored){
+
+            }
             client.disconnect(false);
 
             resetState();

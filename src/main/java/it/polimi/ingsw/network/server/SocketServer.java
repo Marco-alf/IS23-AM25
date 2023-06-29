@@ -96,6 +96,10 @@ public class SocketServer implements Runnable{
         }
     }
 
+    /**
+     * setInGameStatus is used to set the status of all the client in a lobby to IN_GAME whenever the game starts
+     * @param lobby is the target lobby
+     */
     public synchronized void setInGameStatus (String lobby) {
         for (ClientHandler clientHandler : clientHandlers) {
             if(clientHandler != null ) {

@@ -64,6 +64,9 @@ public class ClientHandler implements Runnable{
      * lobby in which the client plays
      */
     private Lobby lobby = null;
+    /**
+     * state maintains the state of the client in order to responds to messages accordingly
+     */
     private ClientState state = ClientState.CONNECTED;
 
     /**
@@ -96,6 +99,10 @@ public class ClientHandler implements Runnable{
         return clientNickname;
     }
 
+    /**
+     * setter for the "state" attribute
+     * @param state is the new state of the client
+     */
     public synchronized void setStatus (ClientState state) {
         this.state = state;
     }
@@ -279,6 +286,9 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    /**
+     * pingClient is the method that the server uses to check the availability of the connection with the client
+     */
     public void pingClient () {
         while (activeClient) {
             try {

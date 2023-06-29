@@ -55,6 +55,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * RMIClientsLobby maps the uniques network interface of the clients to the respective lobby
      */
     private final Map<RMIClientInterface, Lobby> rmiClientsLobby = new HashMap<>();
+    /**
+     * rmiClientsStates maps the uniques network interface of the clients to their states
+     */
     private final Map<RMIClientInterface, ClientState> rmiClientsStates = new HashMap<>();
     /**
      * port is the port number used for rmi connections (server side)
