@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.GUI.SceneFactories;
 
+import it.polimi.ingsw.network.client.RMIClient;
 import it.polimi.ingsw.network.client.SocketClient;
 import it.polimi.ingsw.view.GUI.SceneState;
 import it.polimi.ingsw.view.ViewInterface;
@@ -140,7 +141,7 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
         if(isIPbroken(askip)){
             return;
         }
-        state.setClient(new SocketClient(askip.getText(), 8088, view));
+        state.setClient(new RMIClient(askip.getText(), 8088, view));
         state.getClient().init();
         state.update();
     }
