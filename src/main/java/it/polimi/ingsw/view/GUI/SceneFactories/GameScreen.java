@@ -165,7 +165,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
             state.setIsDisconnecting(true);
 
         controller.disconnect(fromserver);
-        state.setClient( new SocketClient("localhost", 8088, view));
+        state.setClient(null);
         System.gc();
 
 

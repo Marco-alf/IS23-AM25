@@ -132,8 +132,6 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
 
         g.getChildren().add(r);
 
-
-
         adjustScaling(r);
         return g;
     }
@@ -143,17 +141,33 @@ public class PlayScreen extends SceneHandler implements SceneFactory{
             return;
         }
         state.setClient(new SocketClient(askip.getText(), 8088, view));
-        state.getClient().init();
-        state.update();
+
+        if(state.getClient().init()){
+            state.update();
+        } else {
+            state.setClient(null);
+
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setContentText("Unable to reach server, chose another IP address");
+            a.showAndWait();
+        }
     }
 
     private void initiateRMI(){
         if(isIPbroken(askip)){
             return;
         }
-        state.setClient(new RMIClient(askip.getText(), 8088, view));
-        state.getClient().init();
-        state.update();
+        state.setClient(new RMIClient(askip.getText(), 1099, view));
+
+        if(state.getClient().init()){
+            state.update();
+        } else {
+            state.setClient(null);
+
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setContentText("Unable to reach server, chose another IP address");
+            a.showAndWait();
+        }
     }
 
     private boolean isIPbroken(TextField t){
