@@ -290,6 +290,8 @@ public class GameScreenController {
             livingroomBoard = info.getNewBoard();
             refreshBoard();
 
+            System.out.println(onlinePlayers);
+            System.out.println(info.getOnlinePlayers());
             recolorPlayers(onlinePlayers, info.getOnlinePlayers(), otherPlayers);
             onlinePlayers = new ArrayList<>(info.getOnlinePlayers());
 
@@ -688,6 +690,7 @@ public class GameScreenController {
         List<String> onlineNow = new ArrayList<>(onlinePlayers);
         onlineNow.remove(user);
         recolorPlayers(onlinePlayers, onlineNow, otherPlayers);
+        onlinePlayers.remove(user);
     }
 
     protected void disconnect(boolean fromserver) {
