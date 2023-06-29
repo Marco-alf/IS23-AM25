@@ -19,6 +19,7 @@ Il server può essere eseguito tramite il seguente comando:
 java -jar AM25.jar -Server
 ~~~
 Il client può essere eseguito con i seguenti comandi: 
+
 **Per la TUI**
 ~~~
 java -jar AM25.jar -Tui
@@ -74,6 +75,7 @@ The server can be run with the following command in a terminal window:
 java -jar AM25.jar -Server
 ~~~
 The client can be run with one of the following command: 
+
 **For TUI**
 ~~~
 java -jar AM25.jar -Tui
