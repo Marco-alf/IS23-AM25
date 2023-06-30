@@ -33,6 +33,7 @@ import java.util.Objects;
  * */
 public class GameScreen extends SceneHandler implements SceneFactory{
 
+    private String selfName;
     private GameScreenController controller;
 
     /**
@@ -41,7 +42,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
      * */
     public GameScreen(SceneState state, Rectangle2D screen, ViewInterface view, String selfName) {
         super(state, screen, view);
-
+        this.selfName = selfName;
         Parent r = null;
         try {
             controller = new GameScreenController();
@@ -96,7 +97,7 @@ public class GameScreen extends SceneHandler implements SceneFactory{
      * */
     @Override
     public SceneFactory next() {
-        return new FinalScreen(state, screen, view);
+        return new FinalScreen(state, screen, view, selfName);
     }
 
     private void quit(){

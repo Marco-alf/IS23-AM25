@@ -476,7 +476,7 @@ public class GameScreenController {
         }
 
         for(int i=0; i<5; i++){
-            arrowsView[i] = new ImageView("17_MyShelfie_BGA/misc/arrow.jpg");
+            arrowsView[i] = new ImageView("17_MyShelfie_BGA/misc/arrow3.png");
             arrowsView[i].setPreserveRatio(true);
             arrowsView[i].setFitHeight(95);
             int finalI = i;

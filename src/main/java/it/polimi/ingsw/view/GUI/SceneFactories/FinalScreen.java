@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -31,7 +32,8 @@ import java.util.stream.IntStream;
  * SceneFactory for the final screen, will generate the scoreboard and return the user to the starting screen when asked.
  * */
 public class FinalScreen extends SceneHandler implements SceneFactory{
-    private final Background back = new Background(new BackgroundImage(new Image("17_MyShelfie_BGA/misc/base_pagina2.jpg"),
+    private String selfName;
+    private final Background bg = new Background(new BackgroundImage(new Image("17_MyShelfie_BGA/misc/base_pagina2.jpg"),
             null,
             null,
             BackgroundPosition.CENTER,
@@ -40,8 +42,9 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
     /**
      * Constructor for finalGameScreen, calling super().
      * */
-    FinalScreen(SceneState state, Rectangle2D screen, ViewInterface view) {
+    FinalScreen(SceneState state, Rectangle2D screen, ViewInterface view, String selfName) {
         super(state, screen, view);
+        this.selfName = selfName;
         AnchorPane anchor = new AnchorPane();
         scene = new Scene(anchor);
     }
@@ -53,7 +56,7 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
      * */
     public void setInfo(FinalGameInfo info){
         StackPane stack = new StackPane();
-        stack.setBackground(back);
+        stack.setBackground(bg);
 
         List<String> names = new ArrayList<>(info.getOnlinePlayers());
         Map<String, Integer> pointsMap = new HashMap<>();
@@ -105,7 +108,23 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
             state.setClient(null);
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
+        r.setBackground(bg);
         r.getChildren().add(back);
+        try{
+            if( place[names.indexOf(selfName)] == 1){
+                ImageView win = new ImageView(new Image("17_MyShelfie_BGA/misc/endgameWin.gif"));
+                win.setPreserveRatio(true);
+                win.setFitHeight(1080);
+                stack.getChildren().add(win);
+            } else {
+                ImageView lose = new ImageView(new Image("17_MyShelfie_BGA/misc/endgameWin.gif"));
+                lose.setPreserveRatio(true);
+                lose.setFitHeight(1080);
+                stack.getChildren().add(lose);
+            }
+        } catch (Exception e ){
+
+        }
         r.setAlignment(Pos.CENTER);
         adjustScaling(r);
 
