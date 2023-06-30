@@ -208,6 +208,7 @@ public class GameScreenController {
             recolorPlayers(onlinePlayers, info.getOnlinePlayers(), otherPlayers);
             onlinePlayers = new ArrayList<>(info.getOnlinePlayers());
 
+            chatMode.getItems().clear();
             chatMode.getItems().add("Lobby");
             int i = 1;
             int k = 0;
@@ -216,6 +217,7 @@ public class GameScreenController {
                     k++;
                 }
                 s_buttons[i].setText(players.get(k));
+                s_buttons[i].setVisible(true);
                 chatMode.getItems().add(players.get(k));
             }
             myshelfButton.setText("(Me) " + selfName);
@@ -280,6 +282,29 @@ public class GameScreenController {
 
             recolorPlayers(onlinePlayers, info.getOnlinePlayers(), otherPlayers);
             onlinePlayers = new ArrayList<>(info.getOnlinePlayers());
+            players = onlinePlayers;
+            otherPlayers = new ArrayList<>(players);
+            otherPlayers.remove(selfName);
+
+
+            chatMode.getItems().clear();
+            chatMode.getItems().add("Lobby");
+            int iii = 1;
+            int lll = 0;
+            for (; iii < players.size(); iii++, lll++) {
+                if (players.get(lll).equals(selfName)) {
+                    lll++;
+                }
+                s_buttons[iii].setText(players.get(lll));
+                s_buttons[iii].setVisible(true);
+                chatMode.getItems().add(players.get(lll));
+            }
+            myshelfButton.setText("(Me) " + selfName);
+
+            for (; iii < 4; iii++) {
+                s_buttons[iii].setVisible(false);
+            }
+
 
             ImageView[][] old = new ImageView[5][6];
 
