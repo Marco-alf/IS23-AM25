@@ -34,7 +34,7 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
     /**
      * Constructor used to instantiate the scene graph as the waiting screen and buffer the user's name
      * */
-    LobbyScreen(SceneState state, Rectangle2D screen, ViewInterface view, String selfName) {
+    public LobbyScreen(SceneState state, Rectangle2D screen, ViewInterface view, String selfName) {
         super(state, screen, view);
         scene = new Scene(waitingScreen());
         this.selfName = selfName;

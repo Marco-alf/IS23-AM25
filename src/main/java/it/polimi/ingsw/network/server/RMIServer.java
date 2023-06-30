@@ -114,7 +114,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
 
     /**
      * For each client a thread is created that checks if the client is reachable.
-     * If the client is unreachable for 5 consecutive iterations it is disconnected from the server
+     * Every second the server checks whether there are new client online that needs to be pinged.
+     * For each ping to be discarded it's considered a timeout of 5 seconds. Between two ping is waited another second.
+     * If the client is unreachable for 3 consecutive iterations it is disconnected from the server
      */
     public void checkClientAliveness () {
         List<RMIClientInterface> checkedClients = new ArrayList<>();
@@ -181,27 +183,13 @@ public class RMIServer implements Runnable, RMIServerInterface{
      */
     public synchronized void sendMsgToAllRMI (Serializable msg, Lobby lobby) {
 
-        //RMIServer t = this;
         for (RMIClientInterface rmiClient : rmiClients) {
-            /*new Thread(()->{
-                synchronized (t) {
-                    try {
-                        if (rmiClientsLobby.get(rmiClient) == lobby) {
-                            rmiClient.receiveMsgFromServer(msg);
-                            System.out.println("finally sent" + ((ServerMessage)msg).getType() );
-                        }
-                    } catch (RemoteException e) {
-                        manageDisconnection(rmiClient);
-                    }
-                }
-            }).start();*/
             try {
                 if (rmiClientsLobby.get(rmiClient) == lobby) {
                     rmiClient.receiveMsgFromServer(msg);
                     System.out.println("Sent " + ((ServerMessage)msg).getType() + " to RMI client");
                 }
             } catch (RemoteException e) {
-                //manageDisconnection(rmiClient);
             }
         }
     }
@@ -212,21 +200,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
      * @param msg is the serializable message
      */
     public void sendMsgToClient (RMIClientInterface rmiClient, ServerMessage msg) {
-        /*RMIServer t = this;
-        new Thread(()->{
-            synchronized (t) {
-                try {
-                    rmiClient.receiveMsgFromServer(msg);
-                    System.out.println("finally sent" + msg.getType());
-                } catch (RemoteException e) {
-                    manageDisconnection(rmiClient);
-                }
-            }
-        }).start();*/
         try {
             rmiClient.receiveMsgFromServer(msg);
         } catch (RemoteException e) {
-            //manageDisconnection(rmiClient);
         }
         System.out.println("Sent " + msg.getType() + " to RMI client");
     }
@@ -240,7 +216,6 @@ public class RMIServer implements Runnable, RMIServerInterface{
     public synchronized void receiveMsgFromClient (Serializable arg) {
         ClientMessage msg = (ClientMessage) arg;
         RMIClientInterface sender = msg.getRmiClient();
-        //System.out.println(msg.getType());
         System.out.println("Received " + msg.getType() + " from RMI client");
 
         try {
@@ -354,7 +329,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 } catch (IllegalMoveException e) {
                     sendMsgToClient(sender, new InvalidMoveMessage());
                 } catch (GameEndedException ignored) {
-                    // code here
+
                 }
             } else {
                 sendMsgToClient(sender, new InvalidCommandMessage());
@@ -397,7 +372,9 @@ public class RMIServer implements Runnable, RMIServerInterface{
     }
 
     /**
-     * manageDisconnection handles the disconnections of rmi clients
+     * manageDisconnection handles the disconnections of rmi clients.
+     * If the lobby where the client was has only a player left the lobby will be closed after a timeout and the remaining
+     * player will be disconnected from the lobby.
      * @param rmiClient is the interface of the client that is disconnected
      */
     public synchronized void manageDisconnection(RMIClientInterface rmiClient) {
