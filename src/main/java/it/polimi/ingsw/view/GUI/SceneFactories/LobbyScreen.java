@@ -52,11 +52,17 @@ public class LobbyScreen extends SceneHandler implements SceneFactory{
 
         Button cancel = new Button("Go back to menu");
         cancel.setOnAction(actionEvent -> {
+            System.out.println("mando messaggio quit");
             QuitMessage clientMessage = new QuitMessage();
             if (state.getClient() instanceof RMIClient) {
                 clientMessage.setRmiClient((RMIClient) state.getClient());
             }
             state.getClient().sendMsgToServer(clientMessage);
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {
+            }
             state.setIsDisconnecting(true);
             state.getClient().disconnect(false);
             state.setClient(null);

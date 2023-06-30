@@ -172,32 +172,20 @@ public class GameScreenController {
     @FXML
     ImageView personalGoalView;
 
-    private final Image [] cats = new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Gatti1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Gatti1.2.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Gatti1.3.png")
+    private final Image [] cats = new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Gatti1.1.png")
     };
 
-    private final Image [] trophies = new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Trofei1.1.png"),
-                                                    new Image("17_MyShelfie_BGA/item_tiles/Trofei1.2.png"),
-                                                    new Image("17_MyShelfie_BGA/item_tiles/Trofei1.3.png"),
+    private final Image [] trophies = new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Trofei1.1.png")
     };
 
-    private final Image [] frames = new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Cornici1.1.png"),
-                                                    new Image("17_MyShelfie_BGA/item_tiles/Cornici1.2.png"),
-                                                    new Image("17_MyShelfie_BGA/item_tiles/Cornici1.3.png")
+    private final Image [] frames = new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Cornici1.1.png")
     };
-    private final Image[] games =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png")
+    private final Image[] games =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Giochi1.1.png")
     };
-    private final Image[] books =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png")
+    private final Image[] books =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Libri1.1.png")
     };
 
-    private final Image[] plants =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png"),
-                                                new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png")
+    private final Image[] plants =new Image[]{ new Image("17_MyShelfie_BGA/item_tiles/Piante1.1.png")
     };
 
     private Button[] s_buttons = new Button[]{myshelfButton, player1Button, player2Button, player3Button };

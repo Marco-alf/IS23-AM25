@@ -92,11 +92,17 @@ public class MenuScreen extends SceneHandler implements SceneFactory{
         });
         Button cancel = new Button("Cancel");
         cancel.setOnAction(actionEvent -> {
+
             QuitMessage clientMessage = new QuitMessage();
             if (state.getClient() instanceof RMIClient) {
                 clientMessage.setRmiClient((RMIClient) state.getClient());
             }
             state.getClient().sendMsgToServer(clientMessage);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {
+            }
+            state.setIsDisconnecting(true);
             state.getClient().disconnect(false);
             state.setClient(null);
             state.forceUpdate(new PlayScreen(state, screen, view));

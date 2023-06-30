@@ -58,6 +58,21 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
         StackPane stack = new StackPane();
         stack.setBackground(bg);
 
+        QuitMessage clientMessage = new QuitMessage();
+        if (state.getClient() instanceof RMIClient) {
+            clientMessage.setRmiClient((RMIClient) state.getClient());
+        }
+        state.getClient().sendMsgToServer(clientMessage);
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
+
+        state.setIsDisconnecting(true);
+        state.getClient().disconnect(false);
+        state.setClient(null);
+
         List<String> names = new ArrayList<>(info.getOnlinePlayers());
         Map<String, Integer> pointsMap = new HashMap<>();
         for (String name : names) {
@@ -97,15 +112,6 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
 
         Button back = new Button("back to play screen");
         back.setOnMouseReleased(actionEvent -> {
-            QuitMessage clientMessage = new QuitMessage();
-            if (state.getClient() instanceof RMIClient) {
-                clientMessage.setRmiClient((RMIClient) state.getClient());
-            }
-            state.getClient().sendMsgToServer(clientMessage);
-
-            state.setIsDisconnecting(true);
-            state.getClient().disconnect(false);
-            state.setClient(null);
             state.forceUpdate(new PlayScreen(state, screen, view));
         });
         r.setBackground(bg);
