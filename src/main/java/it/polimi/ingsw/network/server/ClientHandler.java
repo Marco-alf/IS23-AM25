@@ -306,6 +306,8 @@ public class ClientHandler implements Runnable{
 
     /**
      * method used to manage a regular disconnection of a player.
+     * If the lobby where the client was has only a player left the lobby will be closed after a timeout and the remaining
+     * player will be disconnected from the lobby.
      */
     public synchronized void manageDisconnection() {
         if (activeClient){
