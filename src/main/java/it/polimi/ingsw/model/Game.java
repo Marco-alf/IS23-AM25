@@ -324,19 +324,6 @@ public class Game
     }
 
     /**
-     * method to get the total points that every player has gained over the course of the current game
-     * @return the list of all accumulated points of each player in a list ordered by the same index used for players */
-    public List<Integer> getPlayersPoints() {
-        List<Integer> results = new ArrayList<>();
-        int[] commonPoints;
-        for (Player p : players) {
-            commonPoints = p.calculateCommonPoints();
-            results.add(commonPoints[0] + commonPoints[1] + p.calculatePersonalPoints());
-        }
-        return results;
-    }
-
-    /**
      * private method used to retrieve the reference of a player from its name
      * @param name name of the player to return
      * @throws InvalidPlayerNameException if the requested name is empty or null

@@ -229,8 +229,8 @@ class GameTest {
         } catch (ShelfCreationException | PlayersEmptyException | NotTestException e) {
             fail();
         }
-        for(int i = 0; i < 4; i++){
-            for(int j = 0; j < 5; j++){
+        for(int i = 0; i <= 5; i++){
+            for(int j = 0; j <= 4; j++){
                 assertNull(game.getShelf()[i][j]);
             }
         }
@@ -1328,5 +1328,58 @@ class GameTest {
         } catch (InvalidPlayerNameException e) {
             fail();
         }
+    }
+
+    @Test
+    void reconnectTest() {
+        String name1 = "pippo";
+        String name2 = "pluto";
+        String name3 = "paperino";
+        List<String> players = new ArrayList<>();
+        players.add(name1);
+        players.add(name2);
+        players.add(name3);
+        Game game = null;
+        try {
+            game = new Game(players, true);
+        } catch (ShelfCreationException | PlayersEmptyException | NotTestException e) {
+            fail();
+        }
+        assertEquals(3, game.getOnlinePlayers().size());
+        try {
+            game.disconnectPlayer(name1);
+        } catch (InvalidPlayerNameException e) {
+            fail();
+        }
+        assertEquals(2, game.getOnlinePlayers().size());
+        try {
+            game.disconnectPlayer(name2);
+        } catch (InvalidPlayerNameException e) {
+            fail();
+        }
+        assertEquals(1, game.getOnlinePlayers().size());
+        try {
+            game.reconnect(name1);
+        } catch (InvalidPlayerNameException e) {
+            fail();
+        }
+        assertEquals(2, game.getOnlinePlayers().size());
+    }
+
+    @Test
+    void setGameEndedTest() {
+        String name1 = "pippo";
+        String name2 = "pluto";
+        List<String> players = new ArrayList<>();
+        players.add(name1);
+        players.add(name2);
+        Game game = null;
+        try {
+            game = new Game(players, true);
+        } catch (ShelfCreationException | PlayersEmptyException | NotTestException e) {
+            fail();
+        }
+        game.setGameEnded();
+        assertTrue(game.getEndGame());
     }
 }

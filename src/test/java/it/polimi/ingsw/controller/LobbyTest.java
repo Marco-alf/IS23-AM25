@@ -37,6 +37,14 @@ class LobbyTest {
         String lobbyName = "lobby";
         int playerNumber = 2;
         Lobby lobby = new Lobby(lobbyCreator, lobbyName, playerNumber);
+        String player0 = " ";
+        try {
+            lobby.addPlayer(player0);
+        } catch (NameTakenException | FullLobbyException e) {
+            fail();
+        } catch (IllegalPlayerNameException e) {
+            assertTrue(true);
+        }
         String player1 = "pippo";
         try {
             lobby.addPlayer(player1);
@@ -80,6 +88,21 @@ class LobbyTest {
             fail();
         }
         assertEquals(2, lobby.getPlayerNumber());
+        try {
+            lobby.createGame(true);
+        } catch (GameCreationException | NotTestException e) {
+            fail();
+        }
+        try {
+            lobby.disconnectPlayer(lobby.getPlayer(player2));
+        } catch (PlayerNotInLobbyException e) {
+            fail();
+        }
+        try {
+            lobby.addPlayer(player2);
+        } catch (NameTakenException | FullLobbyException | IllegalPlayerNameException e) {
+            fail();
+        }
     }
 
     @Test
