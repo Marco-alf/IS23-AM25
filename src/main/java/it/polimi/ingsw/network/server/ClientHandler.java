@@ -326,7 +326,7 @@ public class ClientHandler implements Runnable{
                     if (lobby.isGameCreated()) serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
                     genericServer.sendMsgToAll(serverMessage, lobby);
 
-                    if (lobby.checkNumberOfPlayers()) {
+                    if (lobby.checkNumberOfPlayers() && lobby.isGameCreated()) {
                         InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
                         genericServer.sendMsgToAll(insufficientPlayersMessage, lobby);
                         Thread t = new Thread(new Runnable() {

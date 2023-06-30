@@ -395,7 +395,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                 if (lobby.isGameCreated()) serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
                 server.sendMsgToAll(serverMessage, lobby);
 
-                if (lobby.checkNumberOfPlayers()) {
+                if (lobby.checkNumberOfPlayers() && lobby.isGameCreated()) {
                     InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
                     server.sendMsgToAll(insufficientPlayersMessage, lobby);
 
