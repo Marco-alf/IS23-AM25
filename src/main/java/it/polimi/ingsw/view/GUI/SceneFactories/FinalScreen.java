@@ -110,21 +110,7 @@ public class FinalScreen extends SceneHandler implements SceneFactory{
         });
         r.setBackground(bg);
         r.getChildren().add(back);
-        try{
-            if( place[names.indexOf(selfName)] == 1){
-                ImageView win = new ImageView(new Image("17_MyShelfie_BGA/misc/endgameWin.gif"));
-                win.setPreserveRatio(true);
-                win.setFitHeight(1080);
-                stack.getChildren().add(win);
-            } else {
-                ImageView lose = new ImageView(new Image("17_MyShelfie_BGA/misc/endgameWin.gif"));
-                lose.setPreserveRatio(true);
-                lose.setFitHeight(1080);
-                stack.getChildren().add(lose);
-            }
-        } catch (Exception e ){
 
-        }
         r.setAlignment(Pos.CENTER);
         adjustScaling(r);
 
