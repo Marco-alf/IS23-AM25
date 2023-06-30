@@ -281,7 +281,7 @@ public class ClientHandler implements Runnable{
             outputStream.flush();
             outputStream.reset();
         } catch (IOException e) {
-            manageDisconnection();
+            if(((Message)msg).getType().equals("Ping"))manageDisconnection();
         }
         Message temp = (Message) msg;
         if(!temp.getType().equals(new Ping().getType())) {
@@ -326,7 +326,7 @@ public class ClientHandler implements Runnable{
                     if (lobby.isGameCreated()) serverMessage.setCurrentPlayer(lobby.getCurrentPlayer());
                     genericServer.sendMsgToAll(serverMessage, lobby);
 
-                    if (lobby.checkNumberOfPlayers() && lobby.isGameCreated()) {
+                    if (lobby.checkNumberOfPlayers() && (lobby.isGameCreated() || lobby.getOnlinePlayers().size()==0)) {
                         InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
                         genericServer.sendMsgToAll(insufficientPlayersMessage, lobby);
                         Thread t = new Thread(new Runnable() {
