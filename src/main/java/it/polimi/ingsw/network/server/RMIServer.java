@@ -132,7 +132,7 @@ public class RMIServer implements Runnable, RMIServerInterface{
                                 synchronized (rmiClientsStates) {
                                     synchronized (rmiClientsLobby) {
                                         if (ClientState.IN_GAME.equals(rmiClientsStates.get(rmiClient)) && !rmiClientsLobby.containsKey(rmiClient)) {
-                                            rmiClientsToRemove.add(rmiClient);
+                                            synchronized (rmiClientsToRemove){rmiClientsToRemove.add(rmiClient);}
                                             online = false;
                                         }
                                     }
@@ -420,28 +420,6 @@ public class RMIServer implements Runnable, RMIServerInterface{
                     updateMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
                     server.sendMsgToAll(updateMessage, lobby);
                 }
-
-                Thread t = new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        if (lobby.checkNumberOfPlayers()) {
-                            InsufficientPlayersMessage insufficientPlayersMessage = new InsufficientPlayersMessage();
-                            server.sendMsgToAll(insufficientPlayersMessage, lobby);
-                            if (!lobby.waitForPlayers()) {
-                                server.gameBroker.closeLobby(lobby);
-                                LobbyClosedMessage lobbyClosedMessage = new LobbyClosedMessage();
-                                server.sendMsgToAll(lobbyClosedMessage, lobby);
-                                rmiClientsLobby.values().remove(lobby);
-                            }
-                        } else if (name.equals(curPlayer)) {
-                            UpdatedPlayerMessage updateMessage = new UpdatedPlayerMessage();
-                            updateMessage.setUpdatedPlayer(lobby.getCurrentPlayer());
-                            server.sendMsgToAll(updateMessage, lobby);
-                        }
-                    }
-                });
-                t.start();
 
             }
 

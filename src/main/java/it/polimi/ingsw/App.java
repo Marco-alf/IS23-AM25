@@ -17,6 +17,9 @@ public class App {
      */
     public static void main(String[] args) {
         try{
+            System.setProperty ("Sun.rmi.transport.tcp.readTimeout", "2000");
+            System.setProperty ("Sun.rmi.transport.connectionTimeout", "2000");
+            System.setProperty ("Sun.rmi.transport.proxy.connectTimeout", "2000");
             System.setProperty("sun.rmi.transport.tcp.responseTimeout", "2000");
         } catch (Exception e){
             System.out.println("RMI not set");
